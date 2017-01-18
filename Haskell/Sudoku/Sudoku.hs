@@ -9,8 +9,12 @@ data SudoCell = SudoCell (XLoc , YLoc , SValue, Found) deriving Show
 
 
 --function to generate the board
-createBoard :: Int -> [SudoCell]
-createBoard y =map (\x -> SudoCell (x,0,0,False)) [1..y]
+--param1: the length of the board in terms of number of cells
+--param2: the starting position of the lower left corner 
+createBoard :: Int -> Int -> [SudoCell]
+createBoard a p
+	| p > a     = []
+	| otherwise = (map (\x -> SudoCell (x, p, 0, False)) [1..a]) ++ createBoard a (p+1)
 
 --function to give the list of SudoCells that are in the same row as the given SudoCell
 --sameRowCells :: SudoCell -> [SudoCell]
