@@ -10,7 +10,7 @@ data SudoCell = SudoCell (XLoc , YLoc , SValue, Found) deriving Show
 
 --function to generate the board
 --param1: the length of the board in terms of number of cells
---param2: the starting position of the lower left corner 
+--param2: the starting position of the lower left corner (you could use index 0 or 1 or whatever number you want) 
 createBoard :: Int -> Int -> [SudoCell]
 createBoard a p
 	| p > a     = []
