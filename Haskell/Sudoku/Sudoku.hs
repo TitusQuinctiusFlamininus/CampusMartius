@@ -17,8 +17,12 @@ createBoard a p
 	| otherwise = (map (\x -> SudoCell (x, p, 0, False)) [1..a]) ++ createBoard a (p+1)
 
 --function to give the list of SudoCells that are in the same row as the given SudoCell
---sameRowCells :: SudoCell -> [SudoCell]
+sameRowCells :: SudoCell -> [SudoCell] -> [SudoCell]
+sameRowCells (SudoCell (_, y, _, _)) board = filter (\(SudoCell (_, a, _, _)) -> (y == a)) board
 
+--function to give the list of SudoCells that are in the same column as the given SudoCell
+sameColumnCells :: SudoCell -> [SudoCell] -> [SudoCell]
+sameColumnCells (SudoCell (x, _, _, _)) board = filter (\(SudoCell (a, _, _, _)) -> (x == a)) board
 
 
 --function to check if SudoCell to the LEFT of the current cell has the same svalue
