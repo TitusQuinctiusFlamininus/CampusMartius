@@ -9,8 +9,7 @@ data SudoCell = SudoCell (XLoc , YLoc , SValue, Found) deriving (Eq, Show)
 
 
 --function to generate the board
---param1: the length of the board in terms of number of cells
---param2: the starting position of the lower left corner (you could use index 0 or 1 or whatever number you want) 
+--param: the starting position of the lower left corner (1 will create cells, that have 1,1 as lower left corner of the board)
 createBoard :: Int -> [SudoCell]
 createBoard p
 	| p > 9     = []
