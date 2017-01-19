@@ -14,12 +14,14 @@ data SudoCell = SudoCell (XLoc , YLoc , SValue, Region, Found) deriving (Eq, Sho
 createBoard :: Int -> [SudoCell]
 createBoard p
 	| p > 9     = []
-	| otherwise = (map (\x -> SudoCell (x, p, 0, 0, False)) [1..9]) ++ createBoard (p+1)
+	| otherwise = 
+		let noRegionBoard = (map (\x -> SudoCell (x, p, 0, 0, False)) [1..9]) ++ createBoard (p+1) in 
+		fillInRegions noRegionBoard
 
-
+--PRIVATE FUNCTION: USED IN THE createBoard Function to fill in the regions data for each cell
 --function to fill in the region or block for each cell
-fillInRegion :: [SudoCell] -> [SudoCell]
-fillInRegion celldata = 
+fillInRegions :: [SudoCell] -> [SudoCell]
+fillInRegions celldata = 
 	let regiondata = concat $ ((replicate 3 ([1,1,1]++[2,2,2]++[3,3,3])) ++ (replicate 3 ([4,4,4]++[5,5,5]++[6,6,6]))  ++ (replicate 3 ([7,7,7]++[8,8,8]++[9,9,9]))) in
 	zipWith (\(SudoCell (a, b, c, _, d)) r -> SudoCell (a, b, c, r, d)) celldata regiondata
 
