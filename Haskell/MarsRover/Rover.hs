@@ -1,3 +1,4 @@
+import Data.Char
 
 type XPos = Int
 type YPos = Int
@@ -38,23 +39,45 @@ createMotionList nasaInput = map (\x -> checkIt x) nasaInput
 	      checkIt 'R' = R
 	      checkIt 'M' = M
 
+charToOrientation :: Char -> Orientation
+charToOrientation 'N' = N
+charToOrientation 'S' = S
+charToOrientation 'E' = E
+charToOrientation 'W' = W
+		  
+createActualPosition :: String -> ActualPosition
+createActualPosition "" = (ActualPosition 0 0 N)
+createActualPosition p =
+	let (x:y:z) = filter (\s -> s /= ' ') p in
+	(ActualPosition (digitToInt x) (digitToInt y) (charToOrientation (head z)))
+
+reportPosition :: ActualPosition -> String
+reportPosition (ActualPosition x y z) = " X: "++(show x)++"  Y: "++(show y)++"  Bearing: "++(show z)
+
+
 main = do
 	putStr "Rover 1 receiving Instructions from NASA: "
 	let r1Instructions = "LMLMLMLMM"
 	putStrLn r1Instructions
 	putStr "Rover 1 receiving CurrentPosition from NASA: "
-	let r1Position = (ActualPosition 1 2 N)
-	print r1Position
+	let r1Position = "1 2 N"
+	putStrLn r1Position
 
 	putStr "Rover 2 receiving Instructions from NASA: "
 	let r2Instructions = "MMRMMRMRRM"
 	putStrLn r2Instructions
 	putStr "Rover 2 receiving CurrentPosition from NASA: "
-	let r2Position = (ActualPosition 3 3 E)
-	print r2Position
-	let r1FinalPosition = processNASAInstructions r1Position $ createMotionList r1Instructions
-	let r2FinalPosition = processNASAInstructions r2Position $ createMotionList r2Instructions
+	let r2Position = "3 3 E"
+	putStrLn r2Position
+	putStrLn ""
+	putStrLn "...Moving Rovers about the Plateau.... "
+	putStrLn ""
+	let r1FinalPosition = processNASAInstructions (createActualPosition r1Position) (createMotionList r1Instructions)
+	let r2FinalPosition = processNASAInstructions (createActualPosition r2Position) (createMotionList r2Instructions)
+	putStrLn ""
 	putStr "Rover 1 Final Mars Plateau Position : "
-	print r1FinalPosition
+	putStr (reportPosition r1FinalPosition)
+	putStrLn ""
 	putStr "Rover 2 Final Mars Plateau Position : "
-	print r2FinalPosition
+	putStr (reportPosition r2FinalPosition)
+	putStrLn ""
