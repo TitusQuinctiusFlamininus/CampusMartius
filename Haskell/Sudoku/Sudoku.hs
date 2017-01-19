@@ -5,7 +5,7 @@ type SValue = Int
 type Found = Bool
 
 
-data SudoCell = SudoCell (XLoc , YLoc , SValue, Found) deriving Show
+data SudoCell = SudoCell (XLoc , YLoc , SValue, Found) deriving (Eq, Show)
 
 
 --function to generate the board
@@ -16,13 +16,18 @@ createBoard a p
 	| p > a     = []
 	| otherwise = (map (\x -> SudoCell (x, p, 0, False)) [1..a]) ++ createBoard a (p+1)
 
---function to give the list of SudoCells that are in the same row as the given SudoCell
+--function to give the list of SudoCells that are in the same row as the given SudoCell, all except the row that is used as the reference request
 sameRowCells :: SudoCell -> [SudoCell] -> [SudoCell]
-sameRowCells (SudoCell (_, y, _, _)) board = filter (\(SudoCell (_, a, _, _)) -> (y == a)) board
+sameRowCells (SudoCell (a, b, c, d)) board = 
+	let cells = filter (\(SudoCell (_, e, _, _)) -> (b == e)) board in
+	filter (\g -> (g /= (SudoCell (a, b, c, d))) ) cells
 
---function to give the list of SudoCells that are in the same column as the given SudoCell
+
+--function to give the list of SudoCells that are in the same column as the given SudoCell, all except the row that is used as the reference request
 sameColumnCells :: SudoCell -> [SudoCell] -> [SudoCell]
-sameColumnCells (SudoCell (x, _, _, _)) board = filter (\(SudoCell (a, _, _, _)) -> (x == a)) board
+sameColumnCells (SudoCell (a, b, c, d)) board = 
+	let cells = filter (\(SudoCell (e, _, _, _)) -> (a == e)) board in
+	filter (\g -> (g /= (SudoCell (a, b, c, d))) ) cells
 
 
 --function to check if SudoCell to the LEFT of the current cell has the same svalue
