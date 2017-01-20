@@ -1,9 +1,9 @@
 --Solving Sudoku in Haskell
-type XLoc = Int
-type YLoc = Int
-type SValue = Int
-type Region = Int
-type Found = Bool
+type XLoc = Int     --the X coordinate of the cell
+type YLoc = Int     --the Y coordinate of the cell
+type SValue = Int   --the sudoku value of the cell, a value between 1 and 9 (inclusive of 1 and 9)
+type Region = Int   --the numbered region this cell belongs to; essentially a number given to a group of 9 cells (bottom left bottom = 1, bottom middle bottom = 2, bottom right bottom = 3, middle left middle = 4, dead center = 5, middle right middle = 6, upper left upper = 7, upper middle upper = 8, upper right upper = 9 )
+type Found = Bool   --the indication if the cell's true sudoku value has been found, once this is set to true, then it will not and should not change
 
 
 data SudoCell = SudoCell (XLoc , YLoc , SValue, Region, Found) deriving (Eq, Show)
@@ -21,9 +21,9 @@ createBoard p
 --PRIVATE FUNCTION: USED IN THE createBoard Function to fill in the regions data for each cell
 --function to fill in the region or block for each cell
 fillInRegions :: [SudoCell] -> [SudoCell]
-fillInRegions celldata = 
-	let regiondata = concat $ ((replicate 3 ((replicate 3 1)++(replicate 3 2)++(replicate 3 3))) ++ (replicate 3 ((replicate 3 4)++(replicate 3 5)++(replicate 3 6)))  ++ (replicate 3 ((replicate 3 7)++(replicate 3 8)++(replicate 3 9)))) in
-	zipWith (\(SudoCell (a, b, c, _, d)) r -> SudoCell (a, b, c, r, d)) celldata regiondata
+fillInRegions celldata =
+	let regiondata = concat $ (concat $ replicate 3 $ map (\x -> replicate 3 x) [1,2,3]) ++ (concat $ replicate 3 $ map (\x -> replicate 3 x) [4,5,6])  ++ (concat $ replicate 3 $ map (\x -> replicate 3 x) [7,8,9])
+	in zipWith (\(SudoCell (a, b, c, _, d)) r -> SudoCell (a, b, c, r, d)) celldata regiondata
 
 --function to give the list of SudoCells that are in the same row as the given SudoCell, all except the row that is used as the reference request
 sameRowCells :: SudoCell -> [SudoCell] -> [SudoCell]
