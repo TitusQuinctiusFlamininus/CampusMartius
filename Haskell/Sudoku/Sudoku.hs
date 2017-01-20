@@ -22,7 +22,7 @@ createBoard p
 --function to fill in the region or block for each cell
 fillInRegions :: [SudoCell] -> [SudoCell]
 fillInRegions celldata = 
-	let regiondata = concat $ ((replicate 3 ([1,1,1]++[2,2,2]++[3,3,3])) ++ (replicate 3 ([4,4,4]++[5,5,5]++[6,6,6]))  ++ (replicate 3 ([7,7,7]++[8,8,8]++[9,9,9]))) in
+	let regiondata = concat $ ((replicate 3 ((replicate 3 1)++(replicate 3 2)++(replicate 3 3))) ++ (replicate 3 ((replicate 3 4)++(replicate 3 5)++(replicate 3 6)))  ++ (replicate 3 ((replicate 3 7)++(replicate 3 8)++(replicate 3 9)))) in
 	zipWith (\(SudoCell (a, b, c, _, d)) r -> SudoCell (a, b, c, r, d)) celldata regiondata
 
 --function to give the list of SudoCells that are in the same row as the given SudoCell, all except the row that is used as the reference request
