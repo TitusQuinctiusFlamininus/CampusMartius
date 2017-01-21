@@ -5,9 +5,10 @@ type SValue = Int   --the sudoku value of the cell, a value between 1 and 9 (inc
 type Region = Int   --the numbered region this cell belongs to; essentially a number given to a group of 9 cells (bottom left bottom = 1, bottom middle bottom = 2, bottom right bottom = 3, middle left middle = 4, dead center = 5, middle right middle = 6, upper left upper = 7, upper middle upper = 8, upper right upper = 9 )
 type Found = Bool   --the indication if the cell's true sudoku value has been found, once this is set to true, then it will not and should not change
 
-data Possibilities = Possibilities [Int] deriving (Eq, Show)
 
-data SudoCell = SudoCell (XLoc , YLoc , SValue, Region, Possibilities, Found) deriving (Eq, Show)
+data Possibilities = Possibilities [Int] deriving (Eq, Show)   --the possible values a cell can have.
+
+data SudoCell = SudoCell (XLoc , YLoc , SValue, Region, Possibilities, Found) deriving (Eq, Show)   --A typical Sudoku Cell
 
 
 --function to generate the board
@@ -16,7 +17,7 @@ createBoard :: Int -> [SudoCell]
 createBoard p
  | p > 9     = []
  | otherwise = 
- let noRegionBoard = (map (\x -> SudoCell (x, p, 0, 0, Possibilities [1,2,3,4,5,6,7,8,9], False)) [1..9]) ++ createBoard (p+1) in 
+ let noRegionBoard = (map (\x -> SudoCell (x, p, 0, 0, Possibilities [1..9], False)) [1..9]) ++ createBoard (p+1) in 
  fillInRegions noRegionBoard
 
 --PRIVATE FUNCTION: Used in the createBoard Function to fill in the regions data for each cell
@@ -43,6 +44,13 @@ sameColumnCells :: SudoCell -> [SudoCell] -> [SudoCell]
 sameColumnCells (SudoCell (a, b, c, d, p, f)) board = 
  let cells = filter (\(SudoCell (e, _, _, _, _, _)) -> (a == e)) board in
  filter (\g -> (g /= (SudoCell (a, b, c, d, p, f))) ) cells
+
+--function to give the list of SudoCells that are in the same region as the given SudoCell, all except the row that is used as the reference request
+sameRegionCells :: SudoCell -> [SudoCell] -> [SudoCell]
+sameRegionCells (SudoCell (a, b, c, d, p, f)) board = 
+ let cells = filter (\(SudoCell (_, _, _, r, _, _)) -> (d == r)) board in
+ filter (\g -> (g /= (SudoCell (a, b, c, d, p, f))) ) cells
+
 
 
 --function to check if SudoCell to the LEFT of the current cell has the same Svalue
