@@ -52,9 +52,12 @@ sameRegionCells (SudoCell (a, b, c, d, p, f)) board =
  filter (\g -> (g /= (SudoCell (a, b, c, d, p, f))) ) cells
 
 
+--function to update a board with the default sudoku values
+setDefaultSudokuValues :: [(Int, Int, Int)] -> [SudoCell] -> [SudoCell]
+setDefaultSudokuValues [] _ = []
+setDefaultSudokuValues ((a,b,c):ys) ((SudoCell (d, e, f, g, h, i)):xs)
+ | a == d && b == e   = (SudoCell (d, e, c, g, h, True)) : setDefaultSudokuValues ys ((SudoCell (d, e, f, g, h, i)):xs)
+ | otherwise          = (SudoCell (d, e, f, g, h, i)) : setDefaultSudokuValues ((a,b,c):ys) xs
 
---function to check if SudoCell to the LEFT of the current cell has the same Svalue
---Param1: The Reference Cell. We want to check all cells to the left of this one
---Param2: the list of SudoCells that have the same y value
---checkLeftForValue :: SudoCell -> [SudoCell] -> Bool
---checkLeftForValue SudoCell (x, y, s, _) =
+
+
