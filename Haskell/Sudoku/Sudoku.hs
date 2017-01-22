@@ -1,3 +1,4 @@
+import Data.List
 --Solving Sudoku in Haskell
 type XLoc = Int     --the X coordinate of the cell
 type YLoc = Int     --the Y coordinate of the cell
@@ -51,13 +52,14 @@ sameRegionCells (SudoCell (a, b, c, d, p, f)) board =
  let cells = filter (\(SudoCell (_, _, _, r, _, _)) -> (d == r)) board in
  filter (\g -> (g /= (SudoCell (a, b, c, d, p, f))) ) cells
 
-
 --function to update a board with the default sudoku values
 setDefaultSudokuValues :: [(Int, Int, Int)] -> [SudoCell] -> [SudoCell]
-setDefaultSudokuValues [] _ = []
 setDefaultSudokuValues ((a,b,c):ys) ((SudoCell (d, e, f, g, h, i)):xs)
  | a == d && b == e   = (SudoCell (d, e, c, g, h, True)) : setDefaultSudokuValues ys ((SudoCell (d, e, f, g, h, i)):xs)
  | otherwise          = (SudoCell (d, e, f, g, h, i)) : setDefaultSudokuValues ((a,b,c):ys) xs
+setDefaultSudokuValues [] _ = []
 
-
-
+postDefault :: [SudoCell] -> [SudoCell] -> [SudoCell]
+postDefault defaultValues origBoard = 
+ let indexToUse = ((length defaultValues)-1)) in
+ filter (\e -> ((e `elemIndex` origBoard)) > (Just indexToUse)) origBoard
