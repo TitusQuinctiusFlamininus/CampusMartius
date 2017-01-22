@@ -27,7 +27,7 @@ createBoard p
 --function to fill in the region or block for each cell
 fillInRegions :: [SudoCell] -> [SudoCell]
 fillInRegions celldata =
- let regiondata = (createRawRegionValues [1,2,3]) ++ (createRawRegionValues [4,5,6]) ++ (createRawRegionValues [7,8,9])
+ let regiondata = (createRawRegionValues [1..3]) ++ (createRawRegionValues [4..6]) ++ (createRawRegionValues [7..9])
  in zipWith (\(SudoCell (a, b, c, _, p, d)) r -> SudoCell (a, b, c, r, p, d)) celldata regiondata
 
 --PRIVATE FUNCTION: Used in the fillInRegions function to give back a list like this, given [1,2,3]: [1,1,1,2,2,2,3,3,3,1,1,1,2,2,2,3,3,3,1,1,1,2,2,2,3,3,3]
