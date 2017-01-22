@@ -57,13 +57,13 @@ sameRegionCells (SudoCell (a, b, c, d, p, f)) board =
 --function to update a board with the default sudoku values
 setDefaultSudokuValues :: [(Int, Int, Int)] -> [SudoCell] -> [SudoCell]
 setDefaultSudokuValues ((a,b,c):ys) ((SudoCell (d, e, f, g, h, i)):xs)
- | a == d && b == e   = (SudoCell (d, e, c, g, h, True)) : setDefaultSudokuValues ys ((SudoCell (d, e, f, g, h, i)):xs)
+ | a == d && b == e   = (SudoCell (d, e, c, g, h, True)) : setDefaultSudokuValues ys xs
  | otherwise          = (SudoCell (d, e, f, g, h, i)) : setDefaultSudokuValues ((a,b,c):ys) xs
 setDefaultSudokuValues [] _ = []
 
 postDefault :: [SudoCell] -> [SudoCell] -> [SudoCell]
 postDefault defaultValues origBoard = 
- let indexToUse = ((length defaultValues)-1) in
+ let indexToUse = ((length defaultValues)) in
  filter (\e -> (e `elemIndex` origBoard) >= (Just indexToUse)) origBoard
  
 --main = do
