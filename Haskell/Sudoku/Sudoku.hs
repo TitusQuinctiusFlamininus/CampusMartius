@@ -1,4 +1,6 @@
 import Data.List
+import Data.Char
+
 --Solving Sudoku in Haskell
 type XLoc = Int     --the X coordinate of the cell
 type YLoc = Int     --the Y coordinate of the cell
@@ -61,5 +63,12 @@ setDefaultSudokuValues [] _ = []
 
 postDefault :: [SudoCell] -> [SudoCell] -> [SudoCell]
 postDefault defaultValues origBoard = 
- let indexToUse = ((length defaultValues)-1)) in
- filter (\e -> ((e `elemIndex` origBoard)) > (Just indexToUse)) origBoard
+ let indexToUse = ((length defaultValues)-1) in
+ filter (\e -> (e `elemIndex` origBoard) >= (Just indexToUse)) origBoard
+ 
+--main = do
+--	let hollowboard = createBoard 1
+--	inputValues <- getLine
+--	let partialboard = setDefaultSudokuValues inputValues hollowboard
+--	let readyboard = postDefault partialboard hollowboard
+--	putStrLn readyboard
