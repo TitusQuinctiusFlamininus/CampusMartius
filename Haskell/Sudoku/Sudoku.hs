@@ -78,9 +78,12 @@ inputToDefault (x:y:z:xs)
 main = do
 	let hollowboard = createBoard 1
 	putStrLn "***********************************************************************************************************"
-	putStrLn "Welcome to Haskell Sudoku: Please Enter the Default Values in the format: 123,456   as: xcoord,ycoord,value"
+	putStrLn "===================================WELCOME TO HASKELL SUDOKU==============================================="
 	putStrLn "***********************************************************************************************************"
-	putStrLn "(Note: Make sure you enter the values as you would traverse the board from lower left cell, from left to right)"
+	putStrLn ""
+	putStrLn "Enter values already solved on the board in the format: 123,456 etc...."
+	putStrLn " For example: 123,456 would imply: 2nd cell in 1st column has value 3, 5th cell in the 4th column has value 6, etc "
+	putStrLn "(Note: Traverse the board from lower left cell, moving left to right for the bottom row, then the next row, etc....)"
 	inputValues <- getLine
 	let defaultInput = inputToDefault inputValues
 	putStrLn (show defaultInput)
