@@ -63,7 +63,7 @@ setDefaultSudokuValues [] _ = []
 
 postDefault :: [SudoCell] -> [SudoCell] -> [SudoCell]
 postDefault defaultValues origBoard = 
- let indexToUse = ((length defaultValues)) in
+ let indexToUse = length defaultValues in
  filter (\e -> (e `elemIndex` origBoard) >= (Just indexToUse)) origBoard
  
 --main = do
