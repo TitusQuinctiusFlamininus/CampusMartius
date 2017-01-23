@@ -61,14 +61,31 @@ setDefaultSudokuValues ((a,b,c):ys) ((SudoCell (d, e, f, g, h, i)):xs)
  | otherwise          = (SudoCell (d, e, f, g, h, i)) : setDefaultSudokuValues ((a,b,c):ys) xs
 setDefaultSudokuValues [] _ = []
 
+--function to finally add the missing cells from the original board that do not have any default values
 postDefault :: [SudoCell] -> [SudoCell] -> [SudoCell]
 postDefault defaultValues origBoard = 
  let indexToUse = length defaultValues in
  filter (\e -> (e `elemIndex` origBoard) >= (Just indexToUse)) origBoard
+
+--function to convert string input for defaut cell values to a format we know about
+inputToDefault :: String -> [(Int, Int, Int)]
+inputToDefault "" = []
+inputToDefault (x:y:z:xs)
+ | x == ',' = inputToDefault (y:z:xs)
+ | otherwise = ((digitToInt x),(digitToInt y),(digitToInt z)) : inputToDefault xs
+
  
---main = do
---	let hollowboard = createBoard 1
---	inputValues <- getLine
---	let partialboard = setDefaultSudokuValues inputValues hollowboard
---	let readyboard = postDefault partialboard hollowboard
---	putStrLn readyboard
+main = do
+	let hollowboard = createBoard 1
+	putStrLn "***********************************************************************************************************"
+	putStrLn "Welcome to Haskell Sudoku: Please Enter the Default Values in the format: 123,456   as: xcoord,ycoord,value"
+	putStrLn "***********************************************************************************************************"
+	putStrLn "(Note: Make sure you enter the values as you would traverse the board from lower left cell, from left to right)"
+	inputValues <- getLine
+	let defaultInput = inputToDefault inputValues
+	putStrLn (show defaultInput)
+	let partialboard = setDefaultSudokuValues defaultInput hollowboard
+	putStrLn (show partialboard)
+	let readyboard = partialboard ++ postDefault partialboard hollowboard
+	
+	putStrLn (show readyboard)
