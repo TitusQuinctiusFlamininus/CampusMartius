@@ -7,10 +7,11 @@ type YLoc = Int     --the Y coordinate of the cell
 type SValue = Int   --the sudoku value of the cell, a value between 1 and 9 (inclusive of 1 and 9)
 type Region = Int   --the numbered region this cell belongs to; essentially a number given to a group of 9 cells (bottom left bottom = 1, bottom middle bottom = 2, bottom right bottom = 3, middle left middle = 4, dead center = 5, middle right middle = 6, upper left upper = 7, upper middle upper = 8, upper right upper = 9 )
 type Found = Bool   --the indication if the cell's true sudoku value has been found, once this is set to true, then it will not and should not change
-
+type FORWARD = String --We can proceed to the next cell
+type BACK = String --we need to go back and remove the last used possible value in the last cell we processed
 
 data Possibilities = Possibilities [Int] deriving (Eq, Show)   --the possible values a cell can have.
-
+data Direction = FORWARD | BACK  deriving (Eq)
 data SudoCell = SudoCell (XLoc , YLoc , SValue, Region, Possibilities, Found) deriving (Eq, Show)   --A typical Sudoku Cell
 
 
@@ -74,6 +75,14 @@ inputToDefault (x:y:z:xs)
  | x == ',' = inputToDefault (y:z:xs)
  | otherwise = ((digitToInt x),(digitToInt y),(digitToInt z)) : inputToDefault xs
 
+
+--MAIN FUNCTION TO GO THROUGH EACH ELEMENT OF THE BOARD, STARTING FROM LOWER LEFT CORNER, AND FIND THE SUITABLE VALUES
+-- Param 1: The INDEX of the Cell we will deal with in this iteration
+-- Param 2: The DIRECTION we last used: If the last round involved a BACK direction, then it means we had a problem with a cell ahead, and we need to adjust the head-value, in the list of possible values the current cell can use; Otherwise, FORWARD means can use the present value (head of possible values list) and try out new possibilities in going forward
+--Param 3: The board as it currently stands
+solveSudoku :: Int -> Direction -> [SudoCell] -> [SudoCell]
+solveSudoku index dir board
+ | index == (length board)    = board
  
 main = do
 	let hollowboard = createBoard 1
