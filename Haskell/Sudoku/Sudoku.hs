@@ -93,7 +93,7 @@ solveSudoku index dir board sudostack
               then let newboard      = foldMap (:[]) (Seq.update index (SudoCell (a, b, x, d, Possibilities(x:xs), f)) $ Seq.fromList board)
                        newsudostack  = ((SudoCell (a, b, x, d, Possibilities(x:xs), f)) : sudostack) in
                        [] ++ solveSudoku (index+1) FORWARD newboard newsudostack
-              else ((SudoCell (a, b, c, d, Possibilities(x:xs), f)):sudostack) ++ solveSudoku (index+1) FORWARD board sudostack 
+              else ((SudoCell (a, b, c, d, Possibilities(x:xs), f)):sudostack) ++ solveSudoku (index+1) FORWARD board sudostack  --  <- IMPORTANT: Need a check here to see if DIRECTION WAS BACK...if it is then you have to move back again to a cell that is NOT true! because you could have gotten here from a future cell that wants to go back to the last NON-TRUE cell....
         }
  
 main = do
