@@ -81,14 +81,17 @@ inputToDefault (x:y:z:xs)
 --MAIN FUNCTION TO GO THROUGH EACH ELEMENT OF THE BOARD, STARTING FROM LOWER LEFT CORNER, AND FIND THE SUITABLE VALUES
 -- Param 1: The INDEX of the Cell we will deal with in this iteration
 -- Param 2: The DIRECTION we last used: If the last round involved a BACK direction, then it means we had a problem with a cell ahead, and we need to adjust the head-value, in the list of possible values the current cell can use; Otherwise, FORWARD means can use the present value (head of possible values list) and try out new possibilities in going forward
---Param 3: The board as it currently stands
-solveSudoku :: Int -> Direction -> [SudoCell] -> [SudoCell]
-solveSudoku index dir board
- | index == (length board)    = board
+--Param 3: The Sudoku board 
+--Param 4: A Stack that contains the elements of the board as you process them; they are popped or pushed back in
+solveSudoku :: Int -> Direction -> [SudoCell] -> [SudoCell] -> [SudoCell]
+solveSudoku index dir board sudostack
+ | index == (length board)    = sudostack
  | dir == FORWARD             = do { 
  	let (SudoCell (a, b, c, d, Possibilities(x:xs), f)) = board !! index
-	    newboard                                        = Seq.update index (SudoCell (a, b, x, d, Possibilities(x:xs), f)) $ Seq.fromList board in
-	foldMap (:[]) newboard
+	    --NEED TO CHECK IF YOURS ROWS COLUMNS AND REGION AGREE WITH YOUR POSSIBLE VALUE!
+	    newboard                                        = foldMap (:[]) (Seq.update index (SudoCell (a, b, x, d, Possibilities(x:xs), f)) $ Seq.fromList board)
+	    newsudostack = ((SudoCell (a, b, x, d, Possibilities(x:xs), f)) : sudostack) in
+	    newsudostack ++ solveSudoku (index+1) FORWARD newboard newsudostack
 	}
  
 main = do
