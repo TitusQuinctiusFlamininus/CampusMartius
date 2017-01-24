@@ -1,5 +1,7 @@
 import Data.List
 import Data.Char
+import qualified Data.Sequence as Seq
+import Data.Foldable
 
 --Solving Sudoku in Haskell
 type XLoc = Int     --the X coordinate of the cell
@@ -83,6 +85,11 @@ inputToDefault (x:y:z:xs)
 solveSudoku :: Int -> Direction -> [SudoCell] -> [SudoCell]
 solveSudoku index dir board
  | index == (length board)    = board
+ | dir == FORWARD             = do { 
+ 	let (SudoCell (a, b, c, d, Possibilities(x:xs), f)) = board !! index
+	    newboard                                        = Seq.update index (SudoCell (a, b, x, d, Possibilities(x:xs), f)) $ Seq.fromList board in
+	foldMap (:[]) newboard
+	}
  
 main = do
 	let hollowboard = createBoard 1
