@@ -86,13 +86,15 @@ inputToDefault (x:y:z:xs)
 solveSudoku :: Int -> Direction -> [SudoCell] -> [SudoCell] -> [SudoCell]
 solveSudoku index dir board sudostack
  | index == (length board)    = sudostack
- | dir == FORWARD             = do { 
- 	let (SudoCell (a, b, c, d, Possibilities(x:xs), f)) = board !! index
-	    --NEED TO CHECK IF YOURS ROWS COLUMNS AND REGION AGREE WITH YOUR POSSIBLE VALUE!
-	    newboard     = foldMap (:[]) (Seq.update index (SudoCell (a, b, x, d, Possibilities(x:xs), f)) $ Seq.fromList board)
-	    newsudostack = ((SudoCell (a, b, x, d, Possibilities(x:xs), f)) : sudostack) in
-	    newsudostack ++ solveSudoku (index+1) FORWARD newboard newsudostack
-	}
+ | dir == FORWARD = do {
+ 	let (SudoCell (a, b, c, d, Possibilities(x:xs), f)) = board !! index in
+	--NEED TO CHECK IF YOURS ROWS COLUMNS AND REGION AGREE WITH YOUR POSSIBLE VALUE!
+        if (f /= True)
+              then let newboard      = foldMap (:[]) (Seq.update index (SudoCell (a, b, x, d, Possibilities(x:xs), f)) $ Seq.fromList board)
+                       newsudostack  = ((SudoCell (a, b, x, d, Possibilities(x:xs), f)) : sudostack) in
+                       [] ++ solveSudoku (index+1) FORWARD newboard newsudostack
+              else ((SudoCell (a, b, c, d, Possibilities(x:xs), f)):sudostack) ++ solveSudoku (index+1) FORWARD board sudostack 
+        }
  
 main = do
 	let hollowboard = createBoard 1
@@ -105,9 +107,11 @@ main = do
 	putStrLn "(Note: Traverse the board from lower left cell, moving left to right for the bottom row, then the next row, etc....)"
 	inputValues <- getLine
 	let defaultInput = inputToDefault inputValues
-	putStrLn (show defaultInput)
+	--putStrLn (show defaultInput)
 	let partialboard = setDefaultSudokuValues defaultInput hollowboard
-	putStrLn (show partialboard)
+	--putStrLn (show partialboard)
 	let readyboard = partialboard ++ postDefault partialboard hollowboard
-	
-	putStrLn (show readyboard)
+	--putStrLn (show readyboard)
+	let finally = nub (solveSudoku 0 FORWARD readyboard [])
+	putStrLn (show (length finally))
+	putStrLn (show finally)
