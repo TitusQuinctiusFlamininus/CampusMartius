@@ -89,7 +89,7 @@ solveSudoku index dir board sudostack
  | dir == FORWARD             = do { 
  	let (SudoCell (a, b, c, d, Possibilities(x:xs), f)) = board !! index
 	    --NEED TO CHECK IF YOURS ROWS COLUMNS AND REGION AGREE WITH YOUR POSSIBLE VALUE!
-	    newboard                                        = foldMap (:[]) (Seq.update index (SudoCell (a, b, x, d, Possibilities(x:xs), f)) $ Seq.fromList board)
+	    newboard     = foldMap (:[]) (Seq.update index (SudoCell (a, b, x, d, Possibilities(x:xs), f)) $ Seq.fromList board)
 	    newsudostack = ((SudoCell (a, b, x, d, Possibilities(x:xs), f)) : sudostack) in
 	    newsudostack ++ solveSudoku (index+1) FORWARD newboard newsudostack
 	}
