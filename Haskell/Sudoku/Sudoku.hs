@@ -18,13 +18,18 @@ data SudoCell = SudoCell (XLoc , YLoc , SValue, Region, Possibilities, Found) de
 
 
 --function to generate the board
---param: the starting position of the lower left corner (1 will create cells, that have 1,1 as lower left corner of the board)
-createBoard :: Int -> [SudoCell]
-createBoard p
- | p > 9     = []
- | otherwise = 
- let noRegionBoard = (map (\x -> SudoCell (x, p, 0, 0, Possibilities [1..9], False)) [1..9]) ++ createBoard (p+1) in 
- fillInRegions noRegionBoard
+--param: the board so far; usually, to start off, we send an empty board
+createBoard :: [SudoCell] -> [SudoCell]
+createBoard board
+ | (length board) == 81     = board
+ | otherwise                = 
+     let y =
+              if length board == 0
+                 then 1
+              else ((length board) `div` 9)+1
+         noRegionBoard = map (\x -> SudoCell (x, y, 0, 0, Possibilities [1..9], False)) [1..9]
+         rdataInc = fillInRegions (board ++ noRegionBoard) in
+     createBoard rdataInc 
 
 --PRIVATE FUNCTION: Used in the createBoard Function to fill in the regions data for each cell
 --function to fill in the region or block for each cell
@@ -93,11 +98,14 @@ solveSudoku index dir board sudostack
               then let newboard      = foldMap (:[]) (Seq.update index (SudoCell (a, b, x, d, Possibilities(x:xs), f)) $ Seq.fromList board)
                        newsudostack  = ((SudoCell (a, b, x, d, Possibilities(x:xs), f)) : sudostack) in
                        [] ++ solveSudoku (index+1) FORWARD newboard newsudostack
-              else ((SudoCell (a, b, c, d, Possibilities(x:xs), f)):sudostack) ++ solveSudoku (index+1) FORWARD board sudostack  --  <- IMPORTANT: Need a check here to see if DIRECTION WAS BACK...if it is then you have to move back again to a cell that is NOT true! because you could have gotten here from a future cell that wants to go back to the last NON-TRUE cell....
+              else ((SudoCell (a, b, c, d, Possibilities(x:xs), f)):sudostack) ++ solveSudoku (index+1) FORWARD board sudostack
         }
- 
+--WE NEED TO TAKE CARE OF THIS CASE: 
+-- <- IMPORTANT: Need a check here to see if DIRECTION WAS BACK...if it is then you have to move back again to a cell that is NOT true! because you could have gotten here from a future cell that wants to go back to the last NON-TRUE cell.... So, you need to check if the direction was BACK......if so, append the current cell on the stack and use the BACKWARD flag
+
+
 main = do
-	let hollowboard = createBoard 1
+	let hollowboard = createBoard []
 	putStrLn "***********************************************************************************************************"
 	putStrLn "===================================WELCOME TO HASKELL SUDOKU==============================================="
 	putStrLn "***********************************************************************************************************"
