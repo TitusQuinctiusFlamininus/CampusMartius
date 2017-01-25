@@ -23,10 +23,7 @@ createBoard :: [SudoCell] -> [SudoCell]
 createBoard board
  | (length board) == 81     = board
  | otherwise                = 
-     let y =
-              if length board == 0
-                 then 1
-              else ((length board) `div` 9)+1
+     let y = if (length board == 0) then 1 else ((length board) `div` 9)+1
          noRegionBoard = map (\x -> SudoCell (x, y, 0, 0, Possibilities [1..9], False)) [1..9]
          rdataInc = fillInRegions (board ++ noRegionBoard) in
      createBoard rdataInc 
