@@ -12,9 +12,9 @@ type Found = Bool   --the indication if the cell's true sudoku value has been fo
 type FORWARD = String --We can proceed to the next cell
 type BACK = String --we need to go back and remove the last used possible value in the last cell we processed
 
-data Possibilities = Possibilities [Int] deriving (Eq, Show)   --the possible values a cell can have.
+data Possibilities = Possibilities [Int] deriving (Eq, Show, Ord)   --the possible values a cell can have.
 data Direction = FORWARD | BACK  deriving (Eq)
-data SudoCell = SudoCell (XLoc , YLoc , SValue, Region, Possibilities, Found) deriving (Eq, Show)   --A typical Sudoku Cell
+data SudoCell = SudoCell (XLoc , YLoc , SValue, Region, Possibilities, Found) deriving (Eq, Show, Ord)   --A typical Sudoku Cell
 
 
 --function to generate the board
@@ -79,6 +79,9 @@ inputToDefault (x:y:z:xs)
  | x == ',' = inputToDefault (y:z:xs)
  | otherwise = ((digitToInt x),(digitToInt y),(digitToInt z)) : inputToDefault xs
 
+sortBoard :: [SudoCell] -> [SudoCell]
+sortBoard [] = []
+sortBoard (x:xs) = sortBoard (filter (\y -> y < x) xs) ++ [x] ++ sortBoard (filter (\y -> y >= x) xs)
 
 --MAIN FUNCTION TO GO THROUGH EACH ELEMENT OF THE BOARD, STARTING FROM LOWER LEFT CORNER, AND FIND THE SUITABLE VALUES
 -- Param 1: The INDEX of the Cell we will deal with in this iteration
@@ -118,5 +121,9 @@ main = do
 	let readyboard = partialboard ++ postDefault partialboard hollowboard
 	--putStrLn (show readyboard)
 	let finally = nub (solveSudoku 0 FORWARD readyboard [])
-	putStrLn (show (length finally))
-	putStrLn (show finally)
+	putStrLn " "
+	putStr "The Sudoku Board has "
+	putStr (show (length finally))
+	putStrLn " elements."
+	putStrLn " "
+	putStrLn (show $ sortBoard finally)
