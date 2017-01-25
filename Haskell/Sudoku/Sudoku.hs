@@ -95,9 +95,11 @@ solveSudoku index dir board sudostack
  	                      let (SudoCell (a, b, c, d, Possibilities(x:xs), f)) = board !! index in
                              if (f /= True)
                                 then let newboard      = foldMap (:[]) (Seq.update index (SudoCell (a, b, x, d, Possibilities(x:xs), f)) $ Seq.fromList board)
-                                         newsudostack  = ((SudoCell (a, b, x, d, Possibilities(x:xs), f)) : sudostack) in
-                                     [] ++ solveSudoku (index+1) FORWARD newboard newsudostack
-                             else ((SudoCell (a, b, c, d, Possibilities(x:xs), f)):sudostack) ++ solveSudoku (index+1) FORWARD board sudostack
+                                         falsevaluestack  = ((SudoCell (a, b, x, d, Possibilities(x:xs), f)) : sudostack) in
+                                         solveSudoku (index+1) FORWARD newboard falsevaluestack
+                             else
+                                     let alreadysetstack       = ((SudoCell (a, b, c, d, Possibilities(x:xs), f)):sudostack) in
+                                         solveSudoku (index+1) FORWARD board alreadysetstack
                        }
 --WE NEED TO TAKE CARE OF THIS CASE: 
 -- <- IMPORTANT: Need a check here to see if DIRECTION WAS BACK...if it is then you have to move back again to a cell that is NOT true! because you could have gotten here from a future cell that wants to go back to the last NON-TRUE cell.... So, you need to check if the direction was BACK......if so, append the current cell on the stack and use the BACKWARD flag
