@@ -87,12 +87,10 @@ sortBoard (x:xs) = sortBoard (filter (\y -> y < x) xs) ++ [x] ++ sortBoard (filt
 --Will tell you if the Possibility at the head of the list in the Sudocell, can be used as a value, considering the rows, columns and region values already
 --set either by default or because we passed through those cells earlier in the program
 isPossibilityOk :: SudoCell -> [SudoCell] -> Bool
-isPossibilityOk (SudoCell (a, b, c, d, Possibilities(x:xs), f)) board
- | (SudoCell (a, b, c, d, Possibilities(x:xs), f)) == (SudoCell (a, b, c, d, Possibilities([]), f))   = False
-	| otherwise                                =
-       let deciders = nub (sameRowCells (SudoCell (a, b, c, d, Possibilities(x:xs), f)) board) ++ (sameColumnCells (SudoCell (a, b, c, d, Possibilities(x:xs), f)) board) ++ (sameRegionCells (SudoCell (a, b, c, d, Possibilities(x:xs), f)) board)
-           forbiddenValues = map (\(SudoCell (_, _, s, _, _, _)) -> s) deciders in
-       all (x/=) forbiddenValues
+isPossibilityOk (SudoCell (a, b, c, d, Possibilities(x:xs), f)) board =
+ let deciders = nub (sameRowCells (SudoCell (a, b, c, d, Possibilities(x:xs), f)) board) ++ (sameColumnCells (SudoCell (a, b, c, d, Possibilities(x:xs), f)) board) ++ (sameRegionCells (SudoCell (a, b, c, d, Possibilities(x:xs), f)) board)
+     forbiddenValues = map (\(SudoCell (_, _, s, _, _, _)) -> s) deciders in
+ all (x/=) forbiddenValues
 
 --MAIN FUNCTION TO GO THROUGH EACH ELEMENT OF THE BOARD, STARTING FROM LOWER LEFT CORNER, AND FIND THE SUITABLE VALUES
 -- Param 1: The INDEX of the Cell we will deal with in this iteration
