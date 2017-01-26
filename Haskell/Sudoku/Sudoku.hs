@@ -13,7 +13,7 @@ type FORWARD = String --We can proceed to the next cell
 type BACK = String --we need to go back and remove the last used possible value in the last cell we processed
 
 data Possibilities = Possibilities [Int] deriving (Eq, Show, Ord)   --the possible values a cell can have.
-data Direction = FORWARD | BACK  deriving (Eq)
+data Direction = FORWARD | BACK  deriving (Eq)  --are we processing the board forwards (toward 9,9) or backwards (to correct an earlier cell SValue assumption)
 data SudoCell = SudoCell (XLoc , YLoc , SValue, Region, Possibilities, Found) deriving (Eq, Show, Ord)   --A typical Sudoku Cell
 
 
@@ -79,9 +79,20 @@ inputToDefault (x:y:z:xs)
  | x == ',' = inputToDefault (y:z:xs)
  | otherwise = ((digitToInt x),(digitToInt y),(digitToInt z)) : inputToDefault xs
 
+--SORTS THE BOARD so it appears from 1,1 through 9,9
 sortBoard :: [SudoCell] -> [SudoCell]
 sortBoard [] = []
 sortBoard (x:xs) = sortBoard (filter (\y -> y < x) xs) ++ [x] ++ sortBoard (filter (\y -> y >= x) xs)
+
+--Will tell you if the Possibility at the head of the list in the Sudocell, can be used as a value, considering the rows, columns and region values already
+--set either by default or because we passed through those cells earlier in the program
+isPossibilityOk :: SudoCell -> [SudoCell] -> Bool
+isPossibilityOk (SudoCell (a, b, c, d, Possibilities(x:xs), f)) board
+ | Possibilities(x:xs) == Possibilities[]   = False
+	| otherwise                                =
+       let deciders = nub (sameRowCells (SudoCell (a, b, c, d, Possibilities(x:xs), f)) board) ++ (sameColumnCells (SudoCell (a, b, c, d, Possibilities(x:xs), f)) board) ++ (sameRegionCells (SudoCell (a, b, c, d, Possibilities(x:xs), f)) board)
+           forbiddenValues = map (\(SudoCell (_, _, s, _, _, _)) -> s) deciders in
+       all (x/=) forbiddenValues
 
 --MAIN FUNCTION TO GO THROUGH EACH ELEMENT OF THE BOARD, STARTING FROM LOWER LEFT CORNER, AND FIND THE SUITABLE VALUES
 -- Param 1: The INDEX of the Cell we will deal with in this iteration
@@ -94,12 +105,12 @@ solveSudoku index dir board sudostack
  | dir == FORWARD = do {
  	                      let (SudoCell (a, b, c, d, Possibilities(x:xs), f)) = board !! index in
                              if (f /= True)
-                                then let newboard      = foldMap (:[]) (Seq.update index (SudoCell (a, b, x, d, Possibilities(x:xs), f)) $ Seq.fromList board)
+                                then let newboard         = foldMap (:[]) (Seq.update index (SudoCell (a, b, x, d, Possibilities(x:xs), f)) $ Seq.fromList board)
                                          falsevaluestack  = ((SudoCell (a, b, x, d, Possibilities(x:xs), f)) : sudostack) in
-                                         solveSudoku (index+1) FORWARD newboard falsevaluestack
+                                     solveSudoku (index+1) FORWARD newboard falsevaluestack
                              else
                                      let alreadysetstack       = ((SudoCell (a, b, c, d, Possibilities(x:xs), f)):sudostack) in
-                                         solveSudoku (index+1) FORWARD board alreadysetstack
+                                     solveSudoku (index+1) FORWARD board alreadysetstack
                        }
 --WE NEED TO TAKE CARE OF THIS CASE: 
 -- <- IMPORTANT: Need a check here to see if DIRECTION WAS BACK...if it is then you have to move back again to a cell that is NOT true! because you could have gotten here from a future cell that wants to go back to the last NON-TRUE cell.... So, you need to check if the direction was BACK......if so, append the current cell on the stack and use the BACKWARD flag
