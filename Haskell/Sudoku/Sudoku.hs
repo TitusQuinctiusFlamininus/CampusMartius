@@ -12,9 +12,9 @@ type Found = Bool   --the indication if the cell's true sudoku value has been fo
 type FORWARD = String --We can proceed to the next cell
 type BACK = String --we need to go back and remove the last used possible value in the last cell we processed
 
-data Possibilities = Possibilities [Int] deriving (Eq, Show, Ord)   --the possible values a cell can have.
+--data Possibilities = Possibilities [Int] deriving (Eq, Show, Ord)   --the possible values a cell can have.
 data Direction = FORWARD | BACK  deriving (Eq)  --are we processing the board forwards (toward 9,9) or backwards (to correct an earlier cell SValue assumption)
-data SudoCell = SudoCell (XLoc , YLoc , SValue, Region, Possibilities, Found) deriving (Eq, Show, Ord)   --A typical Sudoku Cell
+data SudoCell = SudoCell (XLoc , YLoc , SValue, Region, [Int], Found) deriving (Eq, Show, Ord)   --A typical Sudoku Cell
 
 
 --function to generate the board
@@ -24,7 +24,7 @@ createBoard board
  | (length board) == 81     = board
  | otherwise                = 
      let y = if (length board == 0) then 1 else ((length board) `div` 9)+1
-         noRegionBoard = map (\x -> SudoCell (x, y, 0, 0, Possibilities [1..9], False)) [1..9]
+         noRegionBoard = map (\x -> SudoCell (x, y, 0, 0, [1..9], False)) [1..9]
          rdataInc = fillInRegions (board ++ noRegionBoard) in
      createBoard rdataInc 
 
@@ -87,10 +87,12 @@ sortBoard (x:xs) = sortBoard (filter (\y -> y < x) xs) ++ [x] ++ sortBoard (filt
 --Will tell you if the Possibility at the head of the list in the Sudocell, can be used as a value, considering the rows, columns and region values already
 --set either by default or because we passed through those cells earlier in the program
 isPossibilityOk :: SudoCell -> [SudoCell] -> Bool
-isPossibilityOk (SudoCell (a, b, c, d, Possibilities(x:xs), f)) board =
- let deciders = nub (sameRowCells (SudoCell (a, b, c, d, Possibilities(x:xs), f)) board) ++ (sameColumnCells (SudoCell (a, b, c, d, Possibilities(x:xs), f)) board) ++ (sameRegionCells (SudoCell (a, b, c, d, Possibilities(x:xs), f)) board)
+isPossibilityOk (SudoCell (a, b, c, d, (x:xs), f)) board =
+ let deciders = nub (sameRowCells (SudoCell (a, b, c, d, (x:xs), f)) board) ++ (sameColumnCells (SudoCell (a, b, c, d, (x:xs), f)) board) ++ (sameRegionCells (SudoCell (a, b, c, d, (x:xs), f)) board)
      forbiddenValues = map (\(SudoCell (_, _, s, _, _, _)) -> s) deciders in
  all (x/=) forbiddenValues
+
+
 
 --MAIN FUNCTION TO GO THROUGH EACH ELEMENT OF THE BOARD, STARTING FROM LOWER LEFT CORNER, AND FIND THE SUITABLE VALUES
 -- Param 1: The INDEX of the Cell we will deal with in this iteration
@@ -101,13 +103,13 @@ solveSudoku :: Int -> Direction -> [SudoCell] -> [SudoCell] -> [SudoCell]
 solveSudoku index dir board sudostack
  | index == (length board)    = sudostack
  | dir == FORWARD = do {
- 	                      let (SudoCell (a, b, c, d, Possibilities(x:xs), f)) = board !! index in
+ 	                      let (SudoCell (a, b, c, d, (x:xs), f)) = board !! index in
                              if (f /= True)
-                                then let newboard         = foldMap (:[]) (Seq.update index (SudoCell (a, b, x, d, Possibilities(x:xs), f)) $ Seq.fromList board)
-                                         falsevaluestack  = ((SudoCell (a, b, x, d, Possibilities(x:xs), f)) : sudostack) in
+                                then let newboard         = foldMap (:[]) (Seq.update index (SudoCell (a, b, x, d, (x:xs), f)) $ Seq.fromList board)
+                                         falsevaluestack  = ((SudoCell (a, b, x, d, (x:xs), f)) : sudostack) in
                                      solveSudoku (index+1) FORWARD newboard falsevaluestack
                              else
-                                     let alreadysetstack       = ((SudoCell (a, b, c, d, Possibilities(x:xs), f)):sudostack) in
+                                     let alreadysetstack       = ((SudoCell (a, b, c, d, (x:xs), f)):sudostack) in
                                      solveSudoku (index+1) FORWARD board alreadysetstack
                        }
 --WE NEED TO TAKE CARE OF THIS CASE: 
