@@ -88,7 +88,7 @@ sortBoard (x:xs) = sortBoard (filter (\y -> y < x) xs) ++ [x] ++ sortBoard (filt
 --set either by default or because we passed through those cells earlier in the program
 isPossibilityOk :: SudoCell -> [SudoCell] -> Bool
 isPossibilityOk (SudoCell (a, b, c, d, Possibilities(x:xs), f)) board
- | Possibilities(x:xs) == Possibilities[]   = False
+ | (SudoCell (a, b, c, d, Possibilities(x:xs), f)) == (SudoCell (a, b, c, d, Possibilities([]), f))   = False
 	| otherwise                                =
        let deciders = nub (sameRowCells (SudoCell (a, b, c, d, Possibilities(x:xs), f)) board) ++ (sameColumnCells (SudoCell (a, b, c, d, Possibilities(x:xs), f)) board) ++ (sameRegionCells (SudoCell (a, b, c, d, Possibilities(x:xs), f)) board)
            forbiddenValues = map (\(SudoCell (_, _, s, _, _, _)) -> s) deciders in
