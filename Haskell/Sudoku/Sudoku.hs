@@ -129,12 +129,10 @@ main = do
 	putStrLn "(Note: Traverse the board from lower left cell, moving left to right for the bottom row, then the next row, etc....)"
 	inputValues <- getLine
 	let defaultInput = inputToDefault inputValues
-	--putStrLn (show defaultInput)
-	let partialboard = setDefaultSudokuValues defaultInput hollowboard
-	--putStrLn (show partialboard)
-	let readyboard = partialboard ++ postDefault partialboard hollowboard
-	--putStrLn (show readyboard)
-	let finally = nub (solveSudoku 0 FORWARD readyboard [])
+	let partialboard = setDefaultSudokuValues (inputToDefault $ inputValues) hollowboard
+	--board before processing
+	let bbp = partialboard ++ postDefault partialboard hollowboard
+	let finally = nub (solveSudoku 0 FORWARD bbp []) 
 	putStrLn " "
 	putStr "The Sudoku Board has "
 	putStr (show (length finally))
