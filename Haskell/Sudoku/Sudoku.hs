@@ -101,19 +101,24 @@ isPossibilityOk cell board =
 -- Param 2: The DIRECTION we last used: If the last round involved a BACK direction, then it means we had a problem with a cell ahead, and we need to adjust the head-value, in the list of possible values the current cell can use; Otherwise, FORWARD means can use the present value (head of possible values list) and try out new possibilities in going forward
 --Param 3: The Sudoku board 
 --Param 4: A Stack that contains the elements of the board as you process them; they are popped or pushed back in
-solveSudoku :: Int -> Direction -> [SudoCell] -> [SudoCell] -> [SudoCell]
-solveSudoku index dir board sudostack
- | index == (length board)    = sudostack
- | dir == FORWARD = do {
- 	                      let (SudoCell (a, b, c, d, p, f)) = board !! index in
-                             if (f /= True)
-                                then let newboard         = foldMap (:[]) (Seq.update index (SudoCell (a, b, (head p), d, p, f)) $ Seq.fromList board)
-                                         falsevaluestack  = ((SudoCell (a, b, (head p), d, p, f)) : sudostack) in
-                                     solveSudoku (index+1) FORWARD newboard falsevaluestack
-                             else
-                                     let alreadysetstack       = ((SudoCell (a, b, c, d, p, f)):sudostack) in
-                                     solveSudoku (index+1) FORWARD board alreadysetstack
-                       }
+solveSudoku :: Int -> [SudoCell] -> [SudoCell] -> [SudoCell]
+solveSudoku index board sudostack
+ | index == 16    = sudostack
+ | otherwise = do {
+      let (SudoCell (a, b, c, d, p, f)) = board !! index in
+         if (f /= True) then
+               if (p/=[]) then 
+                      if isPossibilityOk (SudoCell (a, b, c, d, p, f)) board then
+                         let goodcellboard         = foldMap (:[]) (Seq.update index (SudoCell (a, b, (head p), d, p, f)) $ Seq.fromList board)
+                             goodvaluestack        = ((SudoCell (a, b, (head p), d, p, f)) : sudostack) in
+                             solveSudoku (index+1) goodcellboard goodvaluestack
+                      else let tryagainboard         = foldMap (:[]) (Seq.update index (SudoCell (a, b, 0, d, (drop 1 p), f)) $ Seq.fromList board) in
+                               solveSudoku index tryagainboard sudostack
+               else let badcellboard       = foldMap (:[]) (Seq.update index (SudoCell (a, b, 0, d, [1..9], f)) $ Seq.fromList board) in
+                        solveSudoku (index-1) badcellboard (drop 1 sudostack)
+         else let alreadysetstack          = ((SudoCell (a, b, c, d, p, f)):sudostack) in
+                  solveSudoku (index+1) board alreadysetstack
+                  }
 --WE NEED TO TAKE CARE OF THIS CASE: 
 -- <- IMPORTANT: Need a check here to see if DIRECTION WAS BACK...if it is then you have to move back again to a cell that is NOT true! because you could have gotten here from a future cell that wants to go back to the last NON-TRUE cell.... So, you need to check if the direction was BACK......if so, append the current cell on the stack and use the BACKWARD flag
 
@@ -129,13 +134,14 @@ main = do
 	putStrLn "(Note: Traverse the board from lower left cell, moving left to right for the bottom row, then the next row, etc....)"
 	inputValues <- getLine
 	let defaultInput = inputToDefault inputValues
-	let partialboard = setDefaultSudokuValues (inputToDefault $ inputValues) hollowboard
+	let partialboard = setDefaultSudokuValues (inputToDefault inputValues) hollowboard
 	--board before processing
 	let bbp = partialboard ++ postDefault partialboard hollowboard
-	let finally = nub (solveSudoku 0 FORWARD bbp []) 
-	putStrLn " "
-	putStr "The Sudoku Board has "
-	putStr (show (length finally))
+	--putStr (show bbp)
+	let finally = nub (solveSudoku 0 bbp []) 
+	--putStrLn " "
+	--putStr "The Sudoku Board has "
+	putStrLn (show (length finally))
 	putStrLn " elements."
 	putStrLn " "
 	putStrLn (show $ sortBoard finally)
