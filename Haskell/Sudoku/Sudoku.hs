@@ -12,9 +12,8 @@ type Poss = [Int] -- the possibilities (1 through 9) that act as an Svalue
 type Found = Bool   --the indication if the cell's true sudoku value has been found, once this is set to true, then it will not and should not change
 type FORWARD = String --We can proceed to the next cell
 type BACK = String --we need to go back and remove the last used possible value in the last cell we processed
-
---data Possibilities = Possibilities [Int] deriving (Eq, Show, Ord)   --the possible values a cell can have.
-data Direction = FORWARD | BACK  deriving (Eq)  --are we processing the board forwards (toward 9,9) or backwards (to correct an earlier cell SValue assumption)
+type STAY = String --we will keep processing the same cell 
+data Direction = FORWARD | BACK | STAY  deriving (Eq)  --are we processing the board forwards (toward 9,9) or backwards (to correct an earlier cell SValue assumption)
 data SudoCell = SudoCell (XLoc , YLoc , SValue, Region, Poss, Found) deriving (Eq, Show, Ord)   --A typical Sudoku Cell
 
 
@@ -97,30 +96,28 @@ isPossibilityOk cell board =
 
 
 --MAIN FUNCTION TO GO THROUGH EACH ELEMENT OF THE BOARD, STARTING FROM LOWER LEFT CORNER, AND FIND THE SUITABLE VALUES
--- Param 1: The INDEX of the Cell we will deal with in this iteration
--- Param 2: The DIRECTION we last used: If the last round involved a BACK direction, then it means we had a problem with a cell ahead, and we need to adjust the head-value, in the list of possible values the current cell can use; Otherwise, FORWARD means can use the present value (head of possible values list) and try out new possibilities in going forward
+--Param 1: The INDEX of the Cell we will deal with in this iteration
+--Param 2: Direction of processing
 --Param 3: The Sudoku board 
---Param 4: A Stack that contains the elements of the board as you process them; they are popped or pushed back in
-solveSudoku :: Int -> [SudoCell] -> [SudoCell] -> [SudoCell]
-solveSudoku index board sudostack
- | index == 16    = sudostack
+solveSudoku :: Int -> Direction -> [SudoCell] -> [SudoCell]
+solveSudoku index dir board
+ | index == 81    = board
  | otherwise = do {
       let (SudoCell (a, b, c, d, p, f)) = board !! index in
          if (f /= True) then
                if (p/=[]) then 
                       if isPossibilityOk (SudoCell (a, b, c, d, p, f)) board then
-                         let goodcellboard         = foldMap (:[]) (Seq.update index (SudoCell (a, b, (head p), d, p, f)) $ Seq.fromList board)
-                             goodvaluestack        = ((SudoCell (a, b, (head p), d, p, f)) : sudostack) in
-                             solveSudoku (index+1) goodcellboard goodvaluestack
+                         let goodcellboard         = foldMap (:[]) (Seq.update index (SudoCell (a, b, (head p), d, (drop 1 p), f)) $ Seq.fromList board) in
+                             solveSudoku (index+1) FORWARD goodcellboard
                       else let tryagainboard         = foldMap (:[]) (Seq.update index (SudoCell (a, b, 0, d, (drop 1 p), f)) $ Seq.fromList board) in
-                               solveSudoku index tryagainboard sudostack
+                               solveSudoku index STAY tryagainboard
                else let badcellboard       = foldMap (:[]) (Seq.update index (SudoCell (a, b, 0, d, [1..9], f)) $ Seq.fromList board) in
-                        solveSudoku (index-1) badcellboard (drop 1 sudostack)
-         else let alreadysetstack          = ((SudoCell (a, b, c, d, p, f)):sudostack) in
-                  solveSudoku (index+1) board alreadysetstack
+                        solveSudoku (index-1) BACK badcellboard
+         else 
+               if dir == BACK then 
+                  solveSudoku (index-1) BACK board
+               else solveSudoku (index+1) FORWARD board
                   }
---WE NEED TO TAKE CARE OF THIS CASE: 
--- <- IMPORTANT: Need a check here to see if DIRECTION WAS BACK...if it is then you have to move back again to a cell that is NOT true! because you could have gotten here from a future cell that wants to go back to the last NON-TRUE cell.... So, you need to check if the direction was BACK......if so, append the current cell on the stack and use the BACKWARD flag
 
 
 main = do
@@ -138,9 +135,7 @@ main = do
 	--board before processing
 	let bbp = partialboard ++ postDefault partialboard hollowboard
 	--putStr (show bbp)
-	let finally = nub (solveSudoku 0 bbp []) 
-	--putStrLn " "
-	--putStr "The Sudoku Board has "
+	let finally = nub (solveSudoku 0 FORWARD bbp) 
 	putStrLn (show (length finally))
 	putStrLn " elements."
 	putStrLn " "
