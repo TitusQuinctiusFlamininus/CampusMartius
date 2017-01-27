@@ -8,13 +8,14 @@ type XLoc = Int     --the X coordinate of the cell
 type YLoc = Int     --the Y coordinate of the cell
 type SValue = Int   --the sudoku value of the cell, a value between 1 and 9 (inclusive of 1 and 9)
 type Region = Int   --the numbered region this cell belongs to; essentially a number given to a group of 9 cells (bottom left bottom = 1, bottom middle bottom = 2, bottom right bottom = 3, middle left middle = 4, dead center = 5, middle right middle = 6, upper left upper = 7, upper middle upper = 8, upper right upper = 9 )
+type Poss = [Int] -- the possibilities (1 through 9) that act as an Svalue
 type Found = Bool   --the indication if the cell's true sudoku value has been found, once this is set to true, then it will not and should not change
 type FORWARD = String --We can proceed to the next cell
 type BACK = String --we need to go back and remove the last used possible value in the last cell we processed
 
 --data Possibilities = Possibilities [Int] deriving (Eq, Show, Ord)   --the possible values a cell can have.
 data Direction = FORWARD | BACK  deriving (Eq)  --are we processing the board forwards (toward 9,9) or backwards (to correct an earlier cell SValue assumption)
-data SudoCell = SudoCell (XLoc , YLoc , SValue, Region, [Int], Found) deriving (Eq, Show, Ord)   --A typical Sudoku Cell
+data SudoCell = SudoCell (XLoc , YLoc , SValue, Region, Poss, Found) deriving (Eq, Show, Ord)   --A typical Sudoku Cell
 
 
 --function to generate the board
@@ -87,10 +88,11 @@ sortBoard (x:xs) = sortBoard (filter (\y -> y < x) xs) ++ [x] ++ sortBoard (filt
 --Will tell you if the Possibility at the head of the list in the Sudocell, can be used as a value, considering the rows, columns and region values already
 --set either by default or because we passed through those cells earlier in the program
 isPossibilityOk :: SudoCell -> [SudoCell] -> Bool
-isPossibilityOk (SudoCell (a, b, c, d, (x:xs), f)) board =
- let deciders = nub (sameRowCells (SudoCell (a, b, c, d, (x:xs), f)) board) ++ (sameColumnCells (SudoCell (a, b, c, d, (x:xs), f)) board) ++ (sameRegionCells (SudoCell (a, b, c, d, (x:xs), f)) board)
+isPossibilityOk cell board =
+ let deciders = nub (sameRowCells cell board) ++ (sameColumnCells cell board) ++ (sameRegionCells cell board)
+     (SudoCell (_, _, _, _, (x:xs), _)) = cell     
      forbiddenValues = map (\(SudoCell (_, _, s, _, _, _)) -> s) deciders in
- all (x/=) forbiddenValues
+     all (x/=) forbiddenValues
 
 
 
@@ -103,13 +105,13 @@ solveSudoku :: Int -> Direction -> [SudoCell] -> [SudoCell] -> [SudoCell]
 solveSudoku index dir board sudostack
  | index == (length board)    = sudostack
  | dir == FORWARD = do {
- 	                      let (SudoCell (a, b, c, d, (x:xs), f)) = board !! index in
+ 	                      let (SudoCell (a, b, c, d, p, f)) = board !! index in
                              if (f /= True)
-                                then let newboard         = foldMap (:[]) (Seq.update index (SudoCell (a, b, x, d, (x:xs), f)) $ Seq.fromList board)
-                                         falsevaluestack  = ((SudoCell (a, b, x, d, (x:xs), f)) : sudostack) in
+                                then let newboard         = foldMap (:[]) (Seq.update index (SudoCell (a, b, (head p), d, p, f)) $ Seq.fromList board)
+                                         falsevaluestack  = ((SudoCell (a, b, (head p), d, p, f)) : sudostack) in
                                      solveSudoku (index+1) FORWARD newboard falsevaluestack
                              else
-                                     let alreadysetstack       = ((SudoCell (a, b, c, d, (x:xs), f)):sudostack) in
+                                     let alreadysetstack       = ((SudoCell (a, b, c, d, p, f)):sudostack) in
                                      solveSudoku (index+1) FORWARD board alreadysetstack
                        }
 --WE NEED TO TAKE CARE OF THIS CASE: 
