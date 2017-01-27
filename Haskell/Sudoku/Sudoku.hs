@@ -23,7 +23,7 @@ createBoard :: [SudoCell] -> [SudoCell]
 createBoard board
  | (length board) == 81     = board
  | otherwise                = 
-     let y = if (length board == 0) then 1 else ((length board) `div` 9)+1
+     let y = if (board == []) then 1 else ((length board) `div` 9)+1
          noRegionBoard = map (\x -> SudoCell (x, y, 0, 0, [1..9], False)) [1..9]
          rdataInc = fillInRegions (board ++ noRegionBoard) in
      createBoard rdataInc 
@@ -135,8 +135,8 @@ main = do
 	--board before processing
 	let bbp = partialboard ++ postDefault partialboard hollowboard
 	--putStr (show bbp)
-	let finally = nub (solveSudoku 0 FORWARD bbp) 
-	putStrLn (show (length finally))
+	let finalsolution = nub (solveSudoku 0 FORWARD bbp) 
+	putStrLn (show (length finalsolution))
 	putStrLn " elements."
 	putStrLn " "
-	putStrLn (show $ sortBoard finally)
+	putStrLn (show $ sortBoard finalsolution)
