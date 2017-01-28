@@ -93,6 +93,8 @@ isPossibilityOk cell board =
      forbiddenValues = map (\(SudoCell (_, _, s, _, _, _)) -> s) deciders in
      all (x/=) forbiddenValues
 
+updateAtIndex :: Int -> SudoCell -> [SudoCell] -> [SudoCell] 
+updateAtIndex index cell board = foldMap (:[]) (Seq.update index cell $ Seq.fromList board)
 
 
 --MAIN FUNCTION TO GO THROUGH EACH ELEMENT OF THE BOARD, STARTING FROM LOWER LEFT CORNER, AND FIND THE SUITABLE VALUES
@@ -107,12 +109,12 @@ solveSudoku index dir board
          if (f /= True) then
                if (p/=[]) then 
                       if isPossibilityOk (SudoCell (a, b, c, d, p, f)) board then
-                         let goodcellboard         = foldMap (:[]) (Seq.update index (SudoCell (a, b, (head p), d, (drop 1 p), f)) $ Seq.fromList board) in
+                         let goodcellboard         = updateAtIndex index (SudoCell (a, b, (head p), d, (drop 1 p), f)) board in
                              solveSudoku (index+1) FORWARD goodcellboard
-                      else let tryagainboard         = foldMap (:[]) (Seq.update index (SudoCell (a, b, 0, d, (drop 1 p), f)) $ Seq.fromList board) in
-                               solveSudoku index STAY tryagainboard
-               else let badcellboard       = foldMap (:[]) (Seq.update index (SudoCell (a, b, 0, d, [1..9], f)) $ Seq.fromList board) in
-                        solveSudoku (index-1) BACK badcellboard
+                      else let tryagainboard       = updateAtIndex index (SudoCell (a, b, 0, d, (drop 1 p), f)) board in
+                             solveSudoku index STAY tryagainboard
+               else let badcellboard               = updateAtIndex index (SudoCell (a, b, 0, d, [1..9], f)) board in
+                             solveSudoku (index-1) BACK badcellboard
          else 
                if dir == BACK then 
                   solveSudoku (index-1) BACK board
