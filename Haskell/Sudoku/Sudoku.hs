@@ -93,6 +93,10 @@ isPossibilityOk cell board =
      forbiddenValues = map (\(SudoCell (_, _, s, _, _, _)) -> s) deciders in
      all (x/=) forbiddenValues
 
+--Will update the board given the index of the cell, the cell itself and the board
+--param 1: the index
+--param 2: the cell 
+--param 3: the board
 updateAtIndex :: Int -> SudoCell -> [SudoCell] -> [SudoCell] 
 updateAtIndex index cell board = foldMap (:[]) (Seq.update index cell $ Seq.fromList board)
 
