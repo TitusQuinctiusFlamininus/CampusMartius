@@ -28,14 +28,13 @@ createBoard board
          rdataInc = fillInRegions (board ++ noRegionBoard) in
      createBoard rdataInc 
 
---PRIVATE FUNCTION: Used in the createBoard Function to fill in the regions data for each cell
 --function to fill in the region or block for each cell
 fillInRegions :: [SudoCell] -> [SudoCell]
 fillInRegions celldata =
  let regiondata = (createRawRegionValues [1..3]) ++ (createRawRegionValues [4..6]) ++ (createRawRegionValues [7..9])
  in zipWith (\(SudoCell (a, b, c, _, p, d)) r -> SudoCell (a, b, c, r, p, d)) celldata regiondata
 
---PRIVATE FUNCTION: Used in the fillInRegions function to give back a list like this, given [1,2,3]: [1,1,1,2,2,2,3,3,3,1,1,1,2,2,2,3,3,3,1,1,1,2,2,2,3,3,3]
+--Used in the fillInRegions function to give back a list like this, given [1,2,3]: [1,1,1,2,2,2,3,3,3,1,1,1,2,2,2,3,3,3,1,1,1,2,2,2,3,3,3]
 -- the value 3 used in the function is the height of any 1 region on the sudoku board, a region comprising of a 3x3 square of sudoku cells
 createRawRegionValues :: [Int] -> [Int]
 createRawRegionValues r = concat $ concat $ replicate 3 $ map (\x -> replicate 3 x) r
@@ -101,7 +100,7 @@ updateAtIndex :: Int -> SudoCell -> [SudoCell] -> [SudoCell]
 updateAtIndex index cell board = foldMap (:[]) (Seq.update index cell $ Seq.fromList board)
 
 
---MAIN FUNCTION TO GO THROUGH EACH ELEMENT OF THE BOARD, STARTING FROM LOWER LEFT CORNER, AND FIND THE SUITABLE VALUES
+--STARTING FROM LOWER LEFT CORNER, AND FIND THE SUITABLE VALUES
 --Param 1: The INDEX of the Cell we will deal with in this iteration
 --Param 2: Direction of processing
 --Param 3: The Sudoku board 
