@@ -41,22 +41,22 @@ createRawRegionValues r = concat $ concat $ replicate 3 $ map (\x -> replicate 3
 
 --function to give the list of SudoCells that are in the same row as the given SudoCell, all except the row that is used as the reference request
 sameRowCells :: SudoCell -> [SudoCell] -> [SudoCell]
-sameRowCells (SudoCell (a, b, c, d, p, f)) board = 
+sameRowCells cell@(SudoCell (a, b, c, d, p, f)) board = 
  let cells = filter (\(SudoCell (_, e, _, _, _, _)) -> (b == e)) board in
- filter (\g -> (g /= (SudoCell (a, b, c, d, p, f))) ) cells
+ filter (\g -> g /= cell) cells
 
 
 --function to give the list of SudoCells that are in the same column as the given SudoCell, all except the row that is used as the reference request
 sameColumnCells :: SudoCell -> [SudoCell] -> [SudoCell]
-sameColumnCells (SudoCell (a, b, c, d, p, f)) board = 
+sameColumnCells  cell@(SudoCell (a, b, c, d, p, f)) board = 
  let cells = filter (\(SudoCell (e, _, _, _, _, _)) -> (a == e)) board in
- filter (\g -> (g /= (SudoCell (a, b, c, d, p, f))) ) cells
+ filter (\g -> g /= cell) cells
 
 --function to give the list of SudoCells that are in the same region as the given SudoCell, all except the row that is used as the reference request
 sameRegionCells :: SudoCell -> [SudoCell] -> [SudoCell]
-sameRegionCells (SudoCell (a, b, c, d, p, f)) board = 
+sameRegionCells cell@(SudoCell (a, b, c, d, p, f)) board = 
  let cells = filter (\(SudoCell (_, _, _, r, _, _)) -> (d == r)) board in
- filter (\g -> (g /= (SudoCell (a, b, c, d, p, f))) ) cells
+ filter (\g -> g /= cell) cells
 
 --function to update a board with the default sudoku values
 setDefaultSudokuValues :: [(Int, Int, Int)] -> [SudoCell] -> [SudoCell]
@@ -100,6 +100,7 @@ updateAtIndex :: Int -> SudoCell -> [SudoCell] -> [SudoCell]
 updateAtIndex index cell board = foldMap (:[]) (Seq.update index cell $ Seq.fromList board)
 
 
+
 --STARTING FROM LOWER LEFT CORNER, AND FIND THE SUITABLE VALUES
 --Param 1: The INDEX of the Cell we will deal with in this iteration
 --Param 2: Direction of processing
@@ -108,10 +109,10 @@ solveSudoku :: Int -> Direction -> [SudoCell] -> [SudoCell]
 solveSudoku index dir board
  | index == 81    = board
  | otherwise = do {
-      let (SudoCell (a, b, c, d, p, f)) = board !! index in
+      let cell@(SudoCell (a, b, c, d, p, f)) = board !! index in
          if (f /= True) then
                if (p/=[]) then 
-                      if isPossibilityOk (SudoCell (a, b, c, d, p, f)) board then
+                      if isPossibilityOk cell board then
                          let goodcellboard         = updateAtIndex index (SudoCell (a, b, (head p), d, (drop 1 p), f)) board in
                              solveSudoku (index+1) FORWARD goodcellboard
                       else let tryagainboard       = updateAtIndex index (SudoCell (a, b, 0, d, (drop 1 p), f)) board in
