@@ -60,9 +60,9 @@ sameRegionCells cell@(SudoCell (a, b, c, d, p, f)) board =
 
 --function to update a board with the default sudoku values
 setDefaultSudokuValues :: [(Int, Int, Int)] -> [SudoCell] -> [SudoCell]
-setDefaultSudokuValues ((a,b,c):ys) ((SudoCell (d, e, f, g, h, i)):xs)
+setDefaultSudokuValues def@((a,b,c):ys) ((SudoCell (d, e, f, g, h, i)):xs)
  | a == d && b == e   = (SudoCell (d, e, c, g, h, True)) : setDefaultSudokuValues ys xs
- | otherwise          = (SudoCell (d, e, f, g, h, i)) : setDefaultSudokuValues ((a,b,c):ys) xs
+ | otherwise          = (SudoCell (d, e, f, g, h, i)) : setDefaultSudokuValues def xs
 setDefaultSudokuValues [] _ = []
 
 --function to finally add the missing cells from the original board that do not have any default values
@@ -73,7 +73,8 @@ postDefault defaultValues origBoard =
 
 --function to convert string input for defaut cell values to a format we know about
 inputToDefault :: String -> [(Int, Int, Int)]
-inputToDefault "" = []
+inputToDefault ""  = []
+inputToDefault " " = []
 inputToDefault (x:y:z:xs)
  | x == ',' = inputToDefault (y:z:xs)
  | otherwise = ((digitToInt x),(digitToInt y),(digitToInt z)) : inputToDefault xs
