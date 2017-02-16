@@ -10,19 +10,20 @@ type Computations = Int --number of times we have added
 
 type CalcState = (Vsf, Computations)
 
---type Calculation a = StateT CalcState IO a
+type Calculation a = StateT CalcState IO a
 
 
-performCalc :: CalcState -> StateT CalcState IO ()
+performCalc :: CalcState -> Calculation ()
 performCalc calc@(i,n) = do
+                           lift $ putStrLn "Put in a number or 'end' if you are done"
                            userInput <- lift $ getLine
                            if userInput /= "end" then
                               let newstate = (i+(read userInput :: Int), n+1) in
-                              put newstate
-                           else return ()
+                              performCalc newstate
+                           else put calc
 
 
 main :: IO()
 main = do
-         let finalstate =  execStateT (performCalc (0,0)) (0,0)
-         putStrLn (show finalstate)
+         do val <- execStateT (performCalc (0,0)) (0,0)
+            putStrLn (show val)
