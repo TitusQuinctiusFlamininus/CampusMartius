@@ -1,2 +1,0 @@
---Calculator: Will attempt to calculate a list of numbers from a list provided through the standard input
---will use the State Transformation monad to store intermediate results as state
