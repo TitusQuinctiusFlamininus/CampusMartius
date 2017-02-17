@@ -26,7 +26,7 @@ doit state = do
                    putStrLn "Put in a number or 'end' if you are done"
                    (a,b,c) <- execStateT performCalc state
                    if c == 0 then
-                       putStrLn (show (a,b,c))
+                       putStrLn ("You added "++ (show b) ++ " numbers: The Total is : " ++ (show a))
                    else doit (a,b,c)
 
 
