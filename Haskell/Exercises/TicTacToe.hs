@@ -21,7 +21,8 @@ replaceCellInBoard (a,b,i) board =
 
 checkVictory :: [T3Cell] -> String
 checkVictory board@((a,b,c):ys)
- | length board == 0                                                            = "Keep playing!" 
+ | length board == 0                                                            = "Keep playing!"
+ | all (\(_,_,e) -> e == X || e == O) board                                     = "Noboby Wins, Too bad."
  | ((a==1 && b==1 && c==X) && (a==2 && b==1 && c==X) && (a==3 && b==1 && c==X)) = "You Won!" 
  | ((a==1 && b==2 && c==X) && (a==2 && b==2 && c==X) && (a==3 && b==2 && c==X)) = "You Won!"
  | ((a==1 && b==3 && c==X) && (a==2 && b==3 && c==X) && (a==3 && b==3 && c==X)) = "You Won!"
@@ -38,7 +39,7 @@ checkVictory board@((a,b,c):ys)
  | ((a==3 && b==1 && c==O) && (a==3 && b==2 && c==O) && (a==3 && b==3 && c==O)) = "You Lost!"
  | ((a==1 && b==1 && c==O) && (a==2 && b==2 && c==O) && (a==3 && b==3 && c==O)) = "You Lost!"
  | ((a==1 && b==3 && c==O) && (a==2 && b==2 && c==O) && (a==1 && b==1 && c==O)) = "You Lost!"
- | otherwise                                                                  = if (all (\(_,_,e) -> e == X || e == O) board) then "Noboby Wins, Too bad." else checkVictory ys
+ | otherwise                                                                    = checkVictory ys
 
 board = [(1,1,N),(2,1,N),(3,1,N),(1,2,N),(2,2,N),(3,2,N),(1,3,N),(2,3,N),(1,3,N)]
 
