@@ -19,7 +19,9 @@ type T3Config = [[(Int, Int)]]
 board = [(1,1,N),(2,1,N),(3,1,N),(1,2,N),(2,2,N),(3,2,N),(1,3,N),(2,3,N),(1,3,N)]
 
 
-victoryindexes = [[(1,1),(2,1),(3,1)],[(1,2),(2,2),(3,2)],[(1,3),(2,3),(3,3)],[(1,1),(1,2),(1,3)],[(2,1),(2,2),(2,3)],[(3,1),(3,2),(3,3)],[(1,1),(2,2),(3,3)],[(1,3),(2,2),(3,1)]]
+victoryindexes = [[(1,1),(2,1),(3,1)],[(1,2),(2,2),(3,2)],[(1,3),(2,3),(3,3)],
+                  [(1,1),(1,2),(1,3)],[(2,1),(2,2),(2,3)],[(3,1),(3,2),(3,3)],
+                  [(1,1),(2,2),(3,3)],[(1,3),(2,2),(3,1)]]
 
 
 type TicTacToeState a  = StateT [T3Cell] (ReaderT T3Config IO) a
@@ -29,6 +31,16 @@ replaceCellInBoard (a,b,i) board =
     map (\(x,y,z) -> if (x==a && y==b) then (x,y,i)  else (x,y,z)) board
 
 
+--runTicTacToe :: TicTacToeState ()
+--runTicTacToe = do
+--                 theboard <- get
+--                 cell@(x,y,i) <- getLine
+--                 case i of
+--                      'X'   -> put (replaceCell cell theboard)
+--                      'O'   -> 
+
+
+{-
 
 checkVictory :: [T3Cell] -> String
 checkVictory board@((a,b,c):ys)
@@ -52,12 +64,7 @@ checkVictory board@((a,b,c):ys)
  | ((a==1 && b==3 && c==O) && (a==2 && b==2 && c==O) && (a==1 && b==1 && c==O)) = "You Lost!"
  | otherwise                                                                    = checkVictory ys
 
+-}
 
 
---runTicTacToe :: TicTacToeState ()
---runTicTacToe = do
---                 theboard <- get
---                 cell@(x,y,i) <- getLine
---                 case i of
---                      'X'   -> put (replaceCell cell theboard)
---                      'O'   -> 
+
