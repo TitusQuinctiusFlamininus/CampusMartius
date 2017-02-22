@@ -2,8 +2,9 @@
 
 import Data.Char
 import Control.Monad.Trans(lift)
-import Control.Monad.Trans.State.Lazy(StateT, put, get, execStateT)
-import Control.Monad.Trans.Reader(ReaderT)
+import Control.Monad.Trans.State.Lazy(StateT, put, get, runStateT)
+import Control.Monad.Trans.Reader(ReaderT, runReaderT)
+import Control.Monad.IO.Class(liftIO)
 
 data T3Input = X | O | N deriving (Show)
 
@@ -24,20 +25,25 @@ victoryindexes = [[(1,1),(2,1),(3,1)],[(1,2),(2,2),(3,2)],[(1,3),(2,3),(3,3)],
                   [(1,1),(2,2),(3,3)],[(1,3),(2,2),(3,1)]]
 
 
-type TicTacToeState a  = StateT [T3Cell] (ReaderT T3Config IO) a
+type TicTacToe a  = StateT [T3Cell] (ReaderT T3Config IO) a
 
 replaceCellInBoard :: T3Cell -> [T3Cell] -> [T3Cell]
 replaceCellInBoard (a,b,i) board =
     map (\(x,y,z) -> if (x==a && y==b) then (x,y,i)  else (x,y,z)) board
-
-
---runTicTacToe :: TicTacToeState ()
---runTicTacToe = do
---                 theboard <- get
+			
+runTicTacToe :: TicTacToe ()
+runTicTacToe = do
+                 liftIO $ putStrLn "Put an 'X' on the board (Give Coordinates as X,Y)"
+                 --theboard <- get
 --                 cell@(x,y,i) <- getLine
 --                 case i of
 --                      'X'   -> put (replaceCell cell theboard)
 --                      'O'   -> 
+
+main :: IO()
+main = do result <- runReaderT (runStateT runTicTacToe board) victoryindexes
+          putStrLn (show (snd result))
+
 
 
 {-
