@@ -16,6 +16,19 @@ replaceCellInBoard :: T3Cell -> [T3Cell] -> [T3Cell]
 replaceCellInBoard (a,b,i) board =
     map (\(x,y,z) -> if (x==a && y==b) then (x,y,i)  else (x,y,z)) board
 
+checkVictory :: [T3Cell] -> String
+checkVictory board@((a,b,c):ys)
+ | ((a==1) && (b==1) && (c==X)) && ((a==2) && (b==1) && (c==X)) && ((a==3) && (b==1) && (c==X)) = "You Won!"
+ | (a==1 && b==2 && c==X) && (a==2 && b==2 && c==X) && (a==3 && b==2 && c==X) = "You Won!"
+ | (a==1 && b==3 && c==X) && (a==2 && b==3 && c==X) && (a==3 && b==3 && c==X) = "You Won!"
+ | (a==1 && b==1 && c==X) && (a==1 && b==2 && c==X) && (a==1 && b==3 && c==X) = "You Won!"
+ | (a==2 && b==1 && c==X) && (a==2 && b==2 && c==X) && (a==2 && b==3 && c==X) = "You Won!"
+ | (a==3 && b==1 && c==X) && (a==3 && b==2 && c==X) && (a==3 && b==3 && c==X) = "You Won!"
+ | (a==1 && b==1 && c==X) && (a==2 && b==2 && c==X) && (a==3 && b==3 && c==X) = "You Won!"
+ | (a==1 && b==3 && c==X) && (a==2 && b==2 && c==X) && (a==1 && b==1 && c==X) = "You Won!"
+ | otherwise                    = if (all (\(_,_,e) -> e == X || e == O) board)
+                                      then "Noboby Wins, Too bad."
+                                  else "Keep Playing!...."
 
 --runTicTacToe :: TicTacToeState ()
 --runTicTacToe = do
