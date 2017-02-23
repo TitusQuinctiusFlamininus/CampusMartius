@@ -28,12 +28,14 @@ victoryindexes = [[(1,1),(2,1),(3,1)],[(1,2),(2,2),(3,2)],[(1,3),(2,3),(3,3)],
 type TicTacToe a  = StateT [T3Cell] (ReaderT T3Config IO) a
 
 replaceCellInBoard :: T3Cell -> [T3Cell] -> [T3Cell]
-replaceCellInBoard (a,b,i) board =
-    map (\(x,y,z) -> if (x==a && y==b) then (x,y,i)  else (x,y,z)) board
+replaceCellInBoard (a,b,i) board
+    | all (\(_,_,e) -> e == X || e == O) board = board
+    | otherwise                                = map (\(x,y,z) -> if (x==a && y==b) then (x,y,i)  else (x,y,z)) board
 			
 runTicTacToe :: TicTacToe ()
 runTicTacToe = do
-                 liftIO $ putStrLn "Put an 'X' on the board (Give Coordinates as X,Y)"
+    liftIO $ putStrLn "Put an 'X' on the board (Give Entry as x,y,X)"
+    --entry <- liftIO $ getLine
                  --theboard <- get
 --                 cell@(x,y,i) <- getLine
 --                 case i of
@@ -41,8 +43,9 @@ runTicTacToe = do
 --                      'O'   -> 
 
 main :: IO()
-main = do result <- runReaderT (runStateT runTicTacToe board) victoryindexes
-          putStrLn (show (snd result))
+main = do
+    result <- runReaderT (runStateT runTicTacToe board) victoryindexes
+    putStrLn (show (snd result))
 
 
 
