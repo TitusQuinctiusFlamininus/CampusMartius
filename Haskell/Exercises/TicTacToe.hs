@@ -34,7 +34,7 @@ replaceCellInBoard :: T3Cell -> [T3Cell] -> [T3Cell]
 replaceCellInBoard (a,b,i) board = map (\(x,y,z) -> if (x==a && y==b) then (x,y,i)  else (x,y,z)) board
 
 isGameOver :: [T3Cell] -> Bool
-isGameOver board = all (\(_,_,e) -> e == X || e == O) board
+isGameOver board = (all (\(_,_,e) -> e == X || e == O) board)
 
 convert :: String -> T3Cell
 convert (a:b:c:ys) = (digitToInt(a), digitToInt(c), X::T3Input)
