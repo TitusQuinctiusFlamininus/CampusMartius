@@ -37,7 +37,7 @@ victoryindexes = [[(1,1),(2,1),(3,1)],[(1,2),(2,2),(3,2)],[(1,3),(2,3),(3,3)],
 type TicTacToe a  = StateT [T3Cell] (ReaderT T3Config IO) a
 
 replaceCellInBoard :: T3Cell -> [T3Cell] -> [T3Cell]
-replaceCellInBoard (a,b,i) board = map (\(x,y,z) -> if (x==a && y==b && z/=O) then (x,y,i)  else (x,y,z)) board
+replaceCellInBoard (a,b,i) board = map (\(x,y,z) -> if (x==a && y==b && z/=O && z/=X) then (x,y,i)  else (x,y,z)) board
 
 botPlayMove :: [T3Cell] -> [T3Cell]
 botPlayMove board =
@@ -51,7 +51,7 @@ isGameOver config board
  | otherwise =
  let ([(x1,y1),(x2,y2),(x3,y3)]:zs) = config
      indcheck = (filter (\(a,b,c) -> (x1==a && y1==b) || (x2==a && y2==b) || (x3==a && y3==b)) board) in
-         if (all (\(_,_,v) -> v==X) indcheck)
+         if (all (\(_,_,v) -> v==X) indcheck) || (all (\(_,_,v) -> v==O) indcheck)
              then WHATEVER
          else isGameOver zs board
 
