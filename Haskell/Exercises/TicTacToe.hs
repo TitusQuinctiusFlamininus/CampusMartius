@@ -8,7 +8,13 @@ import Control.Monad.IO.Class(liftIO)
 
 data T3Input = X | O | N deriving (Show)
 
-data EndGameLingua = WIN | LOSE | UNENTSCHIEDEN | CONTINUE
+data EndGameLingua = WHATEVER | CONTINUE
+
+instance Eq EndGameLingua where
+    WHATEVER == WHATEVER = True
+    CONTINUE == CONTINUE = True
+    WHATEVER == _ = False
+    CONTINUE == _ = False
 
 instance Eq T3Input where
     X == X = True
@@ -22,36 +28,32 @@ type T3Cell =  (Int, Int, T3Input)
 
 type T3Config = [[(Int, Int)]]
 
-
-
-board = [(1,1,N),(2,1,N),(3,1,N),(1,2,N),(2,2,N),(3,2,N),(1,3,N),(2,3,N),(1,3,N)]
-
+board = [(1,1,N),(2,1,N),(3,1,N),(1,2,N),(2,2,N),(3,2,N),(1,3,N),(2,3,N),(3,3,N)]
 
 victoryindexes = [[(1,1),(2,1),(3,1)],[(1,2),(2,2),(3,2)],[(1,3),(2,3),(3,3)],
                   [(1,1),(1,2),(1,3)],[(2,1),(2,2),(2,3)],[(3,1),(3,2),(3,3)],
                   [(1,1),(2,2),(3,3)],[(1,3),(2,2),(3,1)]]
 
-
 type TicTacToe a  = StateT [T3Cell] (ReaderT T3Config IO) a
 
 replaceCellInBoard :: T3Cell -> [T3Cell] -> [T3Cell]
-replaceCellInBoard (a,b,i) board = map (\(x,y,z) -> if (x==a && y==b) then (x,y,i)  else (x,y,z)) board
+replaceCellInBoard (a,b,i) board = map (\(x,y,z) -> if (x==a && y==b && z/=O) then (x,y,i)  else (x,y,z)) board
 
-
-isBoardFull :: [T3Cell] -> EndGameLingua
-isBoardFull board = if (all (\(_,_,e) -> e == X || e == O) board) then UNENTSCHIEDEN else CONTINUE
+botPlayMove :: [T3Cell] -> [T3Cell]
+botPlayMove board =
+    let firstempty@(x,y,z) = head (filter (\(_,_,e) -> e == N) board) in
+        replaceCellInBoard (x,y,O) board
 
 isGameOver :: T3Config -> [T3Cell] -> EndGameLingua
 isGameOver config board
  | config == [] = CONTINUE
+ | (all (\(_,_,e) -> e == X || e == O) board) = WHATEVER
  | otherwise =
- let ([(x1,y1),(x2,y2),(x3,y3)]:zs) = victoryindexes
-     indcheck                       =  filter (\(a,b,c) -> (x1==a && y1==b) || (x2==a && y2==b) || (x3==a && y3==b)) board)
-     in if (all (\(_,_,v) -> v==X) indcheck)
-           then WIN
-        else if (all (\(_,_,v) -> v==O) indcheck)
-             then LOSE
-        else isGameOver zs board
+ let ([(x1,y1),(x2,y2),(x3,y3)]:zs) = config
+     indcheck = (filter (\(a,b,c) -> (x1==a && y1==b) || (x2==a && y2==b) || (x3==a && y3==b)) board) in
+         if (all (\(_,_,v) -> v==X) indcheck)
+             then WHATEVER
+         else isGameOver zs board
 
 convert :: String -> T3Cell
 convert (a:b:c:ys) = (digitToInt(a), digitToInt(c), X::T3Input)
@@ -59,48 +61,21 @@ convert (a:b:c:ys) = (digitToInt(a), digitToInt(c), X::T3Input)
 runTicTacToe :: TicTacToe ()
 runTicTacToe = do
     board <- get
-    if isGameOver victoryindexes board
-       then put board
-    else do 
-            liftIO $ putStrLn "Put an 'X' on the board (Give Entry as: (x-coord, y-coord)"
-            entry <- liftIO $ getLine
-            put (replaceCellInBoard (convert entry) board)
-            runTicTacToe
-
-
+    liftIO $ putStrLn $ show board
+    liftIO $ putStrLn "Put an 'X' on the board (Give Entry as: (x-coord, y-coord)"
+    entry <- liftIO $ getLine
+    put (replaceCellInBoard (convert entry) board)
+    usermodified <- get
+    case isGameOver victoryindexes usermodified of
+         WHATEVER -> put usermodified
+         CONTINUE -> do
+                     put (botPlayMove usermodified)
+                     botmodified <- get
+                     case isGameOver victoryindexes botmodified of
+                          WHATEVER -> put botmodified
+                          CONTINUE -> runTicTacToe
 
 main :: IO()
 main = do
     result <- runReaderT (runStateT runTicTacToe board) victoryindexes
     putStrLn (show (snd result))
-
-
-
-{-
-
-checkVictory :: [T3Cell] -> String
-checkVictory board@((a,b,c):ys)
- | length board == 0                                                            = "Keep playing!"
- | all (\(_,_,e) -> e == X || e == O) board                                     = "Noboby Wins, Too bad."
- | ((a==1 && b==1 && c==X) && (a==2 && b==1 && c==X) && (a==3 && b==1 && c==X)) = "You Won!" 
- | ((a==1 && b==2 && c==X) && (a==2 && b==2 && c==X) && (a==3 && b==2 && c==X)) = "You Won!"
- | ((a==1 && b==3 && c==X) && (a==2 && b==3 && c==X) && (a==3 && b==3 && c==X)) = "You Won!"
- | ((a==1 && b==1 && c==X) && (a==1 && b==2 && c==X) && (a==1 && b==3 && c==X)) = "You Won!"
- | ((a==2 && b==1 && c==X) && (a==2 && b==2 && c==X) && (a==2 && b==3 && c==X)) = "You Won!"
- | ((a==3 && b==1 && c==X) && (a==3 && b==2 && c==X) && (a==3 && b==3 && c==X)) = "You Won!"
- | ((a==1 && b==1 && c==X) && (a==2 && b==2 && c==X) && (a==3 && b==3 && c==X)) = "You Won!"
- | ((a==1 && b==3 && c==X) && (a==2 && b==2 && c==X) && (a==1 && b==1 && c==X)) = "You Won!"
- | ((a==1 && b==1 && c==O) && (a==2 && b==1 && c==O) && (a==3 && b==1 && c==O)) = "You Lost!"
- | ((a==1 && b==2 && c==O) && (a==2 && b==2 && c==O) && (a==3 && b==2 && c==O)) = "You Lost!"
- | ((a==1 && b==3 && c==O) && (a==2 && b==3 && c==O) && (a==3 && b==3 && c==O)) = "You Lost!"
- | ((a==1 && b==1 && c==O) && (a==1 && b==2 && c==O) && (a==1 && b==3 && c==O)) = "You Lost!"
- | ((a==2 && b==1 && c==O) && (a==2 && b==2 && c==O) && (a==2 && b==3 && c==O)) = "You Lost!"
- | ((a==3 && b==1 && c==O) && (a==3 && b==2 && c==O) && (a==3 && b==3 && c==O)) = "You Lost!"
- | ((a==1 && b==1 && c==O) && (a==2 && b==2 && c==O) && (a==3 && b==3 && c==O)) = "You Lost!"
- | ((a==1 && b==3 && c==O) && (a==2 && b==2 && c==O) && (a==1 && b==1 && c==O)) = "You Lost!"
- | otherwise                                                                    = checkVictory ys
-
--}
-
-
-
