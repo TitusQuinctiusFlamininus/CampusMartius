@@ -8,6 +8,8 @@ import Control.Monad.IO.Class(liftIO)
 
 data T3Input = X | O | N deriving (Show)
 
+data EndGameLingua = WIN | LOSE | UNENTSCHIEDEN | CONTINUE
+
 instance Eq T3Input where
     X == X = True
     O == O = True
@@ -19,6 +21,8 @@ instance Eq T3Input where
 type T3Cell =  (Int, Int, T3Input)
 
 type T3Config = [[(Int, Int)]]
+
+
 
 board = [(1,1,N),(2,1,N),(3,1,N),(1,2,N),(2,2,N),(3,2,N),(1,3,N),(2,3,N),(1,3,N)]
 
@@ -33,8 +37,21 @@ type TicTacToe a  = StateT [T3Cell] (ReaderT T3Config IO) a
 replaceCellInBoard :: T3Cell -> [T3Cell] -> [T3Cell]
 replaceCellInBoard (a,b,i) board = map (\(x,y,z) -> if (x==a && y==b) then (x,y,i)  else (x,y,z)) board
 
-isGameOver :: [T3Cell] -> Bool
-isGameOver board = (all (\(_,_,e) -> e == X || e == O) board)
+
+isBoardFull :: [T3Cell] -> EndGameLingua
+isBoardFull board = if (all (\(_,_,e) -> e == X || e == O) board) then UNENTSCHIEDEN else CONTINUE
+
+isGameOver :: T3Config -> [T3Cell] -> EndGameLingua
+isGameOver config board
+ | config == [] = CONTINUE
+ | otherwise =
+ let ([(x1,y1),(x2,y2),(x3,y3)]:zs) = victoryindexes
+     indcheck                       =  filter (\(a,b,c) -> (x1==a && y1==b) || (x2==a && y2==b) || (x3==a && y3==b)) board)
+     in if (all (\(_,_,v) -> v==X) indcheck)
+           then WIN
+        else if (all (\(_,_,v) -> v==O) indcheck)
+             then LOSE
+        else isGameOver zs board
 
 convert :: String -> T3Cell
 convert (a:b:c:ys) = (digitToInt(a), digitToInt(c), X::T3Input)
@@ -42,7 +59,7 @@ convert (a:b:c:ys) = (digitToInt(a), digitToInt(c), X::T3Input)
 runTicTacToe :: TicTacToe ()
 runTicTacToe = do
     board <- get
-    if isGameOver board
+    if isGameOver victoryindexes board
        then put board
     else do 
             liftIO $ putStrLn "Put an 'X' on the board (Give Entry as: (x-coord, y-coord)"
