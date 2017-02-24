@@ -9,7 +9,7 @@ type T3Cell =  (Int, Int, Char)
 type T3Config = [[(Int, Int)]]
 type TicTacToe a  = StateT [T3Cell] (ReaderT T3Config IO) a
 
-board = [(1,1,'N'),(2,1,'N'),(3,1,'N'),(1,2,'N'),(2,2,'N'),(3,2,'N'),(1,3,'N'),(2,3,'N'),(3,3,'N')]
+board = [(1,1,'-'),(2,1,'-'),(3,1,'-'),(1,2,'-'),(2,2,'-'),(3,2,'-'),(1,3,'-'),(2,3,'-'),(3,3,'-')]
 victoryindexes = [[(1,1),(2,1),(3,1)],[(1,2),(2,2),(3,2)],[(1,3),(2,3),(3,3)],
                   [(1,1),(1,2),(1,3)],[(2,1),(2,2),(2,3)],[(3,1),(3,2),(3,3)],
                   [(1,1),(2,2),(3,3)],[(1,3),(2,2),(3,1)]]
@@ -19,7 +19,7 @@ replaceCellInBoard (a,b,i) board = map (\(x,y,z) -> if (x==a && y==b && z/='O' &
 
 botPlayMove :: [T3Cell] -> [T3Cell]
 botPlayMove board =
-    let firstempty@(x,y,z) = head (filter (\(_,_,e) -> e == 'N') board) in
+    let firstempty@(x,y,z) = head (filter (\(_,_,e) -> e == '-') board) in
         replaceCellInBoard (x,y,'O') board
 
 isGameOver :: T3Config -> [T3Cell] -> Bool
