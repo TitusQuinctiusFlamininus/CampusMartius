@@ -9,19 +9,22 @@ type T3Cell =  (Int, Int, Char)
 type T3Config = [[(Int, Int)]]
 type TicTacToe a  = StateT [T3Cell] (ReaderT T3Config IO) a
 
-board = [(1,1,'-'),(2,1,'-'),(3,1,'-'),(1,2,'-'),(2,2,'-'),(3,2,'-'),(1,3,'-'),(2,3,'-'),(3,3,'-')]
+board = [(1,1,' '),(2,1,' '),(3,1,' '),(1,2,' '),(2,2,' '),(3,2,' '),(1,3,' '),(2,3,' '),(3,3,' ')]
 victoryindexes = [[(1,1),(2,1),(3,1)],[(1,2),(2,2),(3,2)],[(1,3),(2,3),(3,3)],
                   [(1,1),(1,2),(1,3)],[(2,1),(2,2),(2,3)],[(3,1),(3,2),(3,3)],
                   [(1,1),(2,2),(3,3)],[(1,3),(2,2),(3,1)]]
 
+--Function to place an X somewhere on the board when user specifies a coordinate
 replaceCellInBoard :: T3Cell -> [T3Cell] -> [T3Cell]
 replaceCellInBoard (a,b,i) board = map (\(x,y,z) -> if (x==a && y==b && z/='O' && z/='X') then (x,y,i)  else (x,y,z)) board
 
+--Function for the computer to make a move
 botPlayMove :: [T3Cell] -> [T3Cell]
 botPlayMove board =
-    let firstempty@(x,y,z) = head (filter (\(_,_,e) -> e == '-') board) in
+    let firstempty@(x,y,z) = head (filter (\(_,_,e) -> e == ' ') board) in
         replaceCellInBoard (x,y,'O') board
 
+--Function to check if the game is over: if the board is completely full of Xs and Os or if there is some row of Xs or Os
 isGameOver :: T3Config -> [T3Cell] -> Bool
 isGameOver config board
  | config == [] = False
@@ -33,39 +36,20 @@ isGameOver config board
              then True
          else isGameOver zs board
 
+--Function to get the entry on the board as a string
 getEntry :: T3Cell -> [Char]
 getEntry (_,_,v) = [v]
 
+--Function to display the board on the commandline console
 showBoard :: [T3Cell] -> IO ()
 showBoard b =
-    do putStrLn "=   -   -   -   -   "
-       putStr "|   "
-       putStr (getEntry (b!!6))
-       putStr "  |  "
-       putStr (getEntry (b!!7))
-       putStr "  |  "
-       putStr (getEntry (b!!8))
-       putStrLn "  |  "
-       putStrLn "-   -   -   -   -   "
-       putStr "|   "
-       putStr (getEntry (b!!3))
-       putStr "  |  "
-       putStr (getEntry (b!!4))
-       putStr "  |  "
-       putStr (getEntry (b!!5))
-       putStrLn "  |  "
-       putStrLn "-   -   -   -   -   "
-       putStr "|   "
-       putStr (getEntry (b!!0))
-       putStr "  |  "
-       putStr (getEntry (b!!1))
-       putStr "  |  "
-       putStr (getEntry (b!!2))
-       putStrLn "  |  "
-       putStrLn "-   -   -   -   -   "
+    do putStrLn "   -   -   -    -  " ; putStr "|   ";putStr (getEntry (b!!6)); putStr "  |  ";putStr (getEntry (b!!7)); putStr "  |  ";putStr (getEntry (b!!8))
+       putStrLn "  |  ";putStrLn "   -   -   -    -  ";putStr "|   ";putStr (getEntry (b!!3));putStr "  |  ";putStr (getEntry (b!!4));putStr "  |  ";putStr (getEntry (b!!5))
+       putStrLn "  |  ";putStrLn "   -   -   -    -  ";putStr "|   ";putStr (getEntry (b!!0));putStr "  |  ";putStr (getEntry (b!!1));putStr "  |  ";putStr (getEntry (b!!2))
+       putStrLn "  |  ";putStrLn "   -   -   -   -   "
 
 
-
+--Function to play the game
 runTicTacToe :: TicTacToe ()
 runTicTacToe = do
     board <- get
@@ -89,5 +73,6 @@ runTicTacToe = do
 
 main :: IO()
 main = do
+    putStrLn "WELCOME to Haskell TicTacToe"
     result <- runReaderT (runStateT runTicTacToe board) victoryindexes
     putStrLn "GAME OVER"
