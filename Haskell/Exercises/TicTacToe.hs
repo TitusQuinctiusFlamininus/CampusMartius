@@ -27,14 +27,11 @@ isGameOver config board
  | config == [] = False
  | (all (\(_,_,e) -> e == 'X' || e == 'O') board) = True
  | otherwise =
- let ([(x1,y1),(x2,y2),(x3,y3)]:zs) = config
-     indcheck = (filter (\(a,b,c) -> (x1==a && y1==b) || (x2==a && y2==b) || (x3==a && y3==b)) board) in
+   let ([(x1,y1),(x2,y2),(x3,y3)]:zs) = config
+       indcheck = (filter (\(a,b,c) -> (x1==a && y1==b) || (x2==a && y2==b) || (x3==a && y3==b)) board) in
          if (all (\(_,_,v) -> v=='X') indcheck) || (all (\(_,_,v) -> v=='O') indcheck)
              then True
          else isGameOver zs board
-
-convert :: String -> T3Cell
-convert (a:b:c:ys) = (digitToInt(a), digitToInt(c), 'X')
 
 runTicTacToe :: TicTacToe ()
 runTicTacToe = do
