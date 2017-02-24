@@ -14,7 +14,7 @@ victoryindexes = [[(1,1),(2,1),(3,1)],[(1,2),(2,2),(3,2)],[(1,3),(2,3),(3,3)],
                   [(1,1),(1,2),(1,3)],[(2,1),(2,2),(2,3)],[(3,1),(3,2),(3,3)],
                   [(1,1),(2,2),(3,3)],[(1,3),(2,2),(3,1)]]
 
---Function to place an X somewhere on the board when user specifies a coordinate
+--Function to place an X on the board when user specifies a coordinate
 replaceCellInBoard :: T3Cell -> [T3Cell] -> [T3Cell]
 replaceCellInBoard (a,b,i) board = map (\(x,y,z) -> if (x==a && y==b && z/='O' && z/='X') then (x,y,i)  else (x,y,z)) board
 
