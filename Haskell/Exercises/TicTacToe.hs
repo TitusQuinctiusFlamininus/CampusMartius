@@ -33,24 +33,61 @@ isGameOver config board
              then True
          else isGameOver zs board
 
+getEntry :: T3Cell -> [Char]
+getEntry (_,_,v) = [v]
+
+showBoard :: [T3Cell] -> IO ()
+showBoard b =
+    do putStrLn "=   -   -   -   -   "
+       putStr "|   "
+       putStr (getEntry (b!!6))
+       putStr "  |  "
+       putStr (getEntry (b!!7))
+       putStr "  |  "
+       putStr (getEntry (b!!8))
+       putStrLn "  |  "
+       putStrLn "-   -   -   -   -   "
+       putStr "|   "
+       putStr (getEntry (b!!3))
+       putStr "  |  "
+       putStr (getEntry (b!!4))
+       putStr "  |  "
+       putStr (getEntry (b!!5))
+       putStrLn "  |  "
+       putStrLn "-   -   -   -   -   "
+       putStr "|   "
+       putStr (getEntry (b!!0))
+       putStr "  |  "
+       putStr (getEntry (b!!1))
+       putStr "  |  "
+       putStr (getEntry (b!!2))
+       putStrLn "  |  "
+       putStrLn "-   -   -   -   -   "
+
+
+
 runTicTacToe :: TicTacToe ()
 runTicTacToe = do
     board <- get
-    liftIO $ putStrLn $ show board
+    liftIO $ showBoard board
     liftIO $ putStrLn "Put an 'X' on the board (Give Entry as: (x-coord, y-coord)"
     (a:b:c:zs) <- liftIO $ getLine
     put (replaceCellInBoard (digitToInt(a), digitToInt(c), 'X') board)
     usermodified <- get
     if isGameOver victoryindexes usermodified
-       then put usermodified
+       then do
+               liftIO $ showBoard usermodified
+               put usermodified
     else do 
        put (botPlayMove usermodified)
        botmodified <- get
        if isGameOver victoryindexes botmodified
-          then put botmodified
+          then do
+                  liftIO $ showBoard botmodified
+                  put botmodified
        else runTicTacToe
 
 main :: IO()
 main = do
     result <- runReaderT (runStateT runTicTacToe board) victoryindexes
-    putStrLn (show (snd result))
+    putStrLn "GAME OVER"
