@@ -54,7 +54,7 @@ runTicTacToe :: TicTacToe ()
 runTicTacToe = do
     board <- get
     liftIO $ showBoard board
-    liftIO $ putStrLn "Put an 'X' on the board (Hint: Bottom Left is 1,1)"
+    liftIO $ putStrLn "Put an 'X' on the board (Hint: Bottom Left Square is 1,1)"
     (a:b:c:zs) <- liftIO $ getLine
     put (replaceCellInBoard (digitToInt(a), digitToInt(c), 'X') board)
     usermodified <- get
