@@ -73,6 +73,6 @@ runTicTacToe = do
 
 main :: IO()
 main = do
-    putStrLn "WELCOME to Haskell TicTacToe"
+    putStrLn "----/ WELCOME TO HASKELL HICHACMISTLETOE /----"
     result <- runReaderT (runStateT runTicTacToe board) victoryindexes
     putStrLn "GAME OVER"
