@@ -59,16 +59,12 @@ runTicTacToe = do
     put (replaceCellInBoard (digitToInt(a), digitToInt(c), 'X') board)
     usermodified <- get
     if isGameOver victoryindexes usermodified
-       then do
-               liftIO $ showBoard usermodified
-               put usermodified
+       then liftIO $ showBoard usermodified
     else do 
        put (botPlayMove usermodified)
        botmodified <- get
        if isGameOver victoryindexes botmodified
-          then do
-                  liftIO $ showBoard botmodified
-                  put botmodified
+          then liftIO $ showBoard botmodified
        else runTicTacToe
 
 main :: IO()
