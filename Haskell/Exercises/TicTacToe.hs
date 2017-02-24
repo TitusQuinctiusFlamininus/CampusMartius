@@ -41,8 +41,8 @@ runTicTacToe = do
     board <- get
     liftIO $ putStrLn $ show board
     liftIO $ putStrLn "Put an 'X' on the board (Give Entry as: (x-coord, y-coord)"
-    entry <- liftIO $ getLine
-    put (replaceCellInBoard (convert entry) board)
+    (a:b:c:zs) <- liftIO $ getLine
+    put (replaceCellInBoard (digitToInt(a), digitToInt(c), 'X') board)
     usermodified <- get
     if isGameOver victoryindexes usermodified
        then put usermodified
