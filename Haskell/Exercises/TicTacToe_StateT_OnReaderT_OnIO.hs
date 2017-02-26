@@ -31,7 +31,7 @@ isGameOver config board
  | (all (\(_,_,e) -> e == 'X' || e == 'O') board) = True
  | otherwise =
    let ([(x1,y1),(x2,y2),(x3,y3)]:zs) = config
-       indcheck = (filter (\(a,b,c) -> (x1==a && y1==b) || (x2==a && y2==b) || (x3==a && y3==b)) board) in
+       indcheck = (filter (\(a,b,_) -> (x1==a && y1==b) || (x2==a && y2==b) || (x3==a && y3==b)) board) in
          if (all (\(_,_,v) -> v=='X') indcheck) || (all (\(_,_,v) -> v=='O') indcheck)
              then True
          else isGameOver zs board
@@ -45,22 +45,25 @@ showBoard :: [T3Cell] -> IO ()
 showBoard b =
     do putStrLn "   -   -   -    -  " ; putStr "|   ";putStr (getEntry (b!!6)); putStr "  |  ";putStr (getEntry (b!!7)); putStr "  |  ";putStr (getEntry (b!!8))
        putStrLn "  |  ";putStrLn "   -   -   -    -  ";putStr "|   ";putStr (getEntry (b!!3));putStr "  |  ";putStr (getEntry (b!!4));putStr "  |  ";putStr (getEntry (b!!5))
-       putStrLn "  |  ";putStrLn "   -   -   -    -  ";putStr "|   ";putStr (getEntry (b!!0));putStr "  |  ";putStr (getEntry (b!!1));putStr "  |  ";putStr (getEntry (b!!2))
+       putStrLn "  |  ";putStrLn "   -   -   -    -  ";putStr "|   ";putStr (getEntry (head b));putStr "  |  ";putStr (getEntry (b!!1));putStr "  |  ";putStr (getEntry (b!!2))
        putStrLn "  |  ";putStrLn "   -   -   -   -   "
 
 
 --Function to play the game
 runTicTacToe :: TicTacToe ()
 runTicTacToe = do
-    board <- get
-    liftIO $ showBoard board
+    brd <- get
+    liftIO $ showBoard brd
     liftIO $ putStrLn "Put an 'X' on the board (Hint: Bottom Left Square is 1,1)"
-    (a:b:c:zs) <- liftIO $ getLine
-    put (replaceCellInBoard (digitToInt(a), digitToInt(c), 'X') board)
+    input <- liftIO $ getLine
+    if input /= ""
+      then let (a:_:b:_) = input in
+           put (replaceCellInBoard (digitToInt a, digitToInt b, 'X') board)
+    else return ()
     usermodified <- get
     if isGameOver victoryindexes usermodified
        then liftIO $ showBoard usermodified
-    else do 
+    else do
        put (botPlayMove usermodified)
        botmodified <- get
        if isGameOver victoryindexes botmodified
@@ -69,6 +72,6 @@ runTicTacToe = do
 
 main :: IO()
 main = do
-    putStrLn "----/ WELCOME TO HASKELL HICHACMISTLETOE /----"
-    result <- runReaderT (runStateT runTicTacToe board) victoryindexes
+    putStrLn "----/ WELCOME TO HASKELL HIC-HAC-MISTLE-TOE /----"
+    _ <- runReaderT (runStateT runTicTacToe board) victoryindexes
     putStrLn "GAME OVER"
