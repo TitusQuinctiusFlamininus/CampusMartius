@@ -1,4 +1,4 @@
-import Control.Monad.Reader
+import Control.Monad.Trans.Reader
 import Data.Map as M
 import Data.Maybe as May
 
