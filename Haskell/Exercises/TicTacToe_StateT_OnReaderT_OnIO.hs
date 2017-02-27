@@ -16,25 +16,25 @@ victoryindexes = [[(1,1),(2,1),(3,1)],[(1,2),(2,2),(3,2)],[(1,3),(2,3),(3,3)],
 
 --Function to place an X on the board when user specifies a coordinate
 replaceCellInBoard :: T3Cell -> [T3Cell] -> [T3Cell]
-replaceCellInBoard (a,b,i) board = map (\(x,y,z) -> if (x==a && y==b && z/='O' && z/='X') then (x,y,i)  else (x,y,z)) board
+replaceCellInBoard (a,b,i) brd = map (\(x,y,z) -> if (x==a && y==b && z/='O' && z/='X') then (x,y,i)  else (x,y,z)) brd
 
 --Function for the computer to make a move
 botPlayMove :: [T3Cell] -> [T3Cell]
-botPlayMove board =
-    let firstempty@(x,y,z) = head (filter (\(_,_,e) -> e == ' ') board) in
-        replaceCellInBoard (x,y,'O') board
+botPlayMove brd =
+    let (x,y,_) = head (filter (\(_,_,e) -> e == ' ') brd) in
+        replaceCellInBoard (x,y,'O') brd
 
 --Function to check if the game is over: if the board is completely full of Xs and Os or if there is some row of Xs or Os
 isGameOver :: T3Config -> [T3Cell] -> Bool
-isGameOver config board
+isGameOver config brd
  | config == [] = False
- | (all (\(_,_,e) -> e == 'X' || e == 'O') board) = True
+ | (all (\(_,_,e) -> e == 'X' || e == 'O') brd) = True
  | otherwise =
    let ([(x1,y1),(x2,y2),(x3,y3)]:zs) = config
-       indcheck = (filter (\(a,b,_) -> (x1==a && y1==b) || (x2==a && y2==b) || (x3==a && y3==b)) board) in
+       indcheck = (filter (\(a,b,_) -> (x1==a && y1==b) || (x2==a && y2==b) || (x3==a && y3==b)) brd) in
          if (all (\(_,_,v) -> v=='X') indcheck) || (all (\(_,_,v) -> v=='O') indcheck)
              then True
-         else isGameOver zs board
+         else isGameOver zs brd
 
 --Function to get the entry on the board as a string
 getEntry :: T3Cell -> [Char]
