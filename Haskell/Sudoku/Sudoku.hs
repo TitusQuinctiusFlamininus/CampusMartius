@@ -133,9 +133,6 @@ main = do
 	inputValues <- getLine
 	let defaultInput = inputToDefault inputValues
 	let bbp = setDefaultSudokuValues (inputToDefault inputValues) hollowboard
-	--board before processing
-	--let bbp = partialboard ++ postDefault partialboard hollowboard
-	--putStr (show bbp)
 	let finalsolution = nub (solveSudoku 0 FORWARD bbp)
 	putStrLn (show (length finalsolution))
 	putStrLn " elements."
