@@ -12,7 +12,7 @@ type Poss = [Int] -- the possibilities (1 through 9) that act as an Svalue
 type Found = Bool   --the indication if the cell's true sudoku value has been found, once this is set to true, then it will not and should not change
 type FORWARD = String --We can proceed to the next cell
 type BACK = String --we need to go back and remove the last used possible value in the last cell we processed
-type STAY = String --we will keep processing the same cell 
+type STAY = String --we will keep processing the same cell
 data Direction = FORWARD | BACK | STAY  deriving (Eq)  --are we processing the board forwards (toward 9,9) or backwards (to correct an earlier cell SValue assumption)
 data SudoCell = SudoCell (XLoc , YLoc , SValue, Region, Poss, Found) deriving (Eq, Show, Ord)   --A typical Sudoku Cell
 
@@ -22,11 +22,11 @@ data SudoCell = SudoCell (XLoc , YLoc , SValue, Region, Poss, Found) deriving (E
 createBoard :: [SudoCell] -> [SudoCell]
 createBoard board
  | (length board) == 81     = board
- | otherwise                = 
+ | otherwise                =
      let y = if (board == []) then 1 else ((length board) `div` 9)+1
          noRegionBoard = map (\x -> SudoCell (x, y, 0, 0, [1..9], False)) [1..9]
          rdataInc = fillInRegions (board ++ noRegionBoard) in
-     createBoard rdataInc 
+     createBoard rdataInc
 
 --function to fill in the region or block for each cell
 fillInRegions :: [SudoCell] -> [SudoCell]
@@ -41,20 +41,20 @@ createRawRegionValues r = concat $ concat $ replicate 3 $ map (\x -> replicate 3
 
 --function to give the list of SudoCells that are in the same row as the given SudoCell, all except the row that is used as the reference request
 sameRowCells :: SudoCell -> [SudoCell] -> [SudoCell]
-sameRowCells cell@(SudoCell (a, b, c, d, p, f)) board = 
+sameRowCells cell@(SudoCell (a, b, c, d, p, f)) board =
  let cells = filter (\(SudoCell (_, e, _, _, _, _)) -> (b == e)) board in
  filter (\g -> g /= cell) cells
 
 
 --function to give the list of SudoCells that are in the same column as the given SudoCell, all except the row that is used as the reference request
 sameColumnCells :: SudoCell -> [SudoCell] -> [SudoCell]
-sameColumnCells  cell@(SudoCell (a, b, c, d, p, f)) board = 
+sameColumnCells  cell@(SudoCell (a, b, c, d, p, f)) board =
  let cells = filter (\(SudoCell (e, _, _, _, _, _)) -> (a == e)) board in
  filter (\g -> g /= cell) cells
 
 --function to give the list of SudoCells that are in the same region as the given SudoCell, all except the row that is used as the reference request
 sameRegionCells :: SudoCell -> [SudoCell] -> [SudoCell]
-sameRegionCells cell@(SudoCell (a, b, c, d, p, f)) board = 
+sameRegionCells cell@(SudoCell (a, b, c, d, p, f)) board =
  let cells = filter (\(SudoCell (_, _, _, r, _, _)) -> (d == r)) board in
  filter (\g -> g /= cell) cells
 
@@ -63,13 +63,7 @@ setDefaultSudokuValues :: [(Int, Int, Int)] -> [SudoCell] -> [SudoCell]
 setDefaultSudokuValues def@((a,b,c):ys) ((SudoCell (d, e, f, g, h, i)):xs)
  | a == d && b == e   = (SudoCell (d, e, c, g, h, True)) : setDefaultSudokuValues ys xs
  | otherwise          = (SudoCell (d, e, f, g, h, i)) : setDefaultSudokuValues def xs
-setDefaultSudokuValues [] _ = []
-
---function to finally add the missing cells from the original board that do not have any default values
-postDefault :: [SudoCell] -> [SudoCell] -> [SudoCell]
-postDefault defaultValues origBoard = 
- let indexToUse = length defaultValues in
- filter (\e -> (e `elemIndex` origBoard) >= (Just indexToUse)) origBoard
+setDefaultSudokuValues [] r = r
 
 --function to convert string input for defaut cell values to a format we know about
 inputToDefault :: String -> [(Int, Int, Int)]
@@ -89,15 +83,15 @@ sortBoard (x:xs) = sortBoard (filter (\y -> y < x) xs) ++ [x] ++ sortBoard (filt
 isPossibilityOk :: SudoCell -> [SudoCell] -> Bool
 isPossibilityOk cell board =
  let deciders = nub (sameRowCells cell board) ++ (sameColumnCells cell board) ++ (sameRegionCells cell board)
-     (SudoCell (_, _, _, _, (x:xs), _)) = cell     
+     (SudoCell (_, _, _, _, (x:xs), _)) = cell
      forbiddenValues = map (\(SudoCell (_, _, s, _, _, _)) -> s) deciders in
      all (x/=) forbiddenValues
 
 --Will update the board given the index of the cell, the cell itself and the board
 --param 1: the index
---param 2: the cell 
+--param 2: the cell
 --param 3: the board
-updateAtIndex :: Int -> SudoCell -> [SudoCell] -> [SudoCell] 
+updateAtIndex :: Int -> SudoCell -> [SudoCell] -> [SudoCell]
 updateAtIndex index cell board = foldMap (:[]) (Seq.update index cell $ Seq.fromList board)
 
 
@@ -105,14 +99,14 @@ updateAtIndex index cell board = foldMap (:[]) (Seq.update index cell $ Seq.from
 --STARTING FROM LOWER LEFT CORNER, AND FIND THE SUITABLE VALUES
 --Param 1: The INDEX of the Cell we will deal with in this iteration
 --Param 2: Direction of processing
---Param 3: The Sudoku board 
+--Param 3: The Sudoku board
 solveSudoku :: Int -> Direction -> [SudoCell] -> [SudoCell]
 solveSudoku index dir board
  | index == 81    = board
  | otherwise = do {
       let cell@(SudoCell (a, b, c, d, p, f)) = board !! index in
          if (f /= True) then
-               if (p/=[]) then 
+               if (p/=[]) then
                       if isPossibilityOk cell board then
                          let goodcellboard         = updateAtIndex index (SudoCell (a, b, (head p), d, (drop 1 p), f)) board in
                              solveSudoku (index+1) FORWARD goodcellboard
@@ -120,8 +114,8 @@ solveSudoku index dir board
                              solveSudoku index STAY tryagainboard
                else let badcellboard               = updateAtIndex index (SudoCell (a, b, 0, d, [1..9], f)) board in
                              solveSudoku (index-1) BACK badcellboard
-         else 
-               if dir == BACK then 
+         else
+               if dir == BACK then
                   solveSudoku (index-1) BACK board
                else solveSudoku (index+1) FORWARD board
                   }
@@ -138,11 +132,11 @@ main = do
 	putStrLn "(Note: Traverse the board from lower left cell, moving left to right for the bottom row, then the next row, etc....)"
 	inputValues <- getLine
 	let defaultInput = inputToDefault inputValues
-	let partialboard = setDefaultSudokuValues (inputToDefault inputValues) hollowboard
+	let bbp = setDefaultSudokuValues (inputToDefault inputValues) hollowboard
 	--board before processing
-	let bbp = partialboard ++ postDefault partialboard hollowboard
+	--let bbp = partialboard ++ postDefault partialboard hollowboard
 	--putStr (show bbp)
-	let finalsolution = nub (solveSudoku 0 FORWARD bbp) 
+	let finalsolution = nub (solveSudoku 0 FORWARD bbp)
 	putStrLn (show (length finalsolution))
 	putStrLn " elements."
 	putStrLn " "
