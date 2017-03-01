@@ -13,15 +13,15 @@ createNuriBoard board
  | length board == 81     = board
  | otherwise                =
      let y = if (null board) then 1 else ((length board) `div` 9)+1
-         noRegionBoard = map (\x -> NuriCell {locX = x, locY=y, size=0, kind=Island}) [1..9] in
+         noRegionBoard = map (\x -> NuriCell {locX = x, locY=y, size=0, kind=Water}) [1..9] in
          createNuriBoard (board ++ noRegionBoard)
 
 --function to update a board with the default nurikabe values
 setDefaultNurikabeValues :: [(Int, Int, Int)] -> [NuriCell] -> [NuriCell]
 setDefaultNurikabeValues [] rest = rest
-setDefaultNurikabeValues def@((a,b,c):ys) (NuriCell {locX=x, locY=y, size=z, kind=g}:xs)
- | a == x && b == y   = (NuriCell {locX=x, locY=y, size=c, kind=g}) : setDefaultNurikabeValues ys xs
- | otherwise          = (NuriCell {locX=x, locY=y, size=z, kind=g}) : setDefaultNurikabeValues def xs
+setDefaultNurikabeValues def@((a,b,c):ys) (cell@(NuriCell {locX=x, locY=y, size=z, kind=g}):xs)
+ | a == x && b == y   = (NuriCell {locX=x, locY=y, size=c, kind=Island}) : setDefaultNurikabeValues ys xs
+ | otherwise          = cell : setDefaultNurikabeValues def xs
 
 
 --function to convert string input for defaut cell values to a format we know about
