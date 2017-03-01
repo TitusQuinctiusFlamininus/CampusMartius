@@ -17,11 +17,11 @@ createNuriBoard board
          createNuriBoard (board ++ noRegionBoard)
 
 --function to update a board with the default nurikabe values
-setDefaultNurikabeValues :: [(Int, Int, Int)] -> [NuriCell] -> [NuriCell]
-setDefaultNurikabeValues [] rest = rest
-setDefaultNurikabeValues def@((a,b,c):ys) (cell@(NuriCell {locX=x, locY=y, size=z, kind=g}):xs)
- | a == x && b == y   = (NuriCell {locX=x, locY=y, size=c, kind=Island}) : setDefaultNurikabeValues ys xs
- | otherwise          = cell : setDefaultNurikabeValues def xs
+setDefaultIslands :: [(Int, Int, Int)] -> [NuriCell] -> [NuriCell]
+setDefaultIslands [] rest = rest
+setDefaultIslands def@((a,b,c):ys) (cell@(NuriCell {locX=x, locY=y, size=z, kind=g}):xs)
+ | a == x && b == y   = (NuriCell {locX=x, locY=y, size=c, kind=Island}) : setDefaultIslands ys xs
+ | otherwise          = cell : setDefaultIslands def xs
 
 
 --function to convert string input for defaut cell values to a format we know about
@@ -44,4 +44,4 @@ main = do
  inputValues <- getLine
  let hollowboard = createNuriBoard []
      defaultInput = inputToDefault inputValues in
-     putStr (show (setDefaultNurikabeValues defaultInput hollowboard))
+     putStr (show (setDefaultIslands defaultInput hollowboard))
