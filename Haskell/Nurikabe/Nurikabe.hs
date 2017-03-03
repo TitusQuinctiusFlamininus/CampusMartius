@@ -32,6 +32,29 @@ inputToDefault (x:y:z:xs)
  | x == ',' = inputToDefault (y:z:xs)
  | otherwise = ((digitToInt x),(digitToInt y),(digitToInt z)) : inputToDefault xs
 
+--
+--FUNCTIONS TO DEAL WITH CONSTRUCTING ISLANDS OF THE CORRECT LENGTH
+--
+--Function params
+-- a base island cell (send it in the first time as a list with 1 element)
+-- the size of the island length
+--to produce a list of cells that constitute the island
+--This is for islands with length greater than 1
+createIsland :: [NuriCell] -> Int -> [[NuriCell]]
+createIsland _ 0 = [[]]
+createIsland cell@(NuriCell{locX=x, locY=y, size=s, kind=_}:xs) n =
+ let top     = head cell
+     p1      = NuriCell{locX=x+1, locY=y, size=s, kind=Island}
+     p2      = NuriCell{locX=x-1, locY=y, size=s, kind=Island}
+     p3      = NuriCell{locX=x, locY=y+1, size=s, kind=Island}
+     p4      = NuriCell{locX=x, locY=y-1, size=s, kind=Island}
+     newcells@[q:xs] = filter ( \(NuriCell{locX=a, locY=b, size=_, kind=_}:_) -> (a >= 1 && a <= 9) && (b >= 1 && b <= 9))  [(p1:top:xs), (p2:top:xs), (p3:top:xs), (p4:top:xs)]
+  in createIsland q (n-1)
+  -- ++ createIsland [w] (n-1) ++ createIsland [r] (n-1) ++ createIsland [h] (n-1)
+
+
+
+
 main :: IO ()
 main = do
  putStrLn "***********************************************************************************************************"
