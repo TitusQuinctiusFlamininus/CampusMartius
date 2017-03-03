@@ -48,8 +48,8 @@ createIsland cell@(NuriCell{locX=x, locY=y, size=s, kind=_}:xs) n =
      p2      = NuriCell{locX=x-1, locY=y, size=s, kind=Island}
      p3      = NuriCell{locX=x, locY=y+1, size=s, kind=Island}
      p4      = NuriCell{locX=x, locY=y-1, size=s, kind=Island}
-    [q,w,r,h] = filter ( \(NuriCell{locX=a, locY=b, size=_, kind=_}:_) -> (a >= 1 && a <= 9) && (b >= 1 && b <= 9))  [[p1,top,xs], [p2,top,xs], [p3,top,xs], [p4,top,xs]]
-  in createIsland [w] (n-1) ++ createIsland [r] (n-1) ++ createIsland [h] (n-1)
+     [q,w,r,h] = filter ( \(NuriCell{locX=a, locY=b, size=_, kind=_}:_) -> (a >= 1 && a <= 9) && (b >= 1 && b <= 9))  [[p1,top], [p2,top], [p3,top], [p4,top]]
+  in createIsland w (n-1) ++ createIsland r (n-1) ++ createIsland h (n-1)
 
 
 
