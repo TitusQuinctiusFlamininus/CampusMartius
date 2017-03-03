@@ -1,5 +1,7 @@
 --Nurikabe : https://www.brainbashers.com/nurikabehelp.asp
 import Data.Char
+import Data.List
+
 
 --the kind of cell it is
 data Cellkind = Island | Water deriving (Eq, Show)
@@ -42,14 +44,15 @@ inputToDefault (x:y:z:xs)
 --This is for islands with length greater than 1
 createIsland :: [NuriCell] -> Int -> [[NuriCell]]
 createIsland _ 0 = [[]]
-createIsland cell@(NuriCell{locX=x, locY=y, size=s, kind=_}:xs) n =
+createIsland cell@(NuriCell{locX=x, locY=y, size=s, kind=_}:_) n =
  let top     = head cell
      p1      = NuriCell{locX=x+1, locY=y, size=s, kind=Island}
      p2      = NuriCell{locX=x-1, locY=y, size=s, kind=Island}
      p3      = NuriCell{locX=x, locY=y+1, size=s, kind=Island}
      p4      = NuriCell{locX=x, locY=y-1, size=s, kind=Island}
-     [q,w,r,h] = filter ( \(NuriCell{locX=a, locY=b, size=_, kind=_}:_) -> (a >= 1 && a <= 9) && (b >= 1 && b <= 9))  [[p1,top], [p2,top], [p3,top], [p4,top]]
-  in createIsland w (n-1) ++ createIsland r (n-1) ++ createIsland h (n-1)
+     intermed = filter ( \(NuriCell{locX=a, locY=b, size=_, kind=_}:_) -> (a >= 1 && a <= 9) && (b >= 1 && b <= 9))  [[p1,top], [p2,top], [p3,top], [p4,top]]
+     insellist = nub (concat $ map (\comb -> intermed ++ createIsland comb (n-1)) intermed) in
+  dropWhile (\q -> q == []) insellist
 
 
 
