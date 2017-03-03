@@ -66,5 +66,5 @@ main = do
  let hollowboard = createNuriBoard []
      defaultInput = inputToDefault inputValues
      readyboard = setDefaultIslands defaultInput hollowboard
-     checking = createIsland (head readyboard) readyboard 3 in
-     putStr (show checking)
+     done = map(\stikinsel@NuriCell{locX=_, locY=_, size=s, kind=_} ->  createIsland stikinsel readyboard s) $ filter (\NuriCell{locX=_, locY=_, size=r, kind=_} -> r > 0) readyboard in
+     putStr (show done)
