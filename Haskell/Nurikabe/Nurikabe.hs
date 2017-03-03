@@ -34,6 +34,9 @@ inputToDefault (x:y:z:xs)
  | x == ',' = inputToDefault (y:z:xs)
  | otherwise = ((digitToInt x),(digitToInt y),(digitToInt z)) : inputToDefault xs
 
+
+
+
 --
 --FUNCTIONS TO DEAL WITH CONSTRUCTING ISLANDS OF THE CORRECT LENGTH
 --
@@ -47,8 +50,7 @@ createIsland _ _ 0 = []
 createIsland cell@NuriCell{locX=x, locY=y, size=s, kind=_} brd n =
  let maxdist = n-1
      possiblecells = [cell] ++ (filter (\NuriCell{locX=a, locY=b, size=_, kind=_} -> ((a <= (x+maxdist)) && (a >= (x-maxdist))) && ((b <= (y+maxdist)) && (b >= (y-maxdist))) ) $ (filter (\NuriCell{locX=_, locY=_, size=e, kind=_} -> e ==0 ) brd))
-     --possiblecells =  filter (\NuriCell{locX=_, locY=_, size=e, kind=_} -> e==0 ) brd
- in possiblecells
+  in possiblecells
      --p1      = map (\i -> NuriCell{locX=x+i, locY=y, size=s, kind=Island}) [1..n]
 
 
