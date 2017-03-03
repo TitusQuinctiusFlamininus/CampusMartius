@@ -35,7 +35,14 @@ inputToDefault (x:y:z:xs)
  | otherwise = ((digitToInt x),(digitToInt y),(digitToInt z)) : inputToDefault xs
 
 
-
+groupPoss :: [NuriCell] -> Int -> [[NuriCell]]
+groupPoss poss@(x:xs) n
+  | poss == []          = [[]]
+  | (length poss) <= n   = [[]]
+  | otherwise =
+    let firstpass  = [take n poss] ++ groupPoss (drop n poss) n
+        sndpass    = groupPoss xs n
+        in filter (\a -> a /= []) firstpass ++ sndpass
 
 --
 --FUNCTIONS TO DEAL WITH CONSTRUCTING ISLANDS OF THE CORRECT LENGTH
@@ -68,5 +75,7 @@ main = do
  let hollowboard = createNuriBoard []
      defaultInput = inputToDefault inputValues
      readyboard = setDefaultIslands defaultInput hollowboard
-     done = map(\stikinsel@NuriCell{locX=_, locY=_, size=s, kind=_} ->  createIsland stikinsel readyboard s) $ filter (\NuriCell{locX=_, locY=_, size=r, kind=_} -> r > 0) readyboard in
-     putStr (show done)
+     done = concat $ map(\stikinsel@NuriCell{locX=_, locY=_, size=s, kind=_} ->  createIsland stikinsel readyboard s) $ filter (\NuriCell{locX=_, locY=_, size=r, kind=_} -> r > 0) readyboard
+     grouped = groupPoss done 3
+  in putStr (show grouped)
+  --putStr (show grouped)
