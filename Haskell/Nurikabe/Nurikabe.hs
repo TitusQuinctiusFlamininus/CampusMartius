@@ -42,18 +42,14 @@ inputToDefault (x:y:z:xs)
 -- the size of the island length
 --to produce a list of cells that constitute the island
 --This is for islands with length greater than 1
-createIsland :: [NuriCell] -> Int -> [[NuriCell]]
-createIsland _ 0 = [[]]
-createIsland cell@(NuriCell{locX=x, locY=y, size=s, kind=_}:_) n =
- let top     = head cell
-     p1      = NuriCell{locX=x+1, locY=y, size=s, kind=Island}
-     p2      = NuriCell{locX=x-1, locY=y, size=s, kind=Island}
-     p3      = NuriCell{locX=x, locY=y+1, size=s, kind=Island}
-     p4      = NuriCell{locX=x, locY=y-1, size=s, kind=Island}
-     intermed = filter ( \(NuriCell{locX=a, locY=b, size=_, kind=_}:_) -> (a >= 1 && a <= 9) && (b >= 1 && b <= 9))  [[p1,top], [p2,top], [p3,top], [p4,top]]
-     insellist = nub (concat $ map (\comb -> intermed ++ createIsland comb (n-1)) intermed) in
-  dropWhile (\q -> q == []) insellist
-
+createIsland :: NuriCell -> [NuriCell] -> Int -> [NuriCell]
+createIsland _ _ 0 = []
+createIsland cell@NuriCell{locX=x, locY=y, size=s, kind=_} brd n =
+ let maxdist = n-1
+     possiblecells = [cell] ++ (filter (\NuriCell{locX=a, locY=b, size=_, kind=_} -> ((a <= (x+maxdist)) && (a >= (x-maxdist))) && ((b <= (y+maxdist)) && (b >= (y-maxdist))) ) $ (filter (\NuriCell{locX=_, locY=_, size=e, kind=_} -> e ==0 ) brd))
+     --possiblecells =  filter (\NuriCell{locX=_, locY=_, size=e, kind=_} -> e==0 ) brd
+ in possiblecells
+     --p1      = map (\i -> NuriCell{locX=x+i, locY=y, size=s, kind=Island}) [1..n]
 
 
 
@@ -68,5 +64,7 @@ main = do
  putStrLn "(Note: Traverse the board from lower left cell, moving left to right for the bottom row, then the next row, etc....)"
  inputValues <- getLine
  let hollowboard = createNuriBoard []
-     defaultInput = inputToDefault inputValues in
-     putStr (show (setDefaultIslands defaultInput hollowboard))
+     defaultInput = inputToDefault inputValues
+     readyboard = setDefaultIslands defaultInput hollowboard
+     checking = createIsland (head readyboard) readyboard 3 in
+     putStr (show checking)
