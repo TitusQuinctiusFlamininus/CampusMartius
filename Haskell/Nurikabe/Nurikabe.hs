@@ -31,25 +31,9 @@ inputToDefault :: String -> [(Int, Int, Int)]
 inputToDefault ""  = []
 inputToDefault " " = []
 inputToDefault (x:y:z:xs)
- | x == ',' = inputToDefault (y:z:xs)
+ | x == ',' || y == ',' || z == ',' = inputToDefault (y:z:xs)
  | otherwise = ((digitToInt x),(digitToInt y),(digitToInt z)) : inputToDefault xs
 
-
-groupPoss :: Int -> [NuriCell] -> [[NuriCell]]
-groupPoss 0 _  = return []
-groupPoss n xs = do
-                  y:xs' <- tails xs
-                  ys <- groupPoss (n-1) xs'
-                  return (y:ys)
-
---
---FUNCTIONS TO DEAL WITH CONSTRUCTING ISLANDS OF THE CORRECT LENGTH
---
---Function params
--- a base island cell (send it in the first time as a list with 1 element)
--- the size of the island length
---to produce a list of cells that constitute the island
---This is for islands with length greater than 1
 findCellUniverse :: NuriCell -> [NuriCell] -> Int -> [NuriCell]
 findCellUniverse _ _ 0 = []
 findCellUniverse cell@NuriCell{locX=x, locY=y, size=s, kind=_} brd n =
@@ -57,7 +41,27 @@ findCellUniverse cell@NuriCell{locX=x, locY=y, size=s, kind=_} brd n =
      possiblecells = [cell] ++ (filter (\NuriCell{locX=a, locY=b, size=_, kind=_} -> ((a <= (x+maxdist)) && (a >= (x-maxdist))) && ((b <= (y+maxdist)) && (b >= (y-maxdist))) ) $ (filter (\NuriCell{locX=_, locY=_, size=e, kind=_} -> e ==0 ) brd))
   in possiblecells
 
+groupPoss :: Int -> [NuriCell] -> [[NuriCell]]
+groupPoss 0 _  = return []
+groupPoss n xs = do
+                    y:xs' <- tails xs
+                    ys <- groupPoss (n-1) xs'
+                    return (y:ys)
 
+gatherAllUniverses :: [NuriCell] -> [NuriCell] -> [[NuriCell]]
+gatherAllUniverses (b@NuriCell{locX=_, locY=_, size=s, kind=_}:bs) brd = findCellUniverse b brd s : gatherAllUniverses bs brd
+
+
+
+groupAllUniverses :: [NuriCell] -> [[NuriCell]] -> [[[NuriCell]]]
+groupAllUniverses [] _ = [[]]
+groupAllUniverses  (b@NuriCell{locX=_, locY=_, size=s, kind=_}:bs) (x:xs) =
+   let grpOne = (groupPoss s x) in grpOne : groupAllUniverses bs xs
+
+cleanEachGroupedUniverse :: [[[NuriCell]]] -> [NuriCell] -> [[[NuriCell]]]
+cleanEachGroupedUniverse _ [] = [[[]]]
+cleanEachGroupedUniverse ((n:ns):gs) (b:bs) =
+  init $ nub $ map (\g -> if (b `elem` g) then g else [] ) (n:ns) : cleanEachGroupedUniverse gs bs
 
 
 main :: IO ()
@@ -74,7 +78,12 @@ main = do
      defaultInput = inputToDefault inputValues
      readyboard = setDefaultIslands defaultInput hollowboard
      baseislandlist = filter (\NuriCell{locX=_, locY=_, size=r, kind=_} -> r > 0) readyboard
-     done = concat $ map(\stikinsel@NuriCell{locX=_, locY=_, size=s, kind=_} ->  findCellUniverse stikinsel readyboard s) $ baseislandlist
-     grouped = map (\NuriCell{locX=_, locY=_, size=s, kind=_} -> groupPoss s done) baseislandlist
-     cleaned = init $ nub $ map (\g -> if ((head baseislandlist) `elem` g) then g else [] ) (concat $ grouped)
-  in putStr (show (cleaned)++(show (length cleaned)))
+     --done = concat $ map(\stikinsel@NuriCell{locX=_, locY=_, size=s, kind=_} ->  findCellUniverse stikinsel readyboard s) $ baseislandlist
+     gathereduniverses = gatherAllUniverses baseislandlist readyboard
+     groupeduniverses = groupAllUniverses baseislandlist gathereduniverses
+     cleaneduniverses = cleanEachGroupedUniverse groupeduniverses baseislandlist
+     --grouped = map (\NuriCell{locX=_, locY=_, size=s, kind=_} -> groupPoss s gathereduniverses) baseislandlist
+     --cleaned = init $ nub $ map (\g -> if ((head baseislandlist) `elem` g) then g else [] ) (concat $ grouped)
+  in do
+    putStrLn (show (cleaneduniverses)++(show (length cleaneduniverses)))
+    putStrLn (show (baseislandlist)++(show (length baseislandlist)))
