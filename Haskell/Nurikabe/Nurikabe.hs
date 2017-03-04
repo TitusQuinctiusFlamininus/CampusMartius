@@ -35,14 +35,12 @@ inputToDefault (x:y:z:xs)
  | otherwise = ((digitToInt x),(digitToInt y),(digitToInt z)) : inputToDefault xs
 
 
-groupPoss :: [NuriCell] -> Int -> [[NuriCell]]
-groupPoss poss@(x:xs) n
-  | poss == []          = [[]]
-  | (length poss) <= n   = [[]]
-  | otherwise =
-    let firstpass  = [take n poss] ++ groupPoss (drop n poss) n
-        sndpass    = groupPoss xs n
-        in filter (\a -> a /= []) firstpass ++ sndpass
+groupPoss :: Int -> [NuriCell] -> [[NuriCell]]
+groupPoss 0 _  = return []
+groupPoss n xs = do
+                  y:xs' <- tails xs
+                  ys <- groupPoss (n-1) xs'
+                  return (y:ys)
 
 --
 --FUNCTIONS TO DEAL WITH CONSTRUCTING ISLANDS OF THE CORRECT LENGTH
@@ -52,13 +50,13 @@ groupPoss poss@(x:xs) n
 -- the size of the island length
 --to produce a list of cells that constitute the island
 --This is for islands with length greater than 1
-createIsland :: NuriCell -> [NuriCell] -> Int -> [NuriCell]
-createIsland _ _ 0 = []
-createIsland cell@NuriCell{locX=x, locY=y, size=s, kind=_} brd n =
+findCellUniverse :: NuriCell -> [NuriCell] -> Int -> [NuriCell]
+findCellUniverse _ _ 0 = []
+findCellUniverse cell@NuriCell{locX=x, locY=y, size=s, kind=_} brd n =
  let maxdist = n-1
      possiblecells = [cell] ++ (filter (\NuriCell{locX=a, locY=b, size=_, kind=_} -> ((a <= (x+maxdist)) && (a >= (x-maxdist))) && ((b <= (y+maxdist)) && (b >= (y-maxdist))) ) $ (filter (\NuriCell{locX=_, locY=_, size=e, kind=_} -> e ==0 ) brd))
   in possiblecells
-     --p1      = map (\i -> NuriCell{locX=x+i, locY=y, size=s, kind=Island}) [1..n]
+
 
 
 
@@ -75,7 +73,8 @@ main = do
  let hollowboard = createNuriBoard []
      defaultInput = inputToDefault inputValues
      readyboard = setDefaultIslands defaultInput hollowboard
-     done = concat $ map(\stikinsel@NuriCell{locX=_, locY=_, size=s, kind=_} ->  createIsland stikinsel readyboard s) $ filter (\NuriCell{locX=_, locY=_, size=r, kind=_} -> r > 0) readyboard
-     grouped = groupPoss done 3
-  in putStr (show grouped)
-  --putStr (show grouped)
+     baseislandlist = filter (\NuriCell{locX=_, locY=_, size=r, kind=_} -> r > 0) readyboard
+     done = concat $ map(\stikinsel@NuriCell{locX=_, locY=_, size=s, kind=_} ->  findCellUniverse stikinsel readyboard s) $ baseislandlist
+     grouped = map (\NuriCell{locX=_, locY=_, size=s, kind=_} -> groupPoss s done) baseislandlist
+     cleaned = init $ nub $ map (\g -> if ((head baseislandlist) `elem` g) then g else [] ) (concat $ grouped)
+  in putStr (show (cleaned)++(show (length cleaned)))
