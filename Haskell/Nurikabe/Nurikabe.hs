@@ -42,11 +42,14 @@ findCellUniverse cell@NuriCell{locX=x, locY=y, size=s, kind=_} brd n =
   in possiblecells
 
 groupPoss :: Int -> [NuriCell] -> [[NuriCell]]
-groupPoss 0 _  = return []
+groupPoss 0 _ = return []
 groupPoss n xs = do
                     y:xs' <- tails xs
                     ys <- groupPoss (n-1) xs'
                     return (y:ys)
+
+homeToMama :: [[NuriCell]] -> NuriCell -> [[NuriCell]]
+homeToMama grps base = init $ nub $ map (\g -> if (base `elem` g) then g else [] ) grps
 
 gatherAllUniverses :: [NuriCell] -> [NuriCell] -> [[NuriCell]]
 gatherAllUniverses (b@NuriCell{locX=_, locY=_, size=s, kind=_}:bs) brd = findCellUniverse b brd s : gatherAllUniverses bs brd
@@ -58,10 +61,7 @@ groupAllUniverses [] _ = [[]]
 groupAllUniverses  (b@NuriCell{locX=_, locY=_, size=s, kind=_}:bs) (x:xs) =
    let grpOne = (groupPoss s x) in grpOne : groupAllUniverses bs xs
 
-cleanEachGroupedUniverse :: [[[NuriCell]]] -> [NuriCell] -> [[[NuriCell]]]
-cleanEachGroupedUniverse _ [] = [[[]]]
-cleanEachGroupedUniverse ((n:ns):gs) (b:bs) =
-  init $ nub $ map (\g -> if (b `elem` g) then g else [] ) (n:ns) : cleanEachGroupedUniverse gs bs
+
 
 
 main :: IO ()
@@ -78,12 +78,7 @@ main = do
      defaultInput = inputToDefault inputValues
      readyboard = setDefaultIslands defaultInput hollowboard
      baseislandlist = filter (\NuriCell{locX=_, locY=_, size=r, kind=_} -> r > 0) readyboard
-     --done = concat $ map(\stikinsel@NuriCell{locX=_, locY=_, size=s, kind=_} ->  findCellUniverse stikinsel readyboard s) $ baseislandlist
      gathereduniverses = gatherAllUniverses baseislandlist readyboard
      groupeduniverses = groupAllUniverses baseislandlist gathereduniverses
-     cleaneduniverses = cleanEachGroupedUniverse groupeduniverses baseislandlist
-     --grouped = map (\NuriCell{locX=_, locY=_, size=s, kind=_} -> groupPoss s gathereduniverses) baseislandlist
-     --cleaned = init $ nub $ map (\g -> if ((head baseislandlist) `elem` g) then g else [] ) (concat $ grouped)
-  in do
-    putStrLn (show (cleaneduniverses)++(show (length cleaneduniverses)))
-    putStrLn (show (baseislandlist)++(show (length baseislandlist)))
+     cleaneduniverses = map(\b -> homeToMama (concat groupeduniverses) b) baseislandlist
+  in putStrLn (show (cleaneduniverses)++(show (length cleaneduniverses)))
