@@ -34,16 +34,18 @@ inputToDefault (x:y:z:xs)
  | x == ',' || y == ',' || z == ',' = inputToDefault (y:z:xs)
  | otherwise = ((digitToInt x),(digitToInt y),(digitToInt z)) : inputToDefault xs
 
+createBaseIslandList :: [NuriCell] -> [NuriCell]
+createBaseIslandList brd = filter (\NuriCell{locX=_, locY=_, size=r, kind=_} -> r > 0) brd
+
 findCellUniverse :: NuriCell -> [NuriCell] -> Int -> [NuriCell]
 findCellUniverse _ _ 0 = []
 findCellUniverse cell@NuriCell{locX=x, locY=y, size=s, kind=_} brd n =
- let maxdist = n-1
-     possiblecells = [cell] ++ (filter (\NuriCell{locX=a, locY=b, size=_, kind=_} -> ((a <= (x+maxdist)) && (a >= (x-maxdist))) && ((b <= (y+maxdist)) && (b >= (y-maxdist))) ) $ (filter (\NuriCell{locX=_, locY=_, size=e, kind=_} -> e ==0 ) brd))
-  in possiblecells
+ let maxdist = n-1 in
+     [cell] ++ (filter (\NuriCell{locX=a, locY=b, size=_, kind=_} -> ((a <= (x+maxdist)) && (a >= (x-maxdist))) && ((b <= (y+maxdist)) && (b >= (y-maxdist))) ) $ (filter (\NuriCell{locX=_, locY=_, size=e, kind=_} -> e ==0 ) brd))
 
 groupPoss :: Int -> [NuriCell] -> [[NuriCell]]
-groupPoss 0 _ = return []
-groupPoss n xs = do
+groupPoss 0 _ = [[]]
+groupPoss n xs =   do
                     y:xs' <- tails xs
                     ys <- groupPoss (n-1) xs'
                     return (y:ys)
@@ -52,16 +54,22 @@ homeToMama :: [[NuriCell]] -> NuriCell -> [[NuriCell]]
 homeToMama grps base = init $ nub $ map (\g -> if (base `elem` g) then g else [] ) grps
 
 gatherAllUniverses :: [NuriCell] -> [NuriCell] -> [[NuriCell]]
-gatherAllUniverses (b@NuriCell{locX=_, locY=_, size=s, kind=_}:bs) brd = findCellUniverse b brd s : gatherAllUniverses bs brd
-
+gatherAllUniverses [] _  =  [[]]
+gatherAllUniverses (b@NuriCell{locX=_, locY=_, size=s, kind=_}:bs) brd =
+  let gathered = findCellUniverse b brd s : gatherAllUniverses bs brd in
+  filter (\f -> f /= []) gathered
 
 
 groupAllUniverses :: [NuriCell] -> [[NuriCell]] -> [[[NuriCell]]]
-groupAllUniverses [] _ = [[]]
+groupAllUniverses [] _ = [[[]]]
 groupAllUniverses  (b@NuriCell{locX=_, locY=_, size=s, kind=_}:bs) (x:xs) =
-   let grpOne = (groupPoss s x) in grpOne : groupAllUniverses bs xs
+   let grouped = groupPoss s x : groupAllUniverses bs xs
+      in filter (\f -> f /= [[]]) grouped
 
-
+cleanGroupedUniverses :: [NuriCell] -> [[[NuriCell]]] -> [[[NuriCell]]]
+cleanGroupedUniverses baselist grpUnis =
+  let cleaned = nub $ map(\b -> homeToMama (concat grpUnis) b) baselist
+      in map (\grp -> if (head grp) == [] then drop 1 grp else grp ) cleaned
 
 
 main :: IO ()
@@ -77,8 +85,8 @@ main = do
  let hollowboard = createNuriBoard []
      defaultInput = inputToDefault inputValues
      readyboard = setDefaultIslands defaultInput hollowboard
-     baseislandlist = filter (\NuriCell{locX=_, locY=_, size=r, kind=_} -> r > 0) readyboard
+     baseislandlist = createBaseIslandList readyboard
      gathereduniverses = gatherAllUniverses baseislandlist readyboard
      groupeduniverses = groupAllUniverses baseislandlist gathereduniverses
-     cleaneduniverses = map(\b -> homeToMama (concat groupeduniverses) b) baseislandlist
+     cleaneduniverses = cleanGroupedUniverses baseislandlist groupeduniverses
   in putStrLn (show (cleaneduniverses)++(show (length cleaneduniverses)))
