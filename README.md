@@ -1,6 +1,7 @@
 # Experiments in code with Haskell & Java
 
 # JAVA
+![alt tag] https://github.com/TitusQuinctiusFlamininus/CampusMartius/blob/master/jaavlogo.png
 
 Conway's Game of Life Problem: https://en.wikipedia.org/wiki/Conway's_Game_of_Life
 
