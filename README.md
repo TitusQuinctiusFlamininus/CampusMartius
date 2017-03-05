@@ -1,12 +1,13 @@
 # Experiments in code with Haskell & Java
 
-Java:
+# JAVA
 
 Conway's Game of Life Problem: https://en.wikipedia.org/wiki/Conway's_Game_of_Life
 
 Tic Tac Toe problem: https://en.wikipedia.org/wiki/Tic-tac-toe
 
-![alt tag](https://github.com/TitusQuinctiusFlamininus/CampusMartius/blob/master/logo7000.png) Haskell:
+# HASKELL
+![alt tag](https://github.com/TitusQuinctiusFlamininus/CampusMartius/blob/master/logo7000.png)
 
 Mars Rover problem: Problem Originally defined here: https://github.com/priyaaank/MarsRover
 
