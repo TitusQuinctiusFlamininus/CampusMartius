@@ -36,7 +36,7 @@ inputToDefault (x:y:z:xs)
 
 --function that yields a list of all Nuricells that have a default value
 createBaseIslandList :: [NuriCell] -> [NuriCell]
-createBaseIslandList  = filter (\NuriCell{locX=_, locY=_, size=r, kind=_} -> r > 0) 
+createBaseIslandList  = filter (\NuriCell{locX=_, locY=_, size=r, kind=_} -> r > 0)
 
 --function to give a list of all cells in its vicinity that could qualify as a part of an island formed when the given cell is one of the island cells
 -- A cell, the Nuriboard and how many cells the island will be composed of
@@ -77,6 +77,19 @@ cleanGroupedUniverses :: [NuriCell] -> [[[NuriCell]]] -> [[[NuriCell]]]
 cleanGroupedUniverses baselist grpUnis =
   let cleaned = nub $ map(\b -> homeToMama (concat grpUnis) b) baselist
       in map (\grp -> if (head grp) == [] then drop 1 grp else grp ) cleaned
+
+findNeighours :: NuriCell -> [NuriCell] -> [NuriCell]
+findNeighours cell brd =
+  let fwd = (locX cell)+1
+      bck = (locX cell)-1
+      up = (locY cell)+1
+      dwn = (locY cell)-1
+  in filter (\can ->
+                    let crosscond = ((locX can == fwd) && (locY can == locY cell)) || ((locX can == bck) && (locY can == locY cell)) || ((locX can == locX cell) && (locY can == up)) || ((locX can == locX cell) && (locY can == dwn))
+                        boundcond = (fwd <= 9 && bck >= 1 && up <= 9 && dwn >= 1)
+                    in  crosscond &&  boundcond
+            ) brd
+
 
 
 main :: IO ()
