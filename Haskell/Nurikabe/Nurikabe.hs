@@ -36,7 +36,7 @@ inputToDefault (x:y:z:xs)
 
 --function that yields a list of all Nuricells that have a default value
 createBaseIslandList :: [NuriCell] -> [NuriCell]
-createBaseIslandList brd = filter (\NuriCell{locX=_, locY=_, size=r, kind=_} -> r > 0) brd
+createBaseIslandList  = filter (\NuriCell{locX=_, locY=_, size=r, kind=_} -> r > 0) 
 
 --function to give a list of all cells in its vicinity that could qualify as a part of an island formed when the given cell is one of the island cells
 -- A cell, the Nuriboard and how many cells the island will be composed of
