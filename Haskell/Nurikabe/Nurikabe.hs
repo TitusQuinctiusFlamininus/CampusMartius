@@ -34,15 +34,19 @@ inputToDefault (x:y:z:xs)
  | x == ',' || y == ',' || z == ',' = inputToDefault (y:z:xs)
  | otherwise = ((digitToInt x),(digitToInt y),(digitToInt z)) : inputToDefault xs
 
+--function that yields a list of all Nuricells that have a default value
 createBaseIslandList :: [NuriCell] -> [NuriCell]
 createBaseIslandList brd = filter (\NuriCell{locX=_, locY=_, size=r, kind=_} -> r > 0) brd
 
+--function to give a list of all cells in its vicinity that could qualify as a part of an island formed when the given cell is one of the island cells
+-- A cell, the Nuriboard and how many cells the island will be composed of
 findCellUniverse :: NuriCell -> [NuriCell] -> Int -> [NuriCell]
 findCellUniverse _ _ 0 = []
 findCellUniverse cell@NuriCell{locX=x, locY=y, size=s, kind=_} brd n =
  let maxdist = n-1 in
      [cell] ++ (filter (\NuriCell{locX=a, locY=b, size=_, kind=_} -> ((a <= (x+maxdist)) && (a >= (x-maxdist))) && ((b <= (y+maxdist)) && (b >= (y-maxdist))) ) $ (filter (\NuriCell{locX=_, locY=_, size=e, kind=_} -> e ==0 ) brd))
 
+--function that gives all possible combinations of groups of N of things from list L
 groupPoss :: Int -> [NuriCell] -> [[NuriCell]]
 groupPoss 0 _ = [[]]
 groupPoss n xs =   do
@@ -50,22 +54,25 @@ groupPoss n xs =   do
                     ys <- groupPoss (n-1) xs'
                     return (y:ys)
 
+--function of filter a universe of possibilites down to those that contain the given Nuricell as one of them in the list
 homeToMama :: [[NuriCell]] -> NuriCell -> [[NuriCell]]
 homeToMama grps base = init $ nub $ map (\g -> if (base `elem` g) then g else [] ) grps
 
+--function to give the list of all lists of possibilities cells that could be islands
 gatherAllUniverses :: [NuriCell] -> [NuriCell] -> [[NuriCell]]
 gatherAllUniverses [] _  =  [[]]
 gatherAllUniverses (b@NuriCell{locX=_, locY=_, size=s, kind=_}:bs) brd =
   let gathered = findCellUniverse b brd s : gatherAllUniverses bs brd in
   filter (\f -> f /= []) gathered
 
-
+--function to group all the cell into universes, using the baselist as data
 groupAllUniverses :: [NuriCell] -> [[NuriCell]] -> [[[NuriCell]]]
 groupAllUniverses [] _ = [[[]]]
 groupAllUniverses  (b@NuriCell{locX=_, locY=_, size=s, kind=_}:bs) (x:xs) =
    let grouped = groupPoss s x : groupAllUniverses bs xs
       in filter (\f -> f /= [[]]) grouped
 
+--function to remove any lists that are empty in the list of lists
 cleanGroupedUniverses :: [NuriCell] -> [[[NuriCell]]] -> [[[NuriCell]]]
 cleanGroupedUniverses baselist grpUnis =
   let cleaned = nub $ map(\b -> homeToMama (concat grpUnis) b) baselist
