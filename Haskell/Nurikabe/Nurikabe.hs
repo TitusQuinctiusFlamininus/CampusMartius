@@ -85,10 +85,8 @@ findNeighours cell brd =
       up = (locY cell)+1
       dwn = (locY cell)-1
   in filter (\can ->
-                    let crosscond = ((locX can == fwd) && (locY can == locY cell)) || ((locX can == bck) && (locY can == locY cell)) || ((locX can == locX cell) && (locY can == up)) || ((locX can == locX cell) && (locY can == dwn))
-                        boundcond = (fwd <= 9 && bck >= 1 && up <= 9 && dwn >= 1)
-                    in  crosscond &&  boundcond
-            ) brd
+      let crosscond = ((locX can == fwd) && (locY can == locY cell)) || ((locX can == bck) && (locY can == locY cell)) || ((locX can == locX cell) && (locY can == up)) || ((locX can == locX cell) && (locY can == dwn))
+      in  crosscond ) brd
 
 
 
