@@ -100,9 +100,8 @@ checkIfNeighboursBelong (p:ps) brd =
 --NOT WORKING
 --Function to get all the possible wide range of bridges and narrow it down to the the list that could only be real bridges
 findAllBridges :: [[[NuriCell]]] -> [NuriCell] -> [[[NuriCell]]]
-findAllBridges poss brd = filter (\(x:xs) ->
-    any (\r -> r==True) (checkIfNeighboursBelong x brd ++ checkIfNeighboursBelong (head xs) brd) 
-    ) poss
+findAllBridges poss brd = filter (\w -> all (==True) (concat $ (map (\x -> checkIfNeighboursBelong x brd ) w))
+                                 ) poss
 
 main :: IO ()
 main = do
@@ -117,7 +116,7 @@ main = do
  let hollowboard = createNuriBoard []
      defaultInput = inputToDefault inputValues
      readyboard = setDefaultIslands defaultInput hollowboard
-     results = checkIfNeighboursBelong [NuriCell {locX = 1, locY = 1, size = 3, kind = Island},NuriCell {locX = 2, locY = 2, size = 0, kind = Water},NuriCell {locX = 1, locY = 3, size = 0, kind = Water}] readyboard
+     --results = checkIfNeighboursBelong [NuriCell {locX = 1, locY = 1, size = 3, kind = Island},NuriCell {locX = 2, locY = 2, size = 0, kind = Water},NuriCell {locX = 1, locY = 3, size = 0, kind = Water}] readyboard
      baseislandlist = createBaseIslandList readyboard
      gathereduniverses = gatherAllUniverses baseislandlist readyboard
      groupeduniverses = groupAllUniverses baseislandlist gathereduniverses
