@@ -87,17 +87,20 @@ findNeighours cell brd =
   in filter (\can -> ((locX can == fwd) && (locY can == locY cell)) || ((locX can == bck) && (locY can == locY cell)) || ((locX can == locX cell) && (locY can == up)) || ((locX can == locX cell) && (locY can == dwn))
             ) brd
 
---function that take a list of neighbours and a supposed island set of cell and sees if that combination is a real island or not
-checkIfNeighboursBelong :: [NuriCell] -> [NuriCell] -> Bool
-checkIfNeighboursBelong neigh preisland = any (\p -> p `elem` neigh) preisland
+--function that take a supposed island set of cell and a board (with default values) and sees if that combination is a real island or not
+checkIfNeighboursBelong :: [NuriCell] -> [NuriCell] -> [Bool]
+checkIfNeighboursBelong [] _ = [True]
+checkIfNeighboursBelong (x:[]) _ = [True]
+checkIfNeighboursBelong (p:ps) brd =
+  let neighbours = findNeighours p brd
+      singleposstruth  = (head ps) `elem` neighbours in
+      singleposstruth : checkIfNeighboursBelong ps brd
 
 
+--NOT WORKING
 --Function to get all the possible wide range of bridges and narrow it down to the the list that could only be real bridges
 findAllBridges :: [[[NuriCell]]] -> [NuriCell] -> [[[NuriCell]]]
-findAllBridges poss brd = filter (\(inner:cs) ->
-                                   let neighbours = findNeighours (head inner) brd in
-                                       checkIfNeighboursBelong neighbours inner
-                                 ) poss
+findAllBridges poss brd = filter (\(x:xs) -> all (== True) (checkIfNeighboursBelong x brd)) poss
 
 main :: IO ()
 main = do
@@ -112,9 +115,11 @@ main = do
  let hollowboard = createNuriBoard []
      defaultInput = inputToDefault inputValues
      readyboard = setDefaultIslands defaultInput hollowboard
+     results = checkIfNeighboursBelong [NuriCell {locX = 1, locY = 1, size = 3, kind = Island},NuriCell {locX = 2, locY = 2, size = 0, kind = Water},NuriCell {locX = 1, locY = 3, size = 0, kind = Water}] readyboard
      baseislandlist = createBaseIslandList readyboard
      gathereduniverses = gatherAllUniverses baseislandlist readyboard
      groupeduniverses = groupAllUniverses baseislandlist gathereduniverses
      cleaneduniverses = cleanGroupedUniverses baseislandlist groupeduniverses
      trueislandlist = findAllBridges cleaneduniverses readyboard
-  in putStrLn (show (trueislandlist)++(show (length trueislandlist)))
+    in putStrLn (show (trueislandlist)++(show (length trueislandlist)))
+    --in putStrLn (show (results))
