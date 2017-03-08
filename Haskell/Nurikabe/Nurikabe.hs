@@ -100,7 +100,9 @@ checkIfNeighboursBelong (p:ps) brd =
 --NOT WORKING
 --Function to get all the possible wide range of bridges and narrow it down to the the list that could only be real bridges
 findAllBridges :: [[[NuriCell]]] -> [NuriCell] -> [[[NuriCell]]]
-findAllBridges poss brd = filter (\(x:xs) -> all (== True) (checkIfNeighboursBelong x brd)) poss
+findAllBridges poss brd = filter (\(x:xs) ->
+    any (\r -> r==True) (checkIfNeighboursBelong x brd ++ checkIfNeighboursBelong (head xs) brd) 
+    ) poss
 
 main :: IO ()
 main = do
