@@ -87,7 +87,17 @@ findNeighours cell brd =
   in filter (\can -> ((locX can == fwd) && (locY can == locY cell)) || ((locX can == bck) && (locY can == locY cell)) || ((locX can == locX cell) && (locY can == up)) || ((locX can == locX cell) && (locY can == dwn))
             ) brd
 
+--function that take a list of neighbours and a supposed island set of cell and sees if that combination is a real island or not
+checkIfNeighboursBelong :: [NuriCell] -> [NuriCell] -> Bool
+checkIfNeighboursBelong neigh preisland = any (\p -> p `elem` neigh) preisland
 
+
+--Function to get all the possible wide range of bridges and narrow it down to the the list that could only be real bridges
+findAllBridges :: [[[NuriCell]]] -> [NuriCell] -> [[[NuriCell]]]
+findAllBridges poss brd = filter (\(inner:cs) ->
+                                   let neighbours = findNeighours (head inner) brd in
+                                       checkIfNeighboursBelong neighbours inner
+                                 ) poss
 
 main :: IO ()
 main = do
@@ -106,4 +116,5 @@ main = do
      gathereduniverses = gatherAllUniverses baseislandlist readyboard
      groupeduniverses = groupAllUniverses baseislandlist gathereduniverses
      cleaneduniverses = cleanGroupedUniverses baseislandlist groupeduniverses
-  in putStrLn (show (cleaneduniverses)++(show (length cleaneduniverses)))
+     trueislandlist = findAllBridges cleaneduniverses readyboard
+  in putStrLn (show (trueislandlist)++(show (length trueislandlist)))
