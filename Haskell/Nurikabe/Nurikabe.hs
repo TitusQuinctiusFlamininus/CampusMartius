@@ -100,7 +100,9 @@ checkIfNeighboursBelong (p:ps) brd =
 
 --Function to get all the possible wide range of bridges and narrow it down to the the list that could only be real bridges
 findAllBridges :: [[[NuriCell]]] -> [NuriCell] -> [[[NuriCell]]]
-findAllBridges poss brd = map (\w -> filter (\x -> all (==True) (checkIfNeighboursBelong x brd)) w )  poss
+findAllBridges poss brd =
+  let bridges = map (\w -> filter (\x -> all (==True) (checkIfNeighboursBelong x brd)) w )  poss
+  in filter (/= [[]]) bridges
 
 
 main :: IO ()
@@ -122,4 +124,3 @@ main = do
      cleaneduniverses = cleanGroupedUniverses baseislandlist groupeduniverses
      trueislandlist = findAllBridges cleaneduniverses readyboard
     in putStrLn (show (trueislandlist)++(show (length trueislandlist)))
-  
