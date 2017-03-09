@@ -74,6 +74,8 @@ groupAllUniverses  (b@NuriCell{locX=_, locY=_, size=s, kind=_}:bs) (x:xs) =
 
 --function to remove any lists that are empty in the list of lists
 cleanGroupedUniverses :: [NuriCell] -> [[[NuriCell]]] -> [[[NuriCell]]]
+cleanGroupedUniverses _ ([]) = [[[]]]
+cleanGroupedUniverses baselist ((b:[]):as) = [[b]] ++ cleanGroupedUniverses baselist as
 cleanGroupedUniverses baselist grpUnis =
   let cleaned = nub $ map(\b -> homeToMama (concat grpUnis) b) baselist
       in map (\grp -> if (head grp) == [] then drop 1 grp else grp ) cleaned
