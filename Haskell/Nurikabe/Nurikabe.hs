@@ -74,6 +74,8 @@ groupAllUniverses  (b@NuriCell{locX=_, locY=_, size=s, kind=_}:bs) (x:xs) =
 
 --function to remove any lists that are empty in the list of lists
 cleanGroupedUniverses :: [NuriCell] -> [[[NuriCell]]] -> [[[NuriCell]]]
+cleanGroupedUniverses baselist ([]) = [[[]]]
+cleanGroupedUniverses baselist ((single@(a:[])):as) = [[a]] ++ cleanGroupedUniverses baselist as
 cleanGroupedUniverses baselist grpUnis =
   let cleaned = nub $ map(\b -> homeToMama (concat grpUnis) b) baselist
       in map (\grp -> if (head grp) == [] then drop 1 grp else grp ) cleaned
@@ -97,8 +99,10 @@ checkIfNeighboursBelong (p:ps) brd =
       singleposstruth : checkIfNeighboursBelong ps brd
 
 --Function to get all the possible wide range of bridges and narrow it down to the the list that could only be real bridges
-findAllBridges :: [[[NuriCell]]] -> [NuriCell] -> [[[NuriCell]]]
-findAllBridges poss brd = map  (\w -> filter (\x -> all (==True) (checkIfNeighboursBelong x brd)) w )  poss
+findAllBridges :: [NuriCell] -> [[[NuriCell]]] -> [NuriCell] -> [[[NuriCell]]]
+findAllBridges baselist poss brd =
+   map (\w -> filter (\x -> all (==True) (checkIfNeighboursBelong x brd)) w )  poss
+  --in map (\u -> [[u]]) (filter (\b@NuriCell{locX=_, locY=_, size=s, kind=_} -> s==1) baselist) ++ longislands
 
 
 main :: IO ()
@@ -119,6 +123,6 @@ main = do
      gathereduniverses = gatherAllUniverses baseislandlist readyboard
      groupeduniverses = groupAllUniverses baseislandlist gathereduniverses
      cleaneduniverses = cleanGroupedUniverses baseislandlist groupeduniverses
-     trueislandlist = findAllBridges cleaneduniverses readyboard
-    in putStrLn (show (trueislandlist)++(show (length trueislandlist)))
+     trueislandlist = findAllBridges baseislandlist cleaneduniverses readyboard
+    in putStrLn (show (groupeduniverses)++(show (length groupeduniverses)))
     --in putStrLn (show (results))
