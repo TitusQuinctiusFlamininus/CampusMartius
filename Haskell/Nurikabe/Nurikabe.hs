@@ -96,8 +96,6 @@ checkIfNeighboursBelong (p:ps) brd =
       singleposstruth  = any (==True) (map (\g -> g `elem` neighbours) ps) in
       singleposstruth : checkIfNeighboursBelong ps brd
 
-
---NOT WORKING
 --Function to get all the possible wide range of bridges and narrow it down to the the list that could only be real bridges
 findAllBridges :: [[[NuriCell]]] -> [NuriCell] -> [[[NuriCell]]]
 findAllBridges poss brd = map  (\w -> filter (\x -> all (==True) (checkIfNeighboursBelong x brd)) w )  poss
