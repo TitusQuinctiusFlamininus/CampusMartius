@@ -116,11 +116,10 @@ main = do
  let hollowboard = createNuriBoard []
      defaultInput = inputToDefault inputValues
      readyboard = setDefaultIslands defaultInput hollowboard
-     --results = checkIfNeighboursBelong [NuriCell {locX = 1, locY = 1, size = 3, kind = Island},NuriCell {locX = 2, locY = 2, size = 0, kind = Water},NuriCell {locX = 1, locY = 3, size = 0, kind = Water}] readyboard
      baseislandlist = createBaseIslandList readyboard
      gathereduniverses = gatherAllUniverses baseislandlist readyboard
      groupeduniverses = groupAllUniverses baseislandlist gathereduniverses
      cleaneduniverses = cleanGroupedUniverses baseislandlist groupeduniverses
      trueislandlist = findAllBridges cleaneduniverses readyboard
     in putStrLn (show (trueislandlist)++(show (length trueislandlist)))
-    --in putStrLn (show (results))
+  
