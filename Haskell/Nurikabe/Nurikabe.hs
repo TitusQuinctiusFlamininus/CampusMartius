@@ -93,7 +93,7 @@ checkIfNeighboursBelong [] _ = [True]
 checkIfNeighboursBelong (x:[]) _ = [True]
 checkIfNeighboursBelong (p:ps) brd =
   let neighbours = findNeighours p brd
-      singleposstruth  = (head ps) `elem` neighbours in
+      singleposstruth  = any (==True) (map (\g -> g `elem` neighbours) ps) in
       singleposstruth : checkIfNeighboursBelong ps brd
 
 
