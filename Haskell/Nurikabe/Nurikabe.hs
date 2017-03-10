@@ -120,4 +120,3 @@ main = do
      cleaneduniverses = cleanGroupedUniverses baseislandlist groupeduniverses
      trueislandlist = findAllBridges cleaneduniverses readyboard
     in putStrLn (show (trueislandlist)++(show (length trueislandlist)))
---LOOK INTO thiS "BUG": 342,942
