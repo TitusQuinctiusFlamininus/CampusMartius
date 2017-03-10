@@ -64,9 +64,8 @@ gatherAllUniverses (b@NuriCell{locX=_, locY=_, size=s, kind=_}:bs) brd =
 --function to group all the cell into universes, using the baselist as data
 groupAllUniverses :: [NuriCell] -> [[NuriCell]] -> [[[NuriCell]]]
 groupAllUniverses [] _ = [[[]]]
-groupAllUniverses  (b@NuriCell{locX=_, locY=_, size=s, kind=_}:bs) (x:xs) =
-   let grouped = groupPoss s x : groupAllUniverses bs xs
-      in filter (\f -> f /= [[]]) grouped
+groupAllUniverses  (b@NuriCell{locX=_, locY=_, size=s, kind=_}:bs) (x:xs) = let grouped = groupPoss s x : groupAllUniverses bs xs
+       in filter (\f -> f /= [[]]) grouped
 
 --function to remove any lists that are empty in the list of lists
 cleanGroupedUniverses :: [NuriCell] -> [[[NuriCell]]] -> [[[NuriCell]]]
@@ -89,10 +88,9 @@ findNeighours cell brd =
 checkIfNeighboursBelong :: [NuriCell] -> [NuriCell] -> [Bool]
 checkIfNeighboursBelong [] _ = [True]
 checkIfNeighboursBelong (x:[]) _ = [True]
-checkIfNeighboursBelong (p:ps) brd =
-  let neighbours = findNeighours p brd
-      singleposstruth  = any (==True) (map (\g -> g `elem` neighbours) ps) in
-      singleposstruth : checkIfNeighboursBelong ps brd
+checkIfNeighboursBelong (p:ps) brd = let neighbours = findNeighours p brd in
+      any (==True) (map (\g -> g `elem` neighbours) ps) : checkIfNeighboursBelong ps brd
+
 
 --Function to get all the possible wide range of bridges and narrow it down to the the list that could only be real bridges
 findAllBridges :: [[[NuriCell]]] -> [NuriCell] -> [[[NuriCell]]]
