@@ -106,7 +106,7 @@ main = do
  putStrLn "***********************************************************************************************************"
  putStrLn ""
  putStrLn "Enter values already solved on the board in the format: 123,456 etc...."
- putStrLn " For example: 123,456 would imply: 2nd cell in 1st column has value 3, 5th cell in the 4th column has value 6, etc "
+ putStrLn " For example: 123,456 would imply: 2nd cell in 1st column is an island of length 3, 5th cell in the 4th column is an island of length 6, etc "
  putStrLn "(Note: Traverse the board from lower left cell, moving left to right for the bottom row, then the next row, etc....)"
  inputValues <- getLine
  let hollowboard = createNuriBoard []
