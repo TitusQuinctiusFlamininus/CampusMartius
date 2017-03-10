@@ -54,10 +54,6 @@ groupPoss n xs =   do
                     ys <- groupPoss (n-1) xs'
                     return (y:ys)
 
---function of filter a universe of possibilites down to those that contain the given Nuricell as one of them in the list
-homeToMama :: [[NuriCell]] -> NuriCell -> [[NuriCell]]
-homeToMama grps base = init $ nub $ map (\g -> if (base `elem` g) then g else [] ) grps
-
 --function to give the list of all lists of possibilities cells that could be islands
 gatherAllUniverses :: [NuriCell] -> [NuriCell] -> [[NuriCell]]
 gatherAllUniverses [] _  =  [[]]
@@ -77,8 +73,8 @@ cleanGroupedUniverses :: [NuriCell] -> [[[NuriCell]]] -> [[[NuriCell]]]
 cleanGroupedUniverses _ ([]) = [[[]]]
 cleanGroupedUniverses baselist ((b:[]):as) = [[b]] ++ cleanGroupedUniverses baselist as
 cleanGroupedUniverses baselist grpUnis =
-  let cleaned = nub $ map(\b -> homeToMama (concat grpUnis) b) baselist
-      in map (\grp -> if (head grp) == [] then drop 1 grp else grp ) cleaned
+  let cleaned = nub $ map(\b -> filter (\grp -> b `elem` grp ) (concat grpUnis)) baselist
+      in map (\c -> filter (\m -> (m /= []) ) c ) cleaned
 
 findNeighours :: NuriCell -> [NuriCell] -> [NuriCell]
 findNeighours cell brd =
