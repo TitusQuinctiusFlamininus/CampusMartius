@@ -106,8 +106,7 @@ doesWaterBlockExist cell@NuriCell{locX=x, locY=y, size=_, kind=k} brd =
   let posscells = [[cell, NuriCell{locX=x+1, locY=y, size=0, kind=k}, NuriCell{locX=x, locY=y-1, size=0, kind=k},NuriCell{locX=x+1, locY=y-1, size=0, kind=k}],
                    [cell, NuriCell{locX=x-1, locY=y, size=0, kind=k}, NuriCell{locX=x, locY=y-1, size=0, kind=k},NuriCell{locX=x-1, locY=y-1, size=0, kind=k}],
                    [cell, NuriCell{locX=x-1, locY=y, size=0, kind=k}, NuriCell{locX=x, locY=y+1, size=0, kind=k},NuriCell{locX=x-1, locY=y+1, size=0, kind=k}],
-                   [cell, NuriCell{locX=x+1, locY=y, size=0, kind=k}, NuriCell{locX=x, locY=y+1, size=0, kind=k},NuriCell{locX=x+1, locY=y+1, size=0, kind=k}]
-                  ]
+                   [cell, NuriCell{locX=x+1, locY=y, size=0, kind=k}, NuriCell{locX=x, locY=y+1, size=0, kind=k},NuriCell{locX=x+1, locY=y+1, size=0, kind=k}]]
       indvtruths = map (\poss -> map (\p -> p `elem` brd) poss) posscells in
       any (==True) $ map (\tlist -> all (==True) tlist) indvtruths
 
