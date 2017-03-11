@@ -98,6 +98,17 @@ findAllBridges poss brd =
   let bridges = map (\w -> filter (\x -> all (==True) (checkIfNeighboursBelong x brd)) w )  poss
   in filter (/= [[]]) bridges
 
+--function to find a square block of cells given a single cell
+--Arg 1 = The cell in question
+--Arg 2 = The entire Nuri board
+doesWaterBlockExist :: NuriCell -> [NuriCell] -> Bool
+doesWaterBlockExist cell@NuriCell{locX=x, locY=y, size=_, kind=k} brd =
+  let posscells = [[cell, NuriCell{locX=x+1, locY=y, size=0, kind=k}, NuriCell{locX=x, locY=y-1, size=0, kind=k},NuriCell{locX=x+1, locY=y-1, size=0, kind=k}],
+                   [cell, NuriCell{locX=x-1, locY=y, size=0, kind=k}, NuriCell{locX=x, locY=y-1, size=0, kind=k},NuriCell{locX=x-1, locY=y-1, size=0, kind=k}],
+                   [cell, NuriCell{locX=x-1, locY=y, size=0, kind=k}, NuriCell{locX=x, locY=y+1, size=0, kind=k},NuriCell{locX=x-1, locY=y+1, size=0, kind=k}],
+                   [cell, NuriCell{locX=x+1, locY=y, size=0, kind=k}, NuriCell{locX=x, locY=y+1, size=0, kind=k},NuriCell{locX=x+1, locY=y+1, size=0, kind=k}]
+                  ]
+  in any (==True)(concat $ map (\poss -> map (\p -> p `elem` brd) poss) posscells)
 
 main :: IO ()
 main = do
