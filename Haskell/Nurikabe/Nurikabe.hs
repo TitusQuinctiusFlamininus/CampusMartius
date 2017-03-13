@@ -98,6 +98,20 @@ findAllBridges poss brd =
   let bridges = map (\w -> filter (\x -> all (==True) (checkIfNeighboursBelong x brd)) w )  poss
   in filter (/= [[]]) bridges
 
+--FUNCTIONS FOR FINAL VERIFICATION OF ISLAND COMBINATIONS
+
+--function to check that there is no cell in one island that is actually part of another island
+--Arg 1 = Each list represents a DIFFERENT ISLAND, so this list is, for example, all the first lists of each [[[NuriCell]]]
+--When all individual checks are True, then we will have a result of TRUE (since we are ANDing && many true results)
+checkNoIslandOverlaps :: [[NuriCell]] -> Bool
+checkNoIslandOverlaps ([]:_)  = True
+checkNoIslandOverlaps (_:[])   = True
+checkNoIslandOverlaps islandcombi@((a:as):bs) =
+  let exists =  all (==False) $ map (\other -> a `elem` other) bs
+      r1     = exists && checkNoIslandOverlaps (as:bs)
+  in  r1 && checkNoIslandOverlaps bs
+
+
 --function to find a square block of cells given a single cell
 --Arg 1 = The cell in question
 --Arg 2 = The entire Nuri board
