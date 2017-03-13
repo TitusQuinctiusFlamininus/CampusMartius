@@ -100,7 +100,7 @@ findAllBridges poss brd =
 
 --FUNCTIONS FOR FINAL VERIFICATION OF ISLAND COMBINATIONS
 
---function to check that there is no cell in one island that is actually part of another island
+--Function to check that Islands Dont Overlap
 --Arg 1 = Each list represents a DIFFERENT ISLAND, so this list is, for example, all the first lists of each [[[NuriCell]]]
 --When all individual checks are True, then we will have a result of TRUE (since we are ANDing && many true results)
 checkNoIslandOverlaps :: [[NuriCell]] -> Bool
