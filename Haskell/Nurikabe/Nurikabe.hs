@@ -1,6 +1,7 @@
 --Nurikabe : https://www.brainbashers.com/nurikabehelp.asp
 import Data.Char
 import Data.List
+import Control.Monad(join)
 
 
 --the kind of cell it is
@@ -104,13 +105,25 @@ findAllBridges poss brd =
 --Arg 1 = Each list represents a DIFFERENT ISLAND, so this list is, for example, all the first lists of each [[[NuriCell]]]
 --When all individual checks are True, then we will have a result of TRUE (since we are ANDing && many true results)
 checkNoIslandOverlaps :: [[NuriCell]] -> Bool
-checkNoIslandOverlaps ([]:_)  = True
+checkNoIslandOverlaps ([]:_)   = True
 checkNoIslandOverlaps (_:[])   = True
 checkNoIslandOverlaps islandcombi@((a:as):bs) =
-  let exists =  all (==False) $ map (\other -> a `elem` other) bs
-      r1     = exists && checkNoIslandOverlaps (as:bs)
-  in  r1 && checkNoIslandOverlaps bs
+  let singlecellcheck     =  all (==False) $ map (\other -> a `elem` other) bs
+      fullislandcheck     = singlecellcheck && checkNoIslandOverlaps (as:bs)
+  in  fullislandcheck && checkNoIslandOverlaps bs
 
+
+  --Function to check that Islands are not adjacent to each other, cell for cell  (diagonal nearness is ok)
+  --Arg 1 = Each list represents a DIFFERENT ISLAND, so this list is, for example, all the first lists of each [[[NuriCell]]]
+  --When all individual checks are True, then we will have a result of TRUE (since we are ANDing && many true results)
+checkNoIslandAdjacent :: [[NuriCell]] -> [NuriCell] -> Bool
+checkNoIslandAdjacent ([]:_) _  = True
+checkNoIslandAdjacent (_:[]) _  = True
+checkNoIslandAdjacent islandcombi@((a:as):bs) brd =
+    let neighs = findNeighours a brd
+        singlecellcheck     =  all (==False) $ map (`elem` neighs) (concat bs)
+        fullislandcheck     = singlecellcheck && checkNoIslandAdjacent (as:bs) brd
+    in  fullislandcheck && checkNoIslandAdjacent bs brd
 
 --function to find a square block of cells given a single cell
 --Arg 1 = The cell in question
