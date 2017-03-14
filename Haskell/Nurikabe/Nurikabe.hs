@@ -1,7 +1,7 @@
 --Nurikabe : https://www.brainbashers.com/nurikabehelp.asp
 import Data.Char
 import Data.List
-import Control.Monad(join)
+
 
 
 --the kind of cell it is
