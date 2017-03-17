@@ -1,14 +1,14 @@
 --Nurikabe : https://www.brainbashers.com/nurikabehelp.asp
 import Data.Char
 import Data.List
+import Control.Monad.Identity
+import Control.Monad.Trans.State.Lazy
+import Control.Monad.Trans.Reader(ReaderT, runReaderT, ask)
 
-
-
---the kind of cell it is
-data Cellkind = Island | Water deriving (Eq, Show)
-
---complete description of a single cell on the board
-data NuriCell = NuriCell { locX::Int, locY::Int, size::Int, kind::Cellkind } deriving (Eq, Show)
+data Cellkind = Island | Water deriving (Eq, Show) --the kind of cell it is
+data NuriCell = NuriCell { locX::Int, locY::Int, size::Int, kind::Cellkind } deriving (Eq, Show) --complete description of a single cell on the board
+type BIsland = [NuriCell]
+type Nurikabe a = ReaderT BIsland (StateT [(Int,Int)] Identity) a
 
 --function to generate the board
 createNuriBoard :: [NuriCell] -> [NuriCell]
@@ -20,7 +20,7 @@ createNuriBoard board
          createNuriBoard (board ++ noRegionBoard)
 
 --function to update a board with the default nurikabe values
-setDefaultIslands :: [(Int, Int, Int)] -> [NuriCell] -> [NuriCell]
+setDefaultIslands :: [(Int, Int, Int)] -> [NuriCell] -> BIsland
 setDefaultIslands [] rest = rest
 setDefaultIslands def@((a,b,c):ys) (cell@(NuriCell {locX=x, locY=y, size=z, kind=g}):xs)
  | a == x && b == y   = (NuriCell {locX=x, locY=y, size=c, kind=Island}) : setDefaultIslands ys xs
@@ -125,6 +125,16 @@ doesWaterBlockExist cell@NuriCell{locX=x, locY=y, size=_, kind=k} brd =
       indvtruths = map (\poss -> map (\p -> p `elem` brd) poss) posscells in
       any (==True) $ map (\tlist -> all (==True) tlist) indvtruths
 
+solveNuriKabe :: [NuriCell] -> Nurikabe [[[NuriCell]]]
+solveNuriKabe readyboard = do
+                  baseislandlist <- ask
+                  let gathereduniverses = gatherAllUniverses baseislandlist readyboard
+                      groupeduniverses = groupAllUniverses baseislandlist gathereduniverses
+                      cleaneduniverses = cleanGroupedUniverses baseislandlist groupeduniverses
+                      trueislandlist = findAllBridges cleaneduniverses readyboard in
+                      return trueislandlist
+
+
 main :: IO ()
 main = do
  putStrLn "***********************************************************************************************************"
@@ -139,8 +149,6 @@ main = do
      defaultInput = inputToDefault inputValues
      readyboard = setDefaultIslands defaultInput hollowboard
      baseislandlist = createBaseIslandList readyboard
-     gathereduniverses = gatherAllUniverses baseislandlist readyboard
-     groupeduniverses = groupAllUniverses baseislandlist gathereduniverses
-     cleaneduniverses = cleanGroupedUniverses baseislandlist groupeduniverses
-     trueislandlist = findAllBridges cleaneduniverses readyboard
+     trueislandlist = runState (runReaderT (solveNuriKabe readyboard) baseislandlist) [(0,0)]
+
     in putStrLn (show (trueislandlist)++(show (length trueislandlist)))
