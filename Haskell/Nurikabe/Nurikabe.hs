@@ -7,8 +7,8 @@ import Control.Monad.Trans.Reader(ReaderT, runReaderT, ask)
 
 data Cellkind = Island | Water deriving (Eq, Show) --the kind of cell it is
 data NuriCell = NuriCell { locX::Int, locY::Int, size::Int, kind::Cellkind } deriving (Eq, Show) --complete description of a single cell on the board
-type BIsland = [NuriCell]
-type Nurikabe a = ReaderT BIsland (StateT [(Int,Int)] Identity) a
+type BIslandList = [NuriCell]
+type Nurikabe a = ReaderT BIslandList (StateT [(Int,Int)] Identity) a
 
 --function to generate the board
 createNuriBoard :: [NuriCell] -> [NuriCell]
@@ -20,7 +20,7 @@ createNuriBoard board
          createNuriBoard (board ++ noRegionBoard)
 
 --function to update a board with the default nurikabe values
-setDefaultIslands :: [(Int, Int, Int)] -> [NuriCell] -> BIsland
+setDefaultIslands :: [(Int, Int, Int)] -> [NuriCell] -> BIslandList
 setDefaultIslands [] rest = rest
 setDefaultIslands def@((a,b,c):ys) (cell@(NuriCell {locX=x, locY=y, size=z, kind=g}):xs)
  | a == x && b == y   = (NuriCell {locX=x, locY=y, size=c, kind=Island}) : setDefaultIslands ys xs
