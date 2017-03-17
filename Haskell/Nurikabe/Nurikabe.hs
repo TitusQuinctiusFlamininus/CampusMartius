@@ -7,8 +7,8 @@ import Control.Monad.Trans.Reader(ReaderT, runReaderT, ask)
 
 data Cellkind = Island | Water deriving (Eq, Show) --the kind of cell it is
 data NuriCell = NuriCell { locX::Int, locY::Int, size::Int, kind::Cellkind } deriving (Eq, Show) --complete description of a single cell on the board
-type BIslandList = [NuriCell]
-type Nurikabe a = ReaderT BIslandList (StateT [(Int,Int)] Identity) a
+type BIslandList = [NuriCell] --list of islands that were originally given by the user as input
+type Nurikabe a = ReaderT BIslandList (StateT [(Int,Int)] Identity) a  --the monad stack that we will use to solve Nurikabe
 
 --function to generate the board
 createNuriBoard :: [NuriCell] -> [NuriCell]
