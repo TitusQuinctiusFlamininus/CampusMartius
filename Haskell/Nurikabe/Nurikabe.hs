@@ -149,6 +149,6 @@ main = do
      defaultInput = inputToDefault inputValues
      readyboard = setDefaultIslands defaultInput hollowboard
      baseislandlist = createBaseIslandList readyboard
-     trueislandlist = runState (runReaderT (solveNuriKabe readyboard) baseislandlist) [(0,0)]
+     trueislandlist = evalStateT (runReaderT (solveNuriKabe readyboard) baseislandlist) [(0,0)]
 
     in putStrLn (show (trueislandlist)++(show (length trueislandlist)))
