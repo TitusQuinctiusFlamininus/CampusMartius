@@ -125,6 +125,14 @@ doesWaterBlockExist cell@NuriCell{locX=x, locY=y, size=_, kind=k} brd =
       indvtruths = map (\poss -> map (\p -> p `elem` brd) poss) posscells in
       any (==True) $ map (\tlist -> all (==True) tlist) indvtruths
 
+
+createPossibleNuriBoard :: [NuriCell] -> [NuriCell] -> [NuriCell]
+createPossibleNuriBoard _ []  = []
+createPossibleNuriBoard brd (rel@NuriCell{locX=a, locY=b, size=_, kind=Island}:is) =
+      let newbrd = map (\brdcell@NuriCell{locX=x, locY=y, size=_, kind=_} ->  if (a==x && b==y) then rel else brdcell  ) brd
+      in createPossibleNuriBoard newbrd is
+
+--Function to begin solving Nurikabe
 solveNuriKabe :: [NuriCell] -> Nurikabe [[[NuriCell]]]
 solveNuriKabe readyboard = do
                   baseislandlist <- ask
