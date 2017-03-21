@@ -132,6 +132,13 @@ setBoardPossibility brd (rel@NuriCell{locX=a, locY=b, size=_, kind=Island}:is) =
       let newbrd = map (\brdcell@NuriCell{locX=x, locY=y, size=_, kind=_} ->  if (a==x && b==y) then rel else brdcell  ) brd
       in setBoardPossibility newbrd is
 
+--function to construct a list of tuples that represent how we will grab and check through the island possibilities
+--(X,Y) where X is the number of island possibilities for one cell and Y is the current index of island combination we are using
+constructIslandIndexStrat :: [[[NuriCell]]] -> [(Int, Int)]
+constructIslandIndexStrat [] = []
+constructIslandIndexStrat poss@(insellist@((n:ns):xs):ys) = ((length insellist), 0) : constructIslandIndexStrat ys
+
+
 --Function to begin solving Nurikabe
 solveNuriKabe :: [NuriCell] -> Nurikabe [[[NuriCell]]]
 solveNuriKabe readyboard = do
