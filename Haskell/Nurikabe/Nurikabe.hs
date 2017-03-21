@@ -160,13 +160,14 @@ prepNuri baseislandlist readyboard =
 
 checkNuri :: [[[NuriCell]]] -> [(Int, Int)] -> [NuriCell] ->[NuriCell]
 checkNuri trueislandlist strategy readyboard =
-  let islandcombination = findNextIslandCombination trueislandlist strategy
+  let stratindex = (length strategy) -1
+      islandcombination = findNextIslandCombination trueislandlist strategy
       groundedboard = setBoardPossibility readyboard (concat islandcombination)
       nooverlap_or_adj = checkNoIslandOverlapOrAdj islandcombination readyboard
       nobadwater = all (==False) (map (\cell -> doesWaterBlockExist cell groundedboard) groundedboard)
   in  if (nooverlap_or_adj && nobadwater)
-      then groundedboard
-      else let
+      then groundedboard else []
+
 
 --Function to begin solving Nurikabe
 solveNuriKabe :: [NuriCell] -> Nurikabe [NuriCell]
