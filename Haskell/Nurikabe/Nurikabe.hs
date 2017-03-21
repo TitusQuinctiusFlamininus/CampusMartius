@@ -136,18 +136,18 @@ setBoardPossibility brd (rel@NuriCell{locX=a, locY=b, size=_, kind=Island}:is) =
 --(X,Y) where X is the number of island possibilities for one cell and Y is the current index of island combination we are using
 constructIslandStrat :: [[[NuriCell]]] -> [(Int, Int)]
 constructIslandStrat [] = []
-constructIslandStrat poss@(y:ys) = ((length y), 0) : constructIslandStrat ys
+constructIslandStrat (y:ys) = ((length y), 0) : constructIslandStrat ys
 
 
 --Function to begin solving Nurikabe
-solveNuriKabe :: [NuriCell] -> Nurikabe [[[NuriCell]]]
+solveNuriKabe :: [NuriCell] -> Nurikabe [NuriCell]
 solveNuriKabe readyboard = do
                   baseislandlist <- ask
                   let gathereduniverses = gatherAllUniverses baseislandlist readyboard
                       groupeduniverses = groupAllUniverses baseislandlist gathereduniverses
                       cleaneduniverses = cleanGroupedUniverses baseislandlist groupeduniverses
                       trueislandlist = findAllBridges cleaneduniverses readyboard in
-                      return trueislandlist
+                      return []
 
 
 main :: IO ()
