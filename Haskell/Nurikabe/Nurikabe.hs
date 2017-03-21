@@ -168,7 +168,7 @@ findNextIslandStrategy strat@((a,b):cs)
                in toList . update ((length strat)-1) (a,b+1) $ fromList strat
           else let innocentindex = (head checked)-1
                    (f,g) = strat!!innocentindex   --the one we can add one to
-                   (h,m) = strat!!(innocentindex+1) --the one whose limits have been reached and we need to reset it back to 0
+                   (h,m) = strat!!(innocentindex+1) --the one whose limits have been reached and we need to reset to 0
                    innocentadded = toList . update innocentindex (f,g+1) $ fromList strat in
                    toList . update (innocentindex+1) (h,0) $ fromList innocentadded
 
