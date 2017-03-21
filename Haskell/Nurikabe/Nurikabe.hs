@@ -167,7 +167,8 @@ findNextIslandStrategy strat@((a,b):cs)
           then let (a,b) = last strat
                in toList . update ((length strat)-1) (a,b+1) $ fromList strat
           else let innocentindex = (head checked)-1
-                   (f,g) = strat !! innocentindex
+                   (f,g) = strat !! innocentindex in
+                   []
 
 
 prepNuri :: [NuriCell] -> [NuriCell] -> [[[NuriCell]]]
@@ -183,7 +184,10 @@ checkNuri trueislandlist strategy readyboard =
       groundedboard     = setBoardPossibility readyboard (concat islandcombination)
       nooverlaps        = checkNoIslandOverlapOrAdj islandcombination readyboard
       nobadwater        = all (==False) (map (\cell -> doesWaterBlockExist cell groundedboard) groundedboard)
-  in  if (nooverlaps && nobadwater) then groundedboard else []
+  in  if (nooverlaps && nobadwater)
+    then groundedboard
+    else let nexstrat = findNextIslandStrategy strategy in
+            checkNuri trueislandlist nexstrat readyboard
 
 
 --Function to begin solving Nurikabe
