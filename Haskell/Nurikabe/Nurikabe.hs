@@ -164,8 +164,7 @@ prepNuri baseislandlist readyboard =
 
 checkNuri :: [[[NuriCell]]] -> [(Int, Int)] -> [NuriCell] ->[NuriCell]
 checkNuri trueislandlist strategy readyboard =
-  let stratindex = (length strategy) -1
-      islandcombination =  makeAllCellsIslands $ findNextIslandCombination trueislandlist strategy
+  let islandcombination =  makeAllCellsIslands $ findNextIslandCombination trueislandlist strategy
       groundedboard     = setBoardPossibility readyboard (concat islandcombination)
       nooverlaps        = checkNoIslandOverlapOrAdj islandcombination readyboard
       nobadwater        = all (==False) (map (\cell -> doesWaterBlockExist cell groundedboard) groundedboard)
