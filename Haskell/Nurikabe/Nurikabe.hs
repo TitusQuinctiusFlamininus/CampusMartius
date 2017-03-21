@@ -151,7 +151,7 @@ findNextIslandCombination combis@(y:ys) ((a,b):cs) = (y!!b) : findNextIslandComb
 --we need to set the type of the cell combinations as islands before we put them in the board as its cells
 makeAllCellsIslands :: [[NuriCell]] -> [[NuriCell]]
 makeAllCellsIslands islandposs = map (\igl ->
-    map (\cell@NuriCell{locX=x, locY=y, size=s, kind=_} -> NuriCell{locX=x, locY=y, size=s, kind=Island}) igl) islandposs
+    map (\NuriCell{locX=x, locY=y, size=s, kind=_} -> NuriCell{locX=x, locY=y, size=s, kind=Island}) igl) islandposs
 
 -- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 --ACTUAL SOLVE
