@@ -125,7 +125,10 @@ doesWaterBlockExist cell@NuriCell{locX=x, locY=y, size=_, kind=k} brd =
       indvtruths = map (\poss -> map (\p -> p `elem` brd) poss) posscells in
       any (==True) $ map (\tlist -> all (==True) tlist) indvtruths
 
-
+--Function to give a board representation just before we check if the board is a nurikabe solution.
+--The islands have been provided as a list and everything else should be already water
+--Arg 1 = the board
+--Arg 2 = the list of island cells that will be set into the board
 setBoardPossibility :: [NuriCell] -> [NuriCell] -> [NuriCell]
 setBoardPossibility _ []  = []
 setBoardPossibility brd (rel@NuriCell{locX=a, locY=b, size=_, kind=Island}:is) =
@@ -134,9 +137,9 @@ setBoardPossibility brd (rel@NuriCell{locX=a, locY=b, size=_, kind=Island}:is) =
 
 --function to construct a list of tuples that represent how we will grab and check through the island possibilities
 --(X,Y) where X is the number of island possibilities for one cell and Y is the current index of island combination we are using
-constructIslandStrat :: [[[NuriCell]]] -> [(Int, Int)]
-constructIslandStrat [] = []
-constructIslandStrat (y:ys) = ((length y), 0) : constructIslandStrat ys
+constructIslandStrategy :: [[[NuriCell]]] -> [(Int, Int)]
+constructIslandStrategy [] = []
+constructIslandStrategy (y:ys) = ((length y), 0) : constructIslandStrategy ys
 
 
 --Function to begin solving Nurikabe
