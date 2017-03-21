@@ -148,6 +148,10 @@ findNextIslandCombination _ [] = []
 findNextIslandCombination [] _ = []
 findNextIslandCombination combis@(y:ys) ((a,b):cs) = (y!!b) : findNextIslandCombination ys cs
 
+--we need to set the type of the cell combinations as islands before we put them in the board as its cells
+makeAllCellsIslands :: [[NuriCell]] -> [[NuriCell]]
+makeAllCellsIslands islandposs = map (\igl ->
+    map (\cell@NuriCell{locX=x, locY=y, size=s, kind=_} -> NuriCell{locX=x, locY=y, size=s, kind=Island}) igl) islandposs
 
 -- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 --ACTUAL SOLVE
@@ -161,12 +165,11 @@ prepNuri baseislandlist readyboard =
 checkNuri :: [[[NuriCell]]] -> [(Int, Int)] -> [NuriCell] ->[NuriCell]
 checkNuri trueislandlist strategy readyboard =
   let stratindex = (length strategy) -1
-      islandcombination = findNextIslandCombination trueislandlist strategy
-      groundedboard = setBoardPossibility readyboard (concat islandcombination)
-      nooverlaps = checkNoIslandOverlapOrAdj islandcombination readyboard
-      nobadwater = all (==False) (map (\cell -> doesWaterBlockExist cell groundedboard) groundedboard)
-  in  if (nooverlaps && nobadwater)
-      then groundedboard else []
+      islandcombination =  makeAllCellsIslands $ findNextIslandCombination trueislandlist strategy
+      groundedboard     = setBoardPossibility readyboard (concat islandcombination)
+      nooverlaps        = checkNoIslandOverlapOrAdj islandcombination readyboard
+      nobadwater        = all (==False) (map (\cell -> doesWaterBlockExist cell groundedboard) groundedboard)
+  in  if (nooverlaps && nobadwater) then groundedboard else []
 
 
 --Function to begin solving Nurikabe
