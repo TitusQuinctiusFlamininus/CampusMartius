@@ -149,7 +149,7 @@ findNextIslandCombination [] _ = []
 findNextIslandCombination combis@(y:ys) ((a,b):cs) = (y!!b) : findNextIslandCombination ys cs
 
 
--- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 --ACTUAL SOLVE
 prepNuri :: [NuriCell] -> [NuriCell] -> [[[NuriCell]]]
 prepNuri baseislandlist readyboard =
@@ -158,14 +158,24 @@ prepNuri baseislandlist readyboard =
       cleaneduniverses = cleanGroupedUniverses baseislandlist groupeduniverses
       in findAllBridges cleaneduniverses readyboard --finally all possible bridges
 
+checkNuri :: [[[NuriCell]]] -> [(Int, Int)] -> [NuriCell] ->[NuriCell]
+checkNuri trueislandlist strategy readyboard =
+  let islandcombination = findNextIslandCombination trueislandlist strategy
+      groundedboard = setBoardPossibility readyboard (concat islandcombination)
+      nooverlap_or_adj = checkNoIslandOverlapOrAdj islandcombination readyboard
+      nobadwater = all (==False) (map (\cell -> doesWaterBlockExist cell groundedboard) groundedboard)
+  in  if (nooverlap_or_adj && nobadwater)
+      then groundedboard
+      else let
+
 --Function to begin solving Nurikabe
 solveNuriKabe :: [NuriCell] -> Nurikabe [NuriCell]
 solveNuriKabe readyboard = do
                   baseislandlist <- ask
                   let trueislandlist = prepNuri baseislandlist readyboard
-                      strategy = constructIslandStrategy trueislandlist -- a base strategy of indexes created
-                      islandcombination = findNextIslandCombination trueislandlist strategy -- the base first island combi
-                      in return []
+                      strategy = constructIslandStrategy trueislandlist in-- a base strategy of indexes created
+                      return (checkNuri trueislandlist strategy readyboard) -- the base first island combi
+
 
 
 main :: IO ()
