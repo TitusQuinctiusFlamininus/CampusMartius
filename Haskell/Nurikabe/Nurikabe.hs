@@ -134,9 +134,9 @@ setBoardPossibility brd (rel@NuriCell{locX=a, locY=b, size=_, kind=Island}:is) =
 
 --function to construct a list of tuples that represent how we will grab and check through the island possibilities
 --(X,Y) where X is the number of island possibilities for one cell and Y is the current index of island combination we are using
-constructIslandIndexStrat :: [[[NuriCell]]] -> [(Int, Int)]
-constructIslandIndexStrat [] = []
-constructIslandIndexStrat poss@(insellist@((n:ns):xs):ys) = ((length insellist), 0) : constructIslandIndexStrat ys
+constructIslandStrat :: [[[NuriCell]]] -> [(Int, Int)]
+constructIslandStrat [] = []
+constructIslandStrat poss@(y:ys) = ((length y), 0) : constructIslandStrat ys
 
 
 --Function to begin solving Nurikabe
