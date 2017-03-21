@@ -149,16 +149,22 @@ findNextIslandCombination [] _ = []
 findNextIslandCombination combis@(y:ys) ((a,b):cs) = (y!!b) : findNextIslandCombination ys cs
 
 
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+--ACTUAL SOLVE
+prepNuri :: [NuriCell] -> [NuriCell] -> [[[NuriCell]]]
+prepNuri baseislandlist readyboard =
+  let gathereduniverses = gatherAllUniverses baseislandlist readyboard
+      groupeduniverses = groupAllUniverses baseislandlist gathereduniverses
+      cleaneduniverses = cleanGroupedUniverses baseislandlist groupeduniverses
+      in findAllBridges cleaneduniverses readyboard --finally all possible bridges
+
 --Function to begin solving Nurikabe
 solveNuriKabe :: [NuriCell] -> Nurikabe [NuriCell]
 solveNuriKabe readyboard = do
                   baseislandlist <- ask
-                  let gathereduniverses = gatherAllUniverses baseislandlist readyboard
-                      groupeduniverses = groupAllUniverses baseislandlist gathereduniverses
-                      cleaneduniverses = cleanGroupedUniverses baseislandlist groupeduniverses
-                      trueislandlist = findAllBridges cleaneduniverses readyboard --finally all possible bridges
+                  let trueislandlist = prepNuri baseislandlist readyboard
                       strategy = constructIslandStrategy trueislandlist -- a base strategy of indexes created
-                      islandcombination = findNextIslandCombination trueislandlist strategy -- the base first island combi 
+                      islandcombination = findNextIslandCombination trueislandlist strategy -- the base first island combi
                       in return []
 
 
