@@ -163,9 +163,9 @@ checkNuri trueislandlist strategy readyboard =
   let stratindex = (length strategy) -1
       islandcombination = findNextIslandCombination trueislandlist strategy
       groundedboard = setBoardPossibility readyboard (concat islandcombination)
-      nooverlap_or_adj = checkNoIslandOverlapOrAdj islandcombination readyboard
+      nooverlaps = checkNoIslandOverlapOrAdj islandcombination readyboard
       nobadwater = all (==False) (map (\cell -> doesWaterBlockExist cell groundedboard) groundedboard)
-  in  if (nooverlap_or_adj && nobadwater)
+  in  if (nooverlaps && nobadwater)
       then groundedboard else []
 
 
