@@ -141,6 +141,13 @@ constructIslandStrategy :: [[[NuriCell]]] -> [(Int, Int)]
 constructIslandStrategy [] = []
 constructIslandStrategy (y:ys) = ((length y), 0) : constructIslandStrategy ys
 
+--will take a strategy, and a bunch of possibilities and fetch the next list of island cell possibilities
+--the output of this function will be fed to the "setBoardPossibility" function to set the actual islands into the board
+findNextIslandCombination :: [[[NuriCell]]] -> [(Int, Int)] -> [[NuriCell]]
+findNextIslandCombination _ [] = []
+findNextIslandCombination [] _ = []
+findNextIslandCombination combis@(y:ys) ((a,b):cs) = (y!!b) : findNextIslandCombination ys cs
+
 
 --Function to begin solving Nurikabe
 solveNuriKabe :: [NuriCell] -> Nurikabe [NuriCell]
@@ -149,8 +156,10 @@ solveNuriKabe readyboard = do
                   let gathereduniverses = gatherAllUniverses baseislandlist readyboard
                       groupeduniverses = groupAllUniverses baseislandlist gathereduniverses
                       cleaneduniverses = cleanGroupedUniverses baseislandlist groupeduniverses
-                      trueislandlist = findAllBridges cleaneduniverses readyboard in
-                      return []
+                      trueislandlist = findAllBridges cleaneduniverses readyboard --finally all possible bridges
+                      strategy = constructIslandStrategy trueislandlist -- a base strategy of indexes created
+                      islandcombination = findNextIslandCombination trueislandlist strategy -- the base first island combi 
+                      in return []
 
 
 main :: IO ()
