@@ -1,7 +1,9 @@
 --Nurikabe : https://www.brainbashers.com/nurikabehelp.asp
 import Data.Char
 import Data.List
+import Data.Maybe(fromJust)
 import Data.Sequence(fromList, update)
+import Data.Foldable (toList)
 import Control.Monad.Identity
 import Control.Monad.Trans.State.Lazy
 import Control.Monad.Trans.Reader(ReaderT, runReaderT, ask)
@@ -160,11 +162,12 @@ findNextIslandStrategy :: [(Int, Int)] -> [(Int, Int)]
 findNextIslandStrategy strat@((a,b):cs)
  | b == a-1   = [(-1,-1)]  --this means we have cycled through all island combinations and not one is Nurikabe
  | otherwise  =
-   let indexofchoice = head ( filter (/= -1) (map (\s@(x,y) -> if (y /= x-1) then s `elemIndex` strat else -1) strat))
-    in if indexofchoice == -1
-        then let (a,b) = last strat
-               in update ((length strat)-1) (a,b+1) $ fromList strat
-        else []
+   let checked = filter (/= -1) (map (\s@(x,y) -> if (y == x-1) then  fromJust(s `elemIndex` strat) else -1) strat) in
+       if checked == []
+          then let (a,b) = last strat
+               in toList . update ((length strat)-1) (a,b+1) $ fromList strat
+          else let innocentindex = (head checked)-1
+                   (f,g) = strat !! innocentindex
 
 
 prepNuri :: [NuriCell] -> [NuriCell] -> [[[NuriCell]]]
