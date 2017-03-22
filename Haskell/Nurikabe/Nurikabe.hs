@@ -196,19 +196,6 @@ checkNuri trueislandlist strategy readyboard =
             if [(-1,-1)] == nexstrat then [] --NO SOLUTION FOUND
             else checkNuri trueislandlist nexstrat readyboard
 
-
-
-
---Function to begin solving Nurikabe
-solveNuriKabe :: [NuriCell] -> Nurikabe [NuriCell]
-solveNuriKabe readyboard = do
-                  baseislandlist <- ask
-                  let trueislandlist = prepNuri baseislandlist readyboard
-                      strategy = constructIslandStrategy trueislandlist in-- a base strategy of indexes created
-                      return (checkNuri trueislandlist strategy readyboard) -- the base first island combi
-
-
-
 main :: IO ()
 main = do
  putStrLn "***********************************************************************************************************"
@@ -223,6 +210,7 @@ main = do
      defaultInput = inputToDefault inputValues
      readyboard = setDefaultIslands defaultInput hollowboard
      baseislandlist = createBaseIslandList readyboard
-     finalNurikabeSolution = runIdentity $ runReaderT (solveNuriKabe readyboard) baseislandlist
-
-    in putStrLn (show (finalNurikabeSolution)++(show (length finalNurikabeSolution)))
+     trueislandlist = prepNuri baseislandlist readyboard
+     strategy = constructIslandStrategy trueislandlist
+     finalNurikabeSolution = checkNuri trueislandlist strategy readyboard in
+     putStrLn (show (finalNurikabeSolution)++(show (length finalNurikabeSolution)))
