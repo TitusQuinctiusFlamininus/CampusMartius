@@ -102,8 +102,9 @@ findAllBridges poss brd =
   let bridges = map (\w -> filter (\x -> all (==True) (checkIfNeighboursBelong x brd)) w )  poss
   in filter (/= [[]]) bridges
 
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 --FUNCTIONS FOR FINAL VERIFICATION OF ISLAND COMBINATIONS
-
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 --Function to check that Islands Dont Overlap and that there are no islands adjacent to each other (even though diagonal nearness is ok)
 --Arg 1 = Each list represents a DIFFERENT ISLAND, so this list is, for example, all the first lists of each [[[NuriCell]]]
 --When all individual checks are True, then we will have a result of TRUE (since we are ANDing && many true results)
@@ -128,6 +129,9 @@ doesWaterBlockExist cell@NuriCell{locX=x, locY=y, size=_, kind=k} brd =
       indvtruths = map (\poss -> map (\p -> p `elem` brd) poss) posscells in
       any (==True) $ map (\tlist -> all (==True) tlist) indvtruths
 
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--ACTUAL SOLVE
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 --Function to give a board representation just before we check if the board is a nurikabe solution.
 --The islands have been provided as a list and everything else should be already water
 --Arg 1 = the board
@@ -144,6 +148,11 @@ constructIslandStrategy :: [[[NuriCell]]] -> [(Int, Int)]
 constructIslandStrategy [] = []
 constructIslandStrategy (y:ys) = ((length y), 0) : constructIslandStrategy ys
 
+--we need to set the type of the cell combinations as islands before we put them in the board as its cells
+makeAllCellsIslands :: [[NuriCell]] -> [[NuriCell]]
+makeAllCellsIslands islandposs = map (\igl ->
+    map (\NuriCell{locX=x, locY=y, size=s, kind=_} -> NuriCell{locX=x, locY=y, size=s, kind=Island}) igl) islandposs
+
 --will take a strategy, and a bunch of possibilities and fetch the next list of island cell possibilities
 --the output of this function will be fed to the "setBoardPossibility" function to set the actual islands into the board
 findNextIslandCombination :: [[[NuriCell]]] -> [(Int, Int)] -> [[NuriCell]]
@@ -151,13 +160,6 @@ findNextIslandCombination _ [] = []
 findNextIslandCombination [] _ = []
 findNextIslandCombination combis@(y:ys) ((a,b):cs) = (y!!b) : findNextIslandCombination ys cs
 
---we need to set the type of the cell combinations as islands before we put them in the board as its cells
-makeAllCellsIslands :: [[NuriCell]] -> [[NuriCell]]
-makeAllCellsIslands islandposs = map (\igl ->
-    map (\NuriCell{locX=x, locY=y, size=s, kind=_} -> NuriCell{locX=x, locY=y, size=s, kind=Island}) igl) islandposs
-
--- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---ACTUAL SOLVE
 findNextIslandStrategy :: [(Int, Int)] -> [(Int, Int)]
 findNextIslandStrategy strat@((a,b):cs)
  | b == a-1   = [(-1,-1)]  --this means we have cycled through all island combinations and not one is Nurikabe
