@@ -164,13 +164,13 @@ findNextIslandCombination [] _ = []
 findNextIslandCombination (y:ys) ((a,b):cs) = (y!!b) : findNextIslandCombination ys cs
 
 findNextIslandStrategy :: [(Int, Int)] -> [(Int, Int)]
-findNextIslandStrategy strat@((a,b):cs)
- | b == a-1   = [(-1,-1)]  --this means we have cycled through all island combinations and not one is Nurikabe
+findNextIslandStrategy strat@((a,b):(c,d):es)
+ | ((b == a-1)  && (d == c-1)) = [(-1,-1)]  --this means we have cycled through all island combinations and not one is Nurikabe
  | otherwise  =
    let checked = filter (/= -1) (map (\s@(x,y) -> if (y == x-1) then  fromJust(s `elemIndex` strat) else -1) strat) in
        if checked == []
-          then let (a,b) = last strat
-               in toList . update ((length strat)-1) (a,b+1) $ fromList strat
+          then let (x,y) = last strat
+               in toList . update ((length strat)-1) (x,y+1) $ fromList strat
           else let innocentindex = (head checked)-1
                    (f,g) = strat!!innocentindex   --the one we can add one to
                    (h,m) = strat!!(innocentindex+1) --the one whose limits have been reached and we need to reset to 0
