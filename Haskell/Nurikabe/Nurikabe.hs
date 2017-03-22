@@ -5,13 +5,12 @@ import Data.Maybe(fromJust)
 import Data.Sequence(fromList, update)
 import Data.Foldable (toList)
 import Control.Monad.Identity
-import Control.Monad.Trans.State.Lazy
 import Control.Monad.Trans.Reader(ReaderT, runReaderT, ask)
 
 data Cellkind = Island | Water deriving (Eq, Show) --the kind of cell it is
 data NuriCell = NuriCell { locX::Int, locY::Int, size::Int, kind::Cellkind } deriving (Eq, Show) --complete description of a single cell on the board
 type BIslandList = [NuriCell] --list of islands that were originally given by the user as input
-type Nurikabe a = ReaderT BIslandList (StateT [(Int,Int)] Identity) a  --the monad stack that we will use to solve Nurikabe
+type Nurikabe a = ReaderT BIslandList Identity a  --the monad stack that we will use to solve Nurikabe
 
 --function to generate the board
 createNuriBoard :: [NuriCell] -> [NuriCell]
@@ -220,6 +219,6 @@ main = do
      defaultInput = inputToDefault inputValues
      readyboard = setDefaultIslands defaultInput hollowboard
      baseislandlist = createBaseIslandList readyboard
-     finalNurikabeSolution = evalStateT (runReaderT (solveNuriKabe readyboard) baseislandlist) [(0,0)]
+     finalNurikabeSolution = runIdentity $ runReaderT (solveNuriKabe readyboard) baseislandlist
 
     in putStrLn (show (finalNurikabeSolution)++(show (length finalNurikabeSolution)))
