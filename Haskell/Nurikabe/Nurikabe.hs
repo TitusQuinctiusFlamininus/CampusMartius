@@ -47,7 +47,11 @@ findCellUniverse :: NuriCell -> [NuriCell] -> Int -> [NuriCell]
 findCellUniverse _ _ 0 = []
 findCellUniverse cell@NuriCell{locX=x, locY=y, size=s, kind=_} brd n =
  let maxdist = n-1 in
-     [cell] ++ (filter (\NuriCell{locX=a, locY=b, size=_, kind=_} -> ((a <= (x+maxdist)) && (a >= (x-maxdist))) && ((b <= (y+maxdist)) && (b >= (y-maxdist))) ) $ (filter (\NuriCell{locX=_, locY=_, size=e, kind=_} -> e ==0 ) brd))
+     [cell] ++ (filter (\NuriCell{locX=a, locY=b, size=_, kind=_} -> ((a <= (x+maxdist)) &&
+                                                                     (a >= (x-maxdist))) &&
+                                                                     ((b <= (y+maxdist)) &&
+                                                                     (b >= (y-maxdist))) )
+              $ (filter (\NuriCell{locX=_, locY=_, size=e, kind=_} -> e ==0 ) brd))
 
 --function that gives all possible combinations of groups of N of things from list L
 groupPoss :: Int -> [NuriCell] -> [[NuriCell]]
@@ -67,7 +71,7 @@ gatherAllUniverses (b@NuriCell{locX=_, locY=_, size=s, kind=_}:bs) brd =
 --function to group all the cell into universes, using the baselist as data
 groupAllUniverses :: [NuriCell] -> [[NuriCell]] -> [[[NuriCell]]]
 groupAllUniverses [] _ = [[[]]]
-groupAllUniverses  (b@NuriCell{locX=_, locY=_, size=s, kind=_}:bs) (x:xs) = let grouped = groupPoss s x : groupAllUniverses bs xs
+groupAllUniverses  (NuriCell{locX=_, locY=_, size=s, kind=_}:bs) (x:xs) = let grouped = groupPoss s x : groupAllUniverses bs xs
        in filter (\f -> f /= [[]]) grouped
 
 --function to remove any lists that are empty in the list of lists
@@ -110,7 +114,7 @@ findAllBridges poss brd =
 checkNoIslandOverlapOrAdj :: [[NuriCell]] -> [NuriCell] -> Bool
 checkNoIslandOverlapOrAdj ([]:_) _ = True
 checkNoIslandOverlapOrAdj (_:[]) _  = True
-checkNoIslandOverlapOrAdj islandcombi@((a:as):bs) brd=
+checkNoIslandOverlapOrAdj ((a:as):bs) brd=
   let neighs              = findNeighours a brd
       singlecellcheck     =  all (==False) $ ((map (\other -> a `elem` other) bs) ++ (map (`elem` neighs) (concat bs)))
       fullislandcheck     = singlecellcheck && checkNoIslandOverlapOrAdj (as:bs) brd
@@ -157,7 +161,7 @@ makeAllCellsIslands islandposs = map (\igl ->
 findNextIslandCombination :: [[[NuriCell]]] -> [(Int, Int)] -> [[NuriCell]]
 findNextIslandCombination _ [] = []
 findNextIslandCombination [] _ = []
-findNextIslandCombination combis@(y:ys) ((a,b):cs) = (y!!b) : findNextIslandCombination ys cs
+findNextIslandCombination (y:ys) ((a,b):cs) = (y!!b) : findNextIslandCombination ys cs
 
 findNextIslandStrategy :: [(Int, Int)] -> [(Int, Int)]
 findNextIslandStrategy strat@((a,b):cs)
