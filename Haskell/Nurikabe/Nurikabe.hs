@@ -4,15 +4,18 @@ import Data.List
 import Data.Maybe(fromJust)
 import Data.Sequence(fromList, update)
 import Data.Foldable (toList)
-import Control.Monad.Trans.State.Lazy(StateT, put, get, evalStateT)
+import Control.Monad.Trans.State.Lazy(StateT, put, get, execStateT)
+import Control.Monad.Trans.Writer.Lazy(WriterT, tell, runWriterT)
 import Control.Monad.Trans.Reader(ReaderT, runReaderT, ask)
+import Control.Monad.Trans.Class(lift)
 import Control.Monad.IO.Class(liftIO)
 
 data Cellkind = Island | Water deriving (Eq, Show) --the kind of cell it is
 data NuriCell = NuriCell { locX::Int, locY::Int, size::Int, kind::Cellkind } deriving (Eq, Show) --complete description of a single cell on the board
 type AllIslands = [[[NuriCell]]] --list of all island possibilities for all user inputToDefault
 type Strategy   = [(Int,Int)]    -- Tuple list : First Int = the index of Island in AllIsland ; Second Int = Index of list to choose within the list of islands
-type Nurikabe a = ReaderT AllIslands (StateT Strategy IO) a  --the monad stack that we will use to solve Nurikabe
+type Log        = [String]
+type Nurikabe a = WriterT Log (ReaderT AllIslands (StateT (Strategy,[NuriCell],Log) IO)) a  --the monad stack that we will use to solve Nurikabe
 
 --function to generate the board
 createNuriBoard :: [NuriCell] -> [NuriCell]
@@ -191,18 +194,26 @@ prepNuri baseislandlist readyboard =
       cleaneduniverses = cleanGroupedUniverses baseislandlist groupeduniverses
       in findAllBridges cleaneduniverses readyboard --finally all possible bridges
 
-checkNuri :: [NuriCell] -> Nurikabe [NuriCell]
-checkNuri trueislandlist strategy readyboard = do
-      trueislandlist   <-  ask
-      strategy         <-  lift $ get
-      let islandcombination =  makeAllCellsIslands $ findNextIslandCombination trueislandlist strategy
-      groundedboard     = setBoardPossibility readyboard (concat islandcombination)
-      nooverlaps        = checkNoIslandOverlapOrAdj islandcombination readyboard
-      nobadwater        = all (==False) (map (\cell -> doesWaterBlockExist cell groundedboard) groundedboard)
-  in  if (nooverlaps && nobadwater) then groundedboard
-      else let nexstrat = findNextIslandStrategy strategy in
-            if [(-1,-1)] == nexstrat then [] --NO SOLUTION FOUND
-            else checkNuri trueislandlist nexstrat readyboard
+checkNuri :: Nurikabe [NuriCell]
+checkNuri = do
+      trueislandlist                 <-  lift $ ask
+      (strategy,readyboard,nurilog)  <-  lift $ lift $ get
+      let islandcombination          =  makeAllCellsIslands $ findNextIslandCombination trueislandlist strategy
+          groundedboard              = setBoardPossibility readyboard (concat islandcombination)
+          nooverlaps                 = checkNoIslandOverlapOrAdj islandcombination readyboard
+          nobadwater                 = all (==False) (map (\cell -> doesWaterBlockExist cell groundedboard) groundedboard) in
+          if (nooverlaps && nobadwater) then return groundedboard
+          else let nexstrat = findNextIslandStrategy strategy in
+            if [(-1,-1)] == nexstrat then return [] --NO SOLUTION FOUND
+            else checkNuri
+
+--just display the log of what has been going on so far when solving Nurikabe
+displayTheLog :: Log -> IO()
+displayTheLog thelog = sequence_ $  map (putStrLn) thelog
+
+--just display the  of what has been going on so far when solving Nurikabe
+displayTheStrategy :: Strategy -> IO()
+displayTheStrategy thestrat =   putStrLn (show thestrat)
 
 main :: IO ()
 main = do
@@ -221,8 +232,9 @@ main = do
      trueislandlist = prepNuri baseislandlist readyboard
      strategy = constructIslandStrategy trueislandlist in
      do
-     finalNurikabeSolution <- evalStateT (runReaderT (checkNuri readyboard) trueislandlist) strategy
-     --finalNurikabeSolution = checkNuri trueislandlist strategy readyboard in
+     (finalstrat,finalNurikabeSolution,nurilog) <- execStateT (runReaderT (runWriterT checkNuri) trueislandlist) (strategy,readyboard,[])
+     displayTheLog nurilog
+     displayTheStrategy finalstrat
      if finalNurikabeSolution == [] then putStrLn "There was No Nurikabe Solution Found! (Recheck your island...)"
      else do
          putStrLn "!§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§"
