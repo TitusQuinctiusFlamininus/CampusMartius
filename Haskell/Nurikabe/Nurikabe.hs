@@ -175,8 +175,7 @@ findNextIslandStrategy strat =
            else let rift = splitAt (head checked) strat
                     sndfiltered = (map (\(a,b) -> if (a/=1) then (a,0) else (a,b)) (snd rift))
                     fstfiltered@((k,q):ms) = filter (\(p,z) -> p/=1) (reverse (fst rift)) in
-                    if fstfiltered == []
-                    then (fst rift) ++ sndfiltered
+                    if fstfiltered == [] then (fst rift) ++ sndfiltered
                     else let fstindex = fromJust ((k,q) `elemIndex` (fst rift)) in
                       (toList . update fstindex (k,q+1) $ fromList (fst rift)) ++ sndfiltered
 
@@ -223,4 +222,9 @@ main = do
      --nooverlaps        = checkNoIslandOverlapOrAdj islandcombination readyboard
      --nobadwater        = all (==False) (map (\cell -> doesWaterBlockExist cell groundedboard) groundedboard) in
      finalNurikabeSolution = checkNuri trueislandlist strategy readyboard in
-     putStrLn (show (finalNurikabeSolution)++(show (length finalNurikabeSolution)))
+     if finalNurikabeSolution == [] then putStrLn "There was No Nurikabe Solution Found!"
+     else do
+       putStrLn "!§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§"
+       putStrLn "!!!!!!!!!!!!!!!NURIKABE!!!!!!!!!!!!"
+       putStrLn "!§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§"
+       putStrLn (show (finalNurikabeSolution)++(show (length finalNurikabeSolution)))
