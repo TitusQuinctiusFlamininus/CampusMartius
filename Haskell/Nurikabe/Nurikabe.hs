@@ -159,8 +159,7 @@ makeAllCellsIslands islandposs = map (\igl ->
 --will take a strategy, and a bunch of possibilities and fetch the next list of island cell possibilities
 --the output of this function will be fed to the "setBoardPossibility" function to set the actual islands into the board
 findNextIslandCombination :: [[[NuriCell]]] -> [(Int, Int)] -> [[NuriCell]]
-findNextIslandCombination _ [] = []
-findNextIslandCombination [] _ = []
+findNextIslandCombination [] [] = []
 findNextIslandCombination (y:ys) ((a,b):cs) = (y!!b) : findNextIslandCombination ys cs
 
 findNextIslandStrategy :: [(Int, Int)] -> [(Int, Int)]
@@ -169,7 +168,7 @@ findNextIslandStrategy strat =
      if exhausted
         then [(-1,-1)]
         else
-         let checked = filter (/= -1) (map (\s@(x,y) -> if ((y == x-1) && (head strat /= s)) then  fromJust(s `elemIndex` strat) else -1) strat) in
+         let checked = filter (/= -1) (map (\s@(x,y) -> if ((y == x-1) && (head strat /= s) && (x/=1)) then  fromJust(s `elemIndex` strat) else -1) strat) in
          if checked == []
            then let (x,y) = last strat
                 in toList . update ((length strat)-1) (x,y+1) $ fromList strat
