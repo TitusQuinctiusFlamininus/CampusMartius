@@ -177,7 +177,8 @@ findNextIslandStrategy strat =
                     fstfiltered@((k,q):ms) = filter (\(p,z) -> p/=1) (reverse (fst rift)) in
                     if fstfiltered == []
                     then (fst rift) ++ sndfiltered
-                    else (toList . update (length (fst rift) -1) (k,q+1) $ fromList (fst rift)) ++ sndfiltered
+                    else let fstindex = fromJust ((k,q) `elemIndex` (fst rift)) in
+                      (toList . update fstindex (k,q+1) $ fromList (fst rift)) ++ sndfiltered
 
 
 
