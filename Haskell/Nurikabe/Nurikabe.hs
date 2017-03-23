@@ -165,17 +165,22 @@ findNextIslandCombination (y:ys) ((a,b):cs) = (y!!b) : findNextIslandCombination
 
 findNextIslandStrategy :: [(Int, Int)] -> [(Int, Int)]
 findNextIslandStrategy strat@((a,b):(c,d):es)
- | ((b == a-1)  && (d == c-1)) = [(-1,-1)]  --this means we have cycled through all island combinations and not one is Nurikabe
+ | length strat == 1                       =   [(-1,-1)] -- 1 elements in the list
+ | ((b == a-1)  && (d == c-1) && es == []) =   [(-1,-1)]  --2 elements in the list
  | otherwise  =
-   let checked = filter (/= -1) (map (\s@(x,y) -> if (y == x-1) then  fromJust(s `elemIndex` strat) else -1) strat) in
-       if checked == []
-          then let (x,y) = last strat
-               in toList . update ((length strat)-1) (x,y+1) $ fromList strat
-          else let innocentindex = (head checked)-1
-                   (f,g) = strat!!innocentindex   --the one we can add one to
-                   (h,m) = strat!!(innocentindex+1) --the one whose limits have been reached and we need to reset to 0
-                   innocentadded = toList . update innocentindex (f,g+1) $ fromList strat in
-                   toList . update (innocentindex+1) (h,0) $ fromList innocentadded
+   let (v,w) = last es in
+     if ((b == a-1)  && (d == c-1) && (w == v-1))
+        then [(-1,-1)]
+        else
+         let checked = filter (/= -1) (map (\s@(x,y) -> if (y == x-1) then  fromJust(s `elemIndex` strat) else -1) strat) in
+         if checked == []
+           then let (x,y) = last strat
+                in toList . update ((length strat)-1) (x,y+1) $ fromList strat
+           else let innocentindex = (head checked)-1
+                    (f,g) = strat!!innocentindex   --the one we can add one to
+                    (h,m) = strat!!(innocentindex+1) --the one whose limits have been reached and we need to reset to 0
+                    innocentadded = toList . update innocentindex (f,g+1) $ fromList strat in
+                    toList . update (innocentindex+1) (h,0) $ fromList innocentadded
 
 
 prepNuri :: [NuriCell] -> [NuriCell] -> [[[NuriCell]]]
