@@ -4,7 +4,7 @@ import Data.List
 import Data.Maybe(fromJust)
 import Data.Sequence(fromList, update)
 import Data.Foldable (toList)
-import Control.Monad.Trans.State.Lazy(StateT, put, get, runStateT)
+import Control.Monad.Trans.State.Lazy(StateT, put, get, evalStateT)
 import Control.Monad.Trans.Reader(ReaderT, runReaderT, ask)
 import Control.Monad.IO.Class(liftIO)
 
@@ -191,9 +191,11 @@ prepNuri baseislandlist readyboard =
       cleaneduniverses = cleanGroupedUniverses baseislandlist groupeduniverses
       in findAllBridges cleaneduniverses readyboard --finally all possible bridges
 
-checkNuri :: [[[NuriCell]]] -> [(Int, Int)] -> [NuriCell] ->[NuriCell]
-checkNuri trueislandlist strategy readyboard =
-  let islandcombination =  makeAllCellsIslands $ findNextIslandCombination trueislandlist strategy
+checkNuri :: [NuriCell] -> Nurikabe [NuriCell]
+checkNuri trueislandlist strategy readyboard = do
+      trueislandlist   <-  ask
+      strategy         <-  lift $ get
+      let islandcombination =  makeAllCellsIslands $ findNextIslandCombination trueislandlist strategy
       groundedboard     = setBoardPossibility readyboard (concat islandcombination)
       nooverlaps        = checkNoIslandOverlapOrAdj islandcombination readyboard
       nobadwater        = all (==False) (map (\cell -> doesWaterBlockExist cell groundedboard) groundedboard)
@@ -217,8 +219,10 @@ main = do
      readyboard = setDefaultIslands defaultInput hollowboard
      baseislandlist = createBaseIslandList readyboard
      trueislandlist = prepNuri baseislandlist readyboard
-     strategy = constructIslandStrategy trueislandlist
-     finalNurikabeSolution = checkNuri trueislandlist strategy readyboard in
+     strategy = constructIslandStrategy trueislandlist in
+     do
+     finalNurikabeSolution <- evalStateT (runReaderT (checkNuri readyboard) trueislandlist) strategy
+     --finalNurikabeSolution = checkNuri trueislandlist strategy readyboard in
      if finalNurikabeSolution == [] then putStrLn "There was No Nurikabe Solution Found! (Recheck your island...)"
      else do
          putStrLn "!§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§"
