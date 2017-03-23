@@ -165,7 +165,7 @@ makeAllCellsIslands islandposs = map (\igl ->
 --the output of this function will be fed to the "setBoardPossibility" function to set the actual islands into the board
 findNextIslandCombination :: [[[NuriCell]]] -> [(Int, Int)] -> [[NuriCell]]
 findNextIslandCombination [] [] = []
-findNextIslandCombination (y:ys) ((a,b):cs) = (y!!b) : findNextIslandCombination ys cs
+findNextIslandCombination (y:ys) ((_,b):cs) = (y!!b) : findNextIslandCombination ys cs
 
 findNextIslandStrategy :: [(Int, Int)] -> [(Int, Int)]
 findNextIslandStrategy strat =
@@ -173,13 +173,13 @@ findNextIslandStrategy strat =
      if exhausted
         then [(-1,-1)]
         else
-         let checked = filter (/= -1) (map (\s@(x,y) -> if ((y == x-1) && (head strat /= s) && (x/=1)) then  fromJust(s `elemIndex` strat) else -1) strat) in
+         let checked = [fromJust ((head $ filter (\(t1,_) -> t1/=1) (reverse strat)) `elemIndex` strat )] in
          if checked == []
            then let (x,y) = last strat
                 in toList . update ((length strat)-1) (x,y+1) $ fromList strat
            else let rift = splitAt (head checked) strat
                     sndfiltered = (map (\(a,b) -> if (a/=1) then (a,0) else (a,b)) (snd rift))
-                    fstfiltered@((k,q):ms) = filter (\(p,z) -> p/=1) (reverse (fst rift)) in
+                    fstfiltered@((k,q):_) = filter (\(p,_) -> p/=1) (reverse (fst rift)) in
                     if fstfiltered == [] then (fst rift) ++ sndfiltered
                     else let fstindex = fromJust ((k,q) `elemIndex` (fst rift)) in
                       (toList . update fstindex (k,q+1) $ fromList (fst rift)) ++ sndfiltered
@@ -198,14 +198,31 @@ checkNuri :: Nurikabe [NuriCell]
 checkNuri = do
       trueislandlist                 <-  lift $ ask
       (strategy,readyboard,nurilog)  <-  lift $ lift $ get
+      liftIO $ putStrLn  ("Will Use Strategy: "++show (strategy))
       let islandcombination          =  makeAllCellsIslands $ findNextIslandCombination trueislandlist strategy
           groundedboard              = setBoardPossibility readyboard (concat islandcombination)
           nooverlaps                 = checkNoIslandOverlapOrAdj islandcombination readyboard
           nobadwater                 = all (==False) (map (\cell -> doesWaterBlockExist cell groundedboard) groundedboard) in
-          if (nooverlaps && nobadwater) then return groundedboard
-          else let nexstrat = findNextIslandStrategy strategy in
-            if [(-1,-1)] == nexstrat then return [] --NO SOLUTION FOUND
-            else checkNuri
+          do
+            liftIO $ putStrLn ("islandcombination: "++show (islandcombination))
+            liftIO $ putStrLn ("nooverlaps: "++show (nooverlaps))
+            liftIO $ putStrLn ("nobadwater: "++show (nobadwater))
+            if (nooverlaps && nobadwater)
+            then  do
+                  liftIO $ putStrLn "We found a solution! Returning it...."
+                  lift $ lift $ put (strategy,groundedboard,nurilog)
+                  return groundedboard
+            else let nexstrat = findNextIslandStrategy strategy in
+              if [(-1,-1)] == nexstrat
+              then do
+                tell ["We found no Nurikabe solution"]
+                lift $ lift $ put (strategy,groundedboard,nurilog)
+                return [] --NO SOLUTION FOUND
+              else do
+              liftIO $ putStrLn "Heading for another round..."
+              liftIO $ putStrLn ("The last Strategy that did NOT work is "++show (strategy))
+              lift $ lift $ put (nexstrat,readyboard,nurilog)
+              checkNuri
 
 --just display the log of what has been going on so far when solving Nurikabe
 displayTheLog :: Log -> IO()
