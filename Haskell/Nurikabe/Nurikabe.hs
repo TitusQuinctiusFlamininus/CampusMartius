@@ -4,13 +4,15 @@ import Data.List
 import Data.Maybe(fromJust)
 import Data.Sequence(fromList, update)
 import Data.Foldable (toList)
-import Control.Monad.Identity
+import Control.Monad.Trans.State.Lazy(StateT, put, get, runStateT)
 import Control.Monad.Trans.Reader(ReaderT, runReaderT, ask)
+import Control.Monad.IO.Class(liftIO)
 
 data Cellkind = Island | Water deriving (Eq, Show) --the kind of cell it is
 data NuriCell = NuriCell { locX::Int, locY::Int, size::Int, kind::Cellkind } deriving (Eq, Show) --complete description of a single cell on the board
-type BIslandList = [NuriCell] --list of islands that were originally given by the user as input
-type Nurikabe a = ReaderT BIslandList Identity a  --the monad stack that we will use to solve Nurikabe
+type AllIslands = [[[NuriCell]]] --list of all island possibilities for all user inputToDefault
+type Strategy   = [(Int,Int)]    -- Tuple list : First Int = the index of Island in AllIsland ; Second Int = Index of list to choose within the list of islands
+type Nurikabe a = ReaderT AllIslands (StateT Strategy IO) a  --the monad stack that we will use to solve Nurikabe
 
 --function to generate the board
 createNuriBoard :: [NuriCell] -> [NuriCell]
@@ -22,7 +24,7 @@ createNuriBoard board
          createNuriBoard (board ++ noRegionBoard)
 
 --function to update a board with the default nurikabe values
-setDefaultIslands :: [(Int, Int, Int)] -> [NuriCell] -> BIslandList
+setDefaultIslands :: [(Int, Int, Int)] -> [NuriCell] -> [NuriCell]
 setDefaultIslands [] rest = rest
 setDefaultIslands def@((a,b,c):ys) (cell@(NuriCell {locX=x, locY=y, size=z, kind=g}):xs)
  | a == x && b == y   = (NuriCell {locX=x, locY=y, size=c, kind=Island}) : setDefaultIslands ys xs
@@ -216,15 +218,10 @@ main = do
      baseislandlist = createBaseIslandList readyboard
      trueislandlist = prepNuri baseislandlist readyboard
      strategy = constructIslandStrategy trueislandlist
-     --ATTeMPT TO DEBUG
-     --islandcombination =  makeAllCellsIslands $ findNextIslandCombination trueislandlist strategy
-     --groundedboard     = setBoardPossibility readyboard (concat islandcombination)
-     --nooverlaps        = checkNoIslandOverlapOrAdj islandcombination readyboard
-     --nobadwater        = all (==False) (map (\cell -> doesWaterBlockExist cell groundedboard) groundedboard) in
      finalNurikabeSolution = checkNuri trueislandlist strategy readyboard in
      if finalNurikabeSolution == [] then putStrLn "There was No Nurikabe Solution Found! (Recheck your island...)"
      else do
-       putStrLn "!§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§"
-       putStrLn "!!!!!!!!!!!!!!!NURIKABE!!!!!!!!!!!!"
-       putStrLn "!§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§"
-       putStrLn (show (finalNurikabeSolution)++(show (length finalNurikabeSolution)))
+         putStrLn "!§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§"
+         putStrLn "!!!!!!!!!!!!!!!NURIKABE!!!!!!!!!!!!"
+         putStrLn "!§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§"
+         putStrLn (show (finalNurikabeSolution)++(show (length finalNurikabeSolution)))
