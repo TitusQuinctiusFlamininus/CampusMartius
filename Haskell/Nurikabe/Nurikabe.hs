@@ -172,11 +172,14 @@ findNextIslandStrategy strat =
          if checked == []
            then let (x,y) = last strat
                 in toList . update ((length strat)-1) (x,y+1) $ fromList strat
-           else let innocentindex = (head checked)-1
-                    (f,g) = strat!!innocentindex   --the one we can add one to
-                    (h,m) = strat!!(innocentindex+1) --the one whose limits have been reached and we need to reset to 0
-                    innocentadded = toList . update innocentindex (f,g+1) $ fromList strat in
-                    toList . update (innocentindex+1) (h,0) $ fromList innocentadded
+           else let rift = splitAt (head checked) strat
+                    sndfiltered = (map (\(a,b) -> if (a/=1) then (a,0) else (a,b)) (snd rift))
+                    fstfiltered@((k,q):ms) = filter (\(p,z) -> p/=1) (reverse (fst rift)) in
+                    if fstfiltered == []
+                    then (fst rift) ++ sndfiltered
+                    else (toList . update (length (fst rift) -1) (k,q+1) $ fromList (fst rift)) ++ sndfiltered
+
+
 
 
 prepNuri :: [NuriCell] -> [NuriCell] -> [[[NuriCell]]]
