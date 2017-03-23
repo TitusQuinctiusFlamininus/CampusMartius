@@ -164,12 +164,9 @@ findNextIslandCombination [] _ = []
 findNextIslandCombination (y:ys) ((a,b):cs) = (y!!b) : findNextIslandCombination ys cs
 
 findNextIslandStrategy :: [(Int, Int)] -> [(Int, Int)]
-findNextIslandStrategy strat@((a,b):(c,d):es)
- | length strat == 1                       =   [(-1,-1)] -- 1 elements in the list
- | ((b == a-1)  && (d == c-1) && es == []) =   [(-1,-1)]  --2 elements in the list
- | otherwise  =
-   let (v,w) = last es in
-     if ((b == a-1)  && (d == c-1) && (w == v-1))
+findNextIslandStrategy strat@((a,b):(c,d):es) =
+   let exhausted = all (==True) $ map (\(v,w) -> if w == v-1 then True else False) strat in
+     if exhausted
         then [(-1,-1)]
         else
          let checked = filter (/= -1) (map (\s@(x,y) -> if (y == x-1) then  fromJust(s `elemIndex` strat) else -1) strat) in
