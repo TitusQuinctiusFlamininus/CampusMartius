@@ -222,7 +222,7 @@ main = do
      --nooverlaps        = checkNoIslandOverlapOrAdj islandcombination readyboard
      --nobadwater        = all (==False) (map (\cell -> doesWaterBlockExist cell groundedboard) groundedboard) in
      finalNurikabeSolution = checkNuri trueislandlist strategy readyboard in
-     if finalNurikabeSolution == [] then putStrLn "There was No Nurikabe Solution Found!"
+     if finalNurikabeSolution == [] then putStrLn "There was No Nurikabe Solution Found! (Recheck your island...)"
      else do
        putStrLn "!§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§"
        putStrLn "!!!!!!!!!!!!!!!NURIKABE!!!!!!!!!!!!"
