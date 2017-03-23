@@ -169,7 +169,7 @@ findNextIslandStrategy strat =
      if exhausted
         then [(-1,-1)]
         else
-         let checked = filter (/= -1) (map (\s@(x,y) -> if (y == x-1) then  fromJust(s `elemIndex` strat) else -1) strat) in
+         let checked = filter (/= -1) (map (\s@(x,y) -> if ((y == x-1) && (head strat /= s)) then  fromJust(s `elemIndex` strat) else -1) strat) in
          if checked == []
            then let (x,y) = last strat
                 in toList . update ((length strat)-1) (x,y+1) $ fromList strat
