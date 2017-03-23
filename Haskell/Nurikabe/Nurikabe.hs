@@ -164,7 +164,7 @@ findNextIslandCombination [] _ = []
 findNextIslandCombination (y:ys) ((a,b):cs) = (y!!b) : findNextIslandCombination ys cs
 
 findNextIslandStrategy :: [(Int, Int)] -> [(Int, Int)]
-findNextIslandStrategy strat@((a,b):(c,d):es) =
+findNextIslandStrategy strat =
    let exhausted = all (==True) $ map (\(v,w) -> if w == v-1 then True else False) strat in
      if exhausted
         then [(-1,-1)]
