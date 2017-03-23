@@ -140,7 +140,7 @@ doesWaterBlockExist cell@NuriCell{locX=x, locY=y, size=_, kind=k} brd =
 --Arg 1 = the board
 --Arg 2 = the list of island cells that will be set into the board
 setBoardPossibility :: [NuriCell] -> [NuriCell] -> [NuriCell]
-setBoardPossibility _ []  = []
+setBoardPossibility brd []  = brd
 setBoardPossibility brd (rel@NuriCell{locX=a, locY=b, size=_, kind=Island}:is) =
       let newbrd = map (\brdcell@NuriCell{locX=x, locY=y, size=_, kind=_} ->  if (a==x && b==y) then rel else brdcell  ) brd
       in setBoardPossibility newbrd is
@@ -214,5 +214,10 @@ main = do
      baseislandlist = createBaseIslandList readyboard
      trueislandlist = prepNuri baseislandlist readyboard
      strategy = constructIslandStrategy trueislandlist
+     --ATTeMPT TO DEBUG
+     --islandcombination =  makeAllCellsIslands $ findNextIslandCombination trueislandlist strategy
+     --groundedboard     = setBoardPossibility readyboard (concat islandcombination)
+     --nooverlaps        = checkNoIslandOverlapOrAdj islandcombination readyboard
+     --nobadwater        = all (==False) (map (\cell -> doesWaterBlockExist cell groundedboard) groundedboard) in
      finalNurikabeSolution = checkNuri trueislandlist strategy readyboard in
      putStrLn (show (finalNurikabeSolution)++(show (length finalNurikabeSolution)))
