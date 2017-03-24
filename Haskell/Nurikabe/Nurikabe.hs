@@ -200,7 +200,7 @@ checkNuri = do
           nooverlaps                 = checkNoIslandOverlapOrAdj islandcombination readyboard
           nobadwater                 = all (==False) (map (\cell -> doesWaterBlockExist cell groundedboard) groundedboard) in
           do
-            liftIO $ putStrLn ("islandcombination: "++show (islandcombination))
+            --liftIO $ putStrLn ("islandcombination: "++show (islandcombination))
             liftIO $ putStrLn ("nooverlaps: "++show (nooverlaps))
             liftIO $ putStrLn ("nobadwater: "++show (nobadwater))
             if (nooverlaps && nobadwater)
@@ -215,8 +215,8 @@ checkNuri = do
                 lift $ lift $ put (strategy,groundedboard,nurilog)
                 return [] --NO SOLUTION FOUND
               else do
-              liftIO $ putStrLn "Heading for another round..."
-              liftIO $ putStrLn ("The last Strategy that did NOT work is "++show (strategy))
+              --liftIO $ putStrLn "Heading for another round..."
+              --liftIO $ putStrLn ("The last Strategy that did NOT work is "++show (strategy))
               lift $ lift $ put (nexstrat,readyboard,nurilog)
               checkNuri
 
