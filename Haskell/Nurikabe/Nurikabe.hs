@@ -169,20 +169,16 @@ findNextIslandCombination (y:ys) ((_,b):cs) = (y!!b) : findNextIslandCombination
 
 findNextIslandStrategy :: [(Int, Int)] -> [(Int, Int)]
 findNextIslandStrategy strat =
-   let exhausted = all (==True) $ map (\(v,w) -> if w == v-1 then True else False) strat in
-     if exhausted
-        then [(-1,-1)]
-        else
-         let checked = [fromJust ((head $ filter (\(t1,_) -> t1/=1) (reverse strat)) `elemIndex` strat )] in
-         if checked == []
-           then let (x,y) = last strat
-                in toList . update ((length strat)-1) (x,y+1) $ fromList strat
-           else let rift = splitAt (head checked) strat
-                    sndfiltered = (map (\(a,b) -> if (a/=1) then (a,0) else (a,b)) (snd rift))
-                    fstfiltered@((k,q):_) = filter (\(p,_) -> p/=1) (reverse (fst rift)) in
-                    if fstfiltered == [] then (fst rift) ++ sndfiltered
-                    else let fstindex = fromJust ((k,q) `elemIndex` (fst rift)) in
-                      (toList . update fstindex (k,q+1) $ fromList (fst rift)) ++ sndfiltered
+  let revlist = (reverse strat)
+      workablelist = filter (\(a,b) -> (a/=1) && (b /= a-1)) revlist in
+      if workablelist == [] then [(-1,-1)]
+      else let workableindex = fromJust $ (head $ workablelist) `elemIndex` revlist
+               rift = splitAt workableindex revlist
+               newfst = map (\(e,f) -> if e/=1 then (e,0) else (e,f)) (fst rift)
+               (g,h) = head $ snd rift
+               newsnd = (g,h+1) : tail (snd rift) in
+                reverse (newfst++newsnd)
+
 
 
 
