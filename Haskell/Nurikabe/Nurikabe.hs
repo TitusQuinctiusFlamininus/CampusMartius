@@ -129,11 +129,11 @@ checkNoIslandOverlapOrAdj ((a:as):bs) brd=
 --Arg 1 = The cell in question
 --Arg 2 = The entire Nuri board
 doesWaterBlockExist :: NuriCell -> [NuriCell] -> Bool
-doesWaterBlockExist cell@NuriCell{locX=x, locY=y, size=_, kind=k} brd =
-  let posscells = [[cell, NuriCell{locX=x+1, locY=y, size=0, kind=k}, NuriCell{locX=x, locY=y-1, size=0, kind=k},NuriCell{locX=x+1, locY=y-1, size=0, kind=k}],
-                   [cell, NuriCell{locX=x-1, locY=y, size=0, kind=k}, NuriCell{locX=x, locY=y-1, size=0, kind=k},NuriCell{locX=x-1, locY=y-1, size=0, kind=k}],
-                   [cell, NuriCell{locX=x-1, locY=y, size=0, kind=k}, NuriCell{locX=x, locY=y+1, size=0, kind=k},NuriCell{locX=x-1, locY=y+1, size=0, kind=k}],
-                   [cell, NuriCell{locX=x+1, locY=y, size=0, kind=k}, NuriCell{locX=x, locY=y+1, size=0, kind=k},NuriCell{locX=x+1, locY=y+1, size=0, kind=k}]]
+doesWaterBlockExist cell@NuriCell{locX=x, locY=y, size=_, kind=Water} brd =
+  let posscells = [[cell, NuriCell{locX=x+1, locY=y, size=0, kind=Water}, NuriCell{locX=x, locY=y-1, size=0, kind=Water},NuriCell{locX=x+1, locY=y-1, size=0, kind=Water}],
+                   [cell, NuriCell{locX=x-1, locY=y, size=0, kind=Water}, NuriCell{locX=x, locY=y-1, size=0, kind=Water},NuriCell{locX=x-1, locY=y-1, size=0, kind=Water}],
+                   [cell, NuriCell{locX=x-1, locY=y, size=0, kind=Water}, NuriCell{locX=x, locY=y+1, size=0, kind=Water},NuriCell{locX=x-1, locY=y+1, size=0, kind=Water}],
+                   [cell, NuriCell{locX=x+1, locY=y, size=0, kind=Water}, NuriCell{locX=x, locY=y+1, size=0, kind=Water},NuriCell{locX=x+1, locY=y+1, size=0, kind=Water}]]
       indvtruths = map (\poss -> map (\p -> p `elem` brd) poss) posscells in
       any (==True) $ map (\tlist -> all (==True) tlist) indvtruths
 
@@ -198,7 +198,7 @@ checkNuri = do
       let islandcombination          =  makeAllCellsIslands $ findNextIslandCombination trueislandlist strategy
           groundedboard              = setBoardPossibility readyboard (concat islandcombination)
           nooverlaps                 = checkNoIslandOverlapOrAdj islandcombination readyboard
-          nobadwater                 = all (==False) (map (\cell -> doesWaterBlockExist cell groundedboard) groundedboard) in
+          nobadwater                 = all (==False) (map (\cell -> doesWaterBlockExist cell groundedboard) (filter (\f -> kind f == Water) groundedboard)) in
           do
             --liftIO $ putStrLn ("islandcombination: "++show (islandcombination))
             liftIO $ putStrLn ("nooverlaps: "++show (nooverlaps))
