@@ -2,10 +2,7 @@
 import Data.Char
 import Data.List
 import Data.Maybe(fromJust)
-import Data.Sequence(fromList, update)
-import Data.Foldable (toList)
 import Control.Monad.Trans.State.Lazy(StateT, put, get, execStateT)
-import Control.Monad.Trans.Writer.Lazy(WriterT, tell, runWriterT)
 import Control.Monad.Trans.Reader(ReaderT, runReaderT, ask)
 import Control.Monad.Trans.Class(lift)
 import Control.Monad.IO.Class(liftIO)
@@ -14,10 +11,9 @@ data Cellkind = Island | Water deriving (Eq, Show) --the kind of cell it is
 data NuriCell = NuriCell { locX::Int, locY::Int, size::Int, kind::Cellkind } deriving (Eq, Show) --complete description of a single cell on the board
 type AllIslands = [[[NuriCell]]] --list of all island possibilities for all user inputToDefault
 type Strategy   = [(Int,Int)]    -- Tuple list : First Int = the index of Island in AllIsland ; Second Int = Index of list to choose within the list of islands
-type Log        = [String]
-type Nurikabe a = WriterT Log (ReaderT AllIslands (StateT (Strategy,[NuriCell],Log) IO)) a  --the monad stack that we will use to solve Nurikabe
+type Nurikabe a = ReaderT AllIslands (StateT (Strategy,[NuriCell]) IO) a  --the monad stack that we will use to solve Nurikabe
 
---function to generate the board
+--function to generate a Nurikabe 9x9 board full of Water cells
 createNuriBoard :: [NuriCell] -> [NuriCell]
 createNuriBoard board
  | length board == 81     = board
@@ -87,6 +83,7 @@ cleanGroupedUniverses baselist grpUnis =
   let cleaned = nub $ map(\b -> filter (\grp -> b `elem` grp ) (concat grpUnis)) baselist
       in map (\c -> filter (\m -> (m /= []) ) c ) cleaned
 
+--Given a cell, and a board, i can tell what cells are my rightful neighbours
 findNeighours :: NuriCell -> [NuriCell] -> [NuriCell]
 findNeighours cell brd =
   let fwd = (locX cell)+1
@@ -111,7 +108,7 @@ findAllBridges poss brd =
   in filter (/= [[]]) bridges
 
 -- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---FUNCTIONS FOR FINAL VERIFICATION OF ISLAND COMBINATIONS
+                  --FUNCTIONS FOR FINAL VERIFICATION OF ISLAND COMBINATIONS
 -- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 --Function to check that Islands Dont Overlap and that there are no islands adjacent to each other (even though diagonal nearness is ok)
 --Arg 1 = Each list represents a DIFFERENT ISLAND, so this list is, for example, all the first lists of each [[[NuriCell]]]
@@ -138,7 +135,7 @@ doesWaterBlockExist cell@NuriCell{locX=x, locY=y, size=_, kind=Water} brd =
       any (==True) $ map (\tlist -> all (==True) tlist) indvtruths
 
 -- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---ACTUAL SOLVE
+                                        --ACTUAL SOLVE
 -- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 --Function to give a board representation just before we check if the board is a nurikabe solution.
 --The islands have been provided as a list and everything else should be already water
@@ -167,6 +164,7 @@ findNextIslandCombination :: [[[NuriCell]]] -> [(Int, Int)] -> [[NuriCell]]
 findNextIslandCombination [] [] = []
 findNextIslandCombination (y:ys) ((_,b):cs) = (y!!b) : findNextIslandCombination ys cs
 
+--function to find the next index to use to pick out an island from a group of possibilities
 findNextIslandStrategy :: [(Int, Int)] -> [(Int, Int)]
 findNextIslandStrategy strat =
   let revlist = (reverse strat)
@@ -179,10 +177,6 @@ findNextIslandStrategy strat =
                newsnd = (g,h+1) : tail (snd rift) in
                 reverse (newfst++newsnd)
 
-
-
-
-
 prepNuri :: [NuriCell] -> [NuriCell] -> [[[NuriCell]]]
 prepNuri baseislandlist readyboard =
   let gathereduniverses = gatherAllUniverses baseislandlist readyboard
@@ -192,41 +186,29 @@ prepNuri baseislandlist readyboard =
 
 checkNuri :: Nurikabe [NuriCell]
 checkNuri = do
-      trueislandlist                 <-  lift $ ask
-      (strategy,readyboard,nurilog)  <-  lift $ lift $ get
+      trueislandlist         <-  ask
+      (strategy,readyboard)  <-  lift $ get
       liftIO $ putStrLn  ("Will Use Strategy: "++show (strategy))
-      let islandcombination          =  makeAllCellsIslands $ findNextIslandCombination trueislandlist strategy
-          groundedboard              = setBoardPossibility readyboard (concat islandcombination)
-          nooverlaps                 = checkNoIslandOverlapOrAdj islandcombination readyboard
-          nobadwater                 = all (==False) (map (\cell -> doesWaterBlockExist cell groundedboard) (filter (\f -> kind f == Water) groundedboard)) in
+      let islandcombination   =  makeAllCellsIslands $ findNextIslandCombination trueislandlist strategy
+          groundedboard        = setBoardPossibility readyboard (concat islandcombination)
+          nooverlaps          = checkNoIslandOverlapOrAdj islandcombination readyboard
+          nobadwater          = all (==False) (map (\cell -> doesWaterBlockExist cell groundedboard) (filter (\f -> kind f == Water) groundedboard)) in
           do
-            --liftIO $ putStrLn ("islandcombination: "++show (islandcombination))
             liftIO $ putStrLn ("nooverlaps: "++show (nooverlaps))
             liftIO $ putStrLn ("nobadwater: "++show (nobadwater))
             if (nooverlaps && nobadwater)
             then  do
                   liftIO $ putStrLn "We found a solution! Returning it...."
-                  lift $ lift $ put (strategy,groundedboard,nurilog)
+                  lift $ put (strategy,groundedboard)
                   return groundedboard
             else let nexstrat = findNextIslandStrategy strategy in
               if [(-1,-1)] == nexstrat
               then do
-                tell ["We found no Nurikabe solution"]
-                lift $ lift $ put (strategy,groundedboard,nurilog)
+                lift $ put (strategy,groundedboard)
                 return [] --NO SOLUTION FOUND
               else do
-              --liftIO $ putStrLn "Heading for another round..."
-              --liftIO $ putStrLn ("The last Strategy that did NOT work is "++show (strategy))
-              lift $ lift $ put (nexstrat,readyboard,nurilog)
+              lift $ put (nexstrat,readyboard)
               checkNuri
-
---just display the log of what has been going on so far when solving Nurikabe
-displayTheLog :: Log -> IO()
-displayTheLog thelog = sequence_ $  map (putStrLn) thelog
-
---just display the  of what has been going on so far when solving Nurikabe
-displayTheStrategy :: Strategy -> IO()
-displayTheStrategy thestrat =   putStrLn (show thestrat)
 
 main :: IO ()
 main = do
@@ -245,10 +227,8 @@ main = do
      trueislandlist = prepNuri baseislandlist readyboard
      strategy = constructIslandStrategy trueislandlist in
      do
-     (finalstrat,finalNurikabeSolution,nurilog) <- execStateT (runReaderT (runWriterT checkNuri) trueislandlist) (strategy,readyboard,[])
-     displayTheLog nurilog
-     displayTheStrategy finalstrat
-     if finalNurikabeSolution == [] then putStrLn "There was No Nurikabe Solution Found! (Recheck your island...)"
+     (finalstrat,finalNurikabeSolution) <- execStateT (runReaderT checkNuri trueislandlist) (strategy,readyboard)
+     if finalNurikabeSolution == [] then putStrLn "There was No Nurikabe Solution Found! (Recheck your islands...)"
      else do
          putStrLn "!§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§"
          putStrLn "!!!!!!!!!!!!!!!NURIKABE!!!!!!!!!!!!"
