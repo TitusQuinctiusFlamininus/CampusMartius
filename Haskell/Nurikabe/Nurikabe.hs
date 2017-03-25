@@ -204,7 +204,7 @@ checkNuri = do
             else let nexstrat = findNextIslandStrategy strategy in
               if [(-1,-1)] == nexstrat
               then do
-                lift $ put (strategy,groundedboard)
+                lift $ put (strategy,[])
                 return [] --NO SOLUTION FOUND
               else do
               lift $ put (nexstrat,readyboard)
