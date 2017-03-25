@@ -105,7 +105,7 @@ checkIfNeighboursBelong (p:ps) brd = let neighbours = findNeighours p brd in
 findAllBridges :: [[[NuriCell]]] -> [NuriCell] -> [[[NuriCell]]]
 findAllBridges poss brd =
   let bridges = map (\w -> filter (\x -> all (==True) (checkIfNeighboursBelong x brd)) w )  poss
-  in filter (/= [[]]) bridges
+  in filter (/= []) $ filter (/= [[]]) bridges
 
 -- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                   --FUNCTIONS FOR FINAL VERIFICATION OF ISLAND COMBINATIONS
@@ -151,7 +151,7 @@ setBoardPossibility brd (rel@NuriCell{locX=a, locY=b, size=_, kind=Island}:is) =
 --(X,Y) where X is the number of island possibilities for one cell and Y is the current index of island combination we are using
 constructIslandStrategy :: [[[NuriCell]]] -> [(Int, Int)]
 constructIslandStrategy [] = []
-constructIslandStrategy (y:ys) = ((length y), 0) : constructIslandStrategy ys
+constructIslandStrategy (y:ys) = if length y == 0 then constructIslandStrategy ys else ((length y), 0) : constructIslandStrategy ys
 
 --we need to set the type of the cell combinations as islands before we put them in the board as its cells
 makeAllCellsIslands :: [[NuriCell]] -> [[NuriCell]]
@@ -227,9 +227,9 @@ main = do
      trueislandlist = prepNuri baseislandlist readyboard
      strategy = constructIslandStrategy trueislandlist in
      do
-     (finalstrat,finalNurikabeSolution) <- execStateT (runReaderT checkNuri trueislandlist) (strategy,readyboard)
-     if finalNurikabeSolution == [] then putStrLn "There was No Nurikabe Solution Found! (Recheck your islands...)"
-     else do
+      (finalstrat,finalNurikabeSolution) <- execStateT (runReaderT checkNuri trueislandlist) (strategy,readyboard)
+      if finalNurikabeSolution == [] then putStrLn "There was No Nurikabe Solution Found! (Recheck your islands...)"
+      else do
          putStrLn "!§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§"
          putStrLn "!!!!!!!!!!!!!!!NURIKABE!!!!!!!!!!!!"
          putStrLn "!§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§"
