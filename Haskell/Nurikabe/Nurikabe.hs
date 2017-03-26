@@ -186,7 +186,7 @@ prepNuri baseislandlist readyboard =
       cleaneduniverses = cleanGroupedUniverses baseislandlist groupeduniverses
       in findAllBridges cleaneduniverses readyboard --finally all possible bridges
 
-checkNuri :: Nurikabe Nuriboard
+checkNuri :: Nurikabe ()
 checkNuri = do
       trueislandlist         <-  ask
       (strategy,readyboard)  <-  lift $ get
@@ -199,15 +199,10 @@ checkNuri = do
             liftIO $ putStrLn ("nooverlaps: "++show (nooverlaps))
             liftIO $ putStrLn ("nobadwater: "++show (nobadwater))
             if (nooverlaps && nobadwater)
-            then  do
-                  liftIO $ putStrLn "We found a solution! Returning it...."
-                  lift $ put (strategy,groundedboard)
-                  return groundedboard
+            then do lift $ put (strategy,groundedboard)
             else let nexstrat = findNextIslandStrategy strategy in
               if [(-1,-1)] == nexstrat
-              then do
-                lift $ put (strategy,[])
-                return [] --NO SOLUTION FOUND
+              then do  (lift $ put (strategy,[]))
               else do
               lift $ put (nexstrat,readyboard)
               checkNuri
@@ -233,6 +228,6 @@ main = do
       if finalNurikabeSolution == [] then putStrLn "There was No Nurikabe Solution Found! (Recheck your islands...)"
       else do
          putStrLn "!§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§"
-         putStrLn "!!!!!!!!!!!!!!!NURIKABE!!!!!!!!!!!!"
+         putStrLn "!! WE FOUND A NURIKABE SOLUTION!!! "
          putStrLn "!§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§"
          putStrLn (show (finalNurikabeSolution)++(show (length finalNurikabeSolution)))
