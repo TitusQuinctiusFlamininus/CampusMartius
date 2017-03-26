@@ -190,12 +190,12 @@ checkNuri :: Nurikabe ()
 checkNuri = do
       trueislandlist         <-  ask
       (strategy,readyboard)  <-  lift $ get
-      liftIO $ putStrLn  ("Will Use Strategy: "++show (strategy))
       let islandcombination   =  makeAllCellsIslands $ findNextIslandCombination trueislandlist strategy
           groundedboard        = setBoardPossibility readyboard (concat islandcombination)
           nooverlaps          = checkNoIslandOverlapOrAdj islandcombination readyboard
           nobadwater          = all (==False) (map (\cell -> doesWaterBlockExist cell groundedboard) (filter (\f -> kind f == Water) groundedboard)) in
           do
+            liftIO $ putStrLn ("strategy: "++show (strategy))
             liftIO $ putStrLn ("nooverlaps: "++show (nooverlaps))
             liftIO $ putStrLn ("nobadwater: "++show (nobadwater))
             if (nooverlaps && nobadwater)
