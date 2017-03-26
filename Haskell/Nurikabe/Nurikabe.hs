@@ -11,10 +11,12 @@ data Cellkind = Island | Water deriving (Eq, Show) --the kind of cell it is
 data NuriCell = NuriCell { locX::Int, locY::Int, size::Int, kind::Cellkind } deriving (Eq, Show) --complete description of a single cell on the board
 type AllIslands = [[[NuriCell]]] --list of all island possibilities for all user inputToDefault
 type Strategy   = [(Int,Int)]    -- Tuple list : First Int = the index of Island in AllIsland ; Second Int = Index of list to choose within the list of islands
+type Nuriboard  = [NuriCell]     -- a typical Nurikabe board
+type BaseIslandList = [NuriCell] -- Just a list of Nuricells that the user set as default
 type Nurikabe a = ReaderT AllIslands (StateT (Strategy,[NuriCell]) IO) a  --the monad stack that we will use to solve Nurikabe
 
 --function to generate a Nurikabe 9x9 board full of Water cells
-createNuriBoard :: [NuriCell] -> [NuriCell]
+createNuriBoard :: Nuriboard -> Nuriboard
 createNuriBoard board
  | length board == 81     = board
  | otherwise                =
@@ -23,7 +25,7 @@ createNuriBoard board
          createNuriBoard (board ++ noRegionBoard)
 
 --function to update a board with the default nurikabe values
-setDefaultIslands :: [(Int, Int, Int)] -> [NuriCell] -> [NuriCell]
+setDefaultIslands :: [(Int, Int, Int)] -> Nuriboard -> Nuriboard
 setDefaultIslands [] rest = rest
 setDefaultIslands def@((a,b,c):ys) (cell@(NuriCell {locX=x, locY=y, size=z, kind=g}):xs)
  | a == x && b == y   = (NuriCell {locX=x, locY=y, size=c, kind=Island}) : setDefaultIslands ys xs
@@ -39,12 +41,12 @@ inputToDefault (x:y:z:xs)
  | otherwise = ((digitToInt x),(digitToInt y),(digitToInt z)) : inputToDefault xs
 
 --function that yields a list of all Nuricells that have a default value
-createBaseIslandList :: [NuriCell] -> [NuriCell]
+createBaseIslandList :: Nuriboard -> BaseIslandList
 createBaseIslandList  = filter (\NuriCell{locX=_, locY=_, size=r, kind=_} -> r > 0)
 
 --function to give a list of all cells in its vicinity that could qualify as a part of an island formed when the given cell is one of the island cells
 -- A cell, the Nuriboard and how many cells the island will be composed of
-findCellUniverse :: NuriCell -> [NuriCell] -> Int -> [NuriCell]
+findCellUniverse :: NuriCell -> Nuriboard -> Int -> [NuriCell]
 findCellUniverse _ _ 0 = []
 findCellUniverse cell@NuriCell{locX=x, locY=y, size=s, kind=_} brd n =
  let maxdist = n-1 in
@@ -63,20 +65,20 @@ groupPoss n xs =   do
                     return (y:ys)
 
 --function to give the list of all lists of possibilities cells that could be islands
-gatherAllUniverses :: [NuriCell] -> [NuriCell] -> [[NuriCell]]
+gatherAllUniverses :: [NuriCell] -> Nuriboard -> [[NuriCell]]
 gatherAllUniverses [] _  =  [[]]
 gatherAllUniverses (b@NuriCell{locX=_, locY=_, size=s, kind=_}:bs) brd =
   let gathered = findCellUniverse b brd s : gatherAllUniverses bs brd in
   filter (\f -> f /= []) gathered
 
 --function to group all the cell into universes, using the baselist as data
-groupAllUniverses :: [NuriCell] -> [[NuriCell]] -> [[[NuriCell]]]
+groupAllUniverses :: [NuriCell] -> [[NuriCell]] -> AllIslands
 groupAllUniverses [] _ = [[[]]]
 groupAllUniverses  (NuriCell{locX=_, locY=_, size=s, kind=_}:bs) (x:xs) = let grouped = groupPoss s x : groupAllUniverses bs xs
        in filter (\f -> f /= [[]]) grouped
 
 --function to remove any lists that are empty in the list of lists
-cleanGroupedUniverses :: [NuriCell] -> [[[NuriCell]]] -> [[[NuriCell]]]
+cleanGroupedUniverses :: BaseIslandList -> AllIslands -> AllIslands
 cleanGroupedUniverses _ ([]) = [[[]]]
 cleanGroupedUniverses baselist ((b:[]):as) = [[b]] ++ cleanGroupedUniverses baselist as
 cleanGroupedUniverses baselist grpUnis =
@@ -84,7 +86,7 @@ cleanGroupedUniverses baselist grpUnis =
       in map (\c -> filter (\m -> (m /= []) ) c ) cleaned
 
 --Given a cell, and a board, i can tell what cells are my rightful neighbours
-findNeighours :: NuriCell -> [NuriCell] -> [NuriCell]
+findNeighours :: NuriCell -> Nuriboard -> [NuriCell]
 findNeighours cell brd =
   let fwd = (locX cell)+1
       bck = (locX cell)-1
@@ -94,7 +96,7 @@ findNeighours cell brd =
             ) brd
 
 --function that take a supposed island set of cell and a board (with default values) and sees if that combination is a real island or not
-checkIfNeighboursBelong :: [NuriCell] -> [NuriCell] -> [Bool]
+checkIfNeighboursBelong :: [NuriCell] -> Nuriboard -> [Bool]
 checkIfNeighboursBelong [] _ = [True]
 checkIfNeighboursBelong (x:[]) _ = [True]
 checkIfNeighboursBelong (p:ps) brd = let neighbours = findNeighours p brd in
@@ -102,7 +104,7 @@ checkIfNeighboursBelong (p:ps) brd = let neighbours = findNeighours p brd in
 
 
 --Function to get all the possible wide range of bridges and narrow it down to the the list that could only be real bridges
-findAllBridges :: [[[NuriCell]]] -> [NuriCell] -> [[[NuriCell]]]
+findAllBridges :: AllIslands -> Nuriboard -> AllIslands
 findAllBridges poss brd =
   let bridges = map (\w -> filter (\x -> all (==True) (checkIfNeighboursBelong x brd)) w )  poss
   in filter (/= []) $ filter (/= [[]]) bridges
@@ -113,7 +115,7 @@ findAllBridges poss brd =
 --Function to check that Islands Dont Overlap and that there are no islands adjacent to each other (even though diagonal nearness is ok)
 --Arg 1 = Each list represents a DIFFERENT ISLAND, so this list is, for example, all the first lists of each [[[NuriCell]]]
 --When all individual checks are True, then we will have a result of TRUE (since we are ANDing && many true results)
-checkNoIslandOverlapOrAdj :: [[NuriCell]] -> [NuriCell] -> Bool
+checkNoIslandOverlapOrAdj :: [[NuriCell]] -> Nuriboard -> Bool
 checkNoIslandOverlapOrAdj ([]:_) _ = True
 checkNoIslandOverlapOrAdj (_:[]) _  = True
 checkNoIslandOverlapOrAdj ((a:as):bs) brd=
@@ -125,7 +127,7 @@ checkNoIslandOverlapOrAdj ((a:as):bs) brd=
 --function to find a square block of cells given a single cell
 --Arg 1 = The cell in question
 --Arg 2 = The entire Nuri board
-doesWaterBlockExist :: NuriCell -> [NuriCell] -> Bool
+doesWaterBlockExist :: NuriCell -> Nuriboard -> Bool
 doesWaterBlockExist cell@NuriCell{locX=x, locY=y, size=_, kind=Water} brd =
   let posscells = [[cell, NuriCell{locX=x+1, locY=y, size=0, kind=Water}, NuriCell{locX=x, locY=y-1, size=0, kind=Water},NuriCell{locX=x+1, locY=y-1, size=0, kind=Water}],
                    [cell, NuriCell{locX=x-1, locY=y, size=0, kind=Water}, NuriCell{locX=x, locY=y-1, size=0, kind=Water},NuriCell{locX=x-1, locY=y-1, size=0, kind=Water}],
@@ -141,7 +143,7 @@ doesWaterBlockExist cell@NuriCell{locX=x, locY=y, size=_, kind=Water} brd =
 --The islands have been provided as a list and everything else should be already water
 --Arg 1 = the board
 --Arg 2 = the list of island cells that will be set into the board
-setBoardPossibility :: [NuriCell] -> [NuriCell] -> [NuriCell]
+setBoardPossibility :: Nuriboard -> [NuriCell] -> Nuriboard
 setBoardPossibility brd []  = brd
 setBoardPossibility brd (rel@NuriCell{locX=a, locY=b, size=_, kind=Island}:is) =
       let newbrd = map (\brdcell@NuriCell{locX=x, locY=y, size=_, kind=_} ->  if (a==x && b==y) then rel else brdcell  ) brd
@@ -149,7 +151,7 @@ setBoardPossibility brd (rel@NuriCell{locX=a, locY=b, size=_, kind=Island}:is) =
 
 --function to construct a list of tuples that represent how we will grab and check through the island possibilities
 --(X,Y) where X is the number of island possibilities for one cell and Y is the current index of island combination we are using
-constructIslandStrategy :: [[[NuriCell]]] -> [(Int, Int)]
+constructIslandStrategy :: AllIslands -> Strategy
 constructIslandStrategy [] = []
 constructIslandStrategy (y:ys) = if length y == 0 then constructIslandStrategy ys else ((length y), 0) : constructIslandStrategy ys
 
@@ -160,12 +162,12 @@ makeAllCellsIslands islandposs = map (\igl ->
 
 --will take a strategy, and a bunch of possibilities and fetch the next list of island cell possibilities
 --the output of this function will be fed to the "setBoardPossibility" function to set the actual islands into the board
-findNextIslandCombination :: [[[NuriCell]]] -> [(Int, Int)] -> [[NuriCell]]
+findNextIslandCombination :: AllIslands -> Strategy -> [[NuriCell]]
 findNextIslandCombination [] [] = []
 findNextIslandCombination (y:ys) ((_,b):cs) = (y!!b) : findNextIslandCombination ys cs
 
 --function to find the next index to use to pick out an island from a group of possibilities
-findNextIslandStrategy :: [(Int, Int)] -> [(Int, Int)]
+findNextIslandStrategy :: Strategy -> Strategy
 findNextIslandStrategy strat =
   let revlist = (reverse strat)
       workablelist = filter (\(a,b) -> (a/=1) && (b /= a-1)) revlist in
@@ -177,14 +179,14 @@ findNextIslandStrategy strat =
                newsnd = (g,h+1) : tail (snd rift) in
                 reverse (newfst++newsnd)
 
-prepNuri :: [NuriCell] -> [NuriCell] -> [[[NuriCell]]]
+prepNuri :: BaseIslandList -> Nuriboard -> AllIslands
 prepNuri baseislandlist readyboard =
   let gathereduniverses = gatherAllUniverses baseislandlist readyboard
       groupeduniverses = groupAllUniverses baseislandlist gathereduniverses
       cleaneduniverses = cleanGroupedUniverses baseislandlist groupeduniverses
       in findAllBridges cleaneduniverses readyboard --finally all possible bridges
 
-checkNuri :: Nurikabe [NuriCell]
+checkNuri :: Nurikabe Nuriboard
 checkNuri = do
       trueislandlist         <-  ask
       (strategy,readyboard)  <-  lift $ get
