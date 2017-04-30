@@ -153,7 +153,7 @@ setBoardPossibility brd (rel@NuriCell{locX=a, locY=b, size=_, kind=Island}:is) =
 --(X,Y) where X is the number of island possibilities for one cell and Y is the current index of island combination we are using
 constructIslandStrategy :: AllIslands -> Strategy
 constructIslandStrategy [] = []
-constructIslandStrategy (y:ys) = if length y == 0 then constructIslandStrategy ys else ((length y), 0) : constructIslandStrategy ys
+constructIslandStrategy (y:ys) = if null y then constructIslandStrategy ys else ((length y), 0) : constructIslandStrategy ys
 
 --we need to set the type of the cell combinations as islands before we put them in the board as its cells
 makeAllCellsIslands :: [[NuriCell]] -> [[NuriCell]]
