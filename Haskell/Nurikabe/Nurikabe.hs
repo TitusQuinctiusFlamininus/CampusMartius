@@ -19,10 +19,9 @@ type Nurikabe a     =     ReaderT AllIslands (StateT (Strategy,[NuriCell]) IO) a
 createNuriBoard :: Nuriboard -> Nuriboard
 createNuriBoard board
  | length board == 81       = board
- | otherwise                =
-     let y                  = if (null board) then 1 else ((length board) `div` 9)+1
-         noRegionBoard      = map (\x -> NuriCell {locX = x, locY=y, size=0, kind=Water}) [1..9] in
-         createNuriBoard (board ++ noRegionBoard)
+ | otherwise                = let y                  = if (null board) then 1 else ((length board) `div` 9)+1
+                                  noRegionBoard      = map (\x -> NuriCell {locX = x, locY=y, size=0, kind=Water}) [1..9] in
+                                  createNuriBoard (board ++ noRegionBoard)
 
 --function to update a board with the default nurikabe values
 setDefaultIslands :: [(Int, Int, Int)] -> Nuriboard -> Nuriboard
@@ -88,12 +87,14 @@ cleanGroupedUniverses baselist grpUnis =
 --Given a cell, and a board, i can tell what cells are my rightful neighbours
 findNeighours :: NuriCell -> Nuriboard -> [NuriCell]
 findNeighours cell brd =
-  let fwd = (locX cell)+1
-      bck = (locX cell)-1
-      up = (locY cell)+1
-      dwn = (locY cell)-1
-  in filter (\can -> ((locX can == fwd) && (locY can == locY cell)) || ((locX can == bck) && (locY can == locY cell)) || ((locX can == locX cell) && (locY can == up)) || ((locX can == locX cell) && (locY can == dwn))
-            ) brd
+  let fwd    = (locX cell)+1
+      bck    = (locX cell)-1
+      up     = (locY cell)+1
+      dwn    = (locY cell)-1
+  in filter (\can -> ((locX can == fwd) && (locY can == locY cell)) ||
+                     ((locX can == bck) && (locY can == locY cell)) ||
+                     ((locX can == locX cell) && (locY can == up))  ||
+                     ((locX can == locX cell) && (locY can == dwn))) brd
 
 --function that take a supposed island set of cell and a board (with default values) and sees if that combination is a real island or not
 checkIfNeighboursBelong :: [NuriCell] -> Nuriboard -> [Bool]
