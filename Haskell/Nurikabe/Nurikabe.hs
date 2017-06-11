@@ -97,10 +97,9 @@ findNeighours cell brd =
 
 --function that take a supposed island set of cell and a board (with default values) and sees if that combination is a real island or not
 checkIfNeighboursBelong :: [NuriCell] -> Nuriboard -> [Bool]
-checkIfNeighboursBelong [] _ = [True]
-checkIfNeighboursBelong (x:[]) _ = [True]
-checkIfNeighboursBelong (p:ps) brd = let neighbours = findNeighours p brd in
-      any (==True) (map (\g -> g `elem` neighbours) ps) : checkIfNeighboursBelong ps brd
+checkIfNeighboursBelong [] _       = [True]
+checkIfNeighboursBelong (x:[]) _   = [True]
+checkIfNeighboursBelong (p:ps) brd = any (==True) (map (\g -> g `elem` findNeighours p brd) ps) : checkIfNeighboursBelong ps brd
 
 
 --Function to get all the possible wide range of bridges and narrow it down to the the list that could only be real bridges
@@ -172,19 +171,16 @@ findNextIslandStrategy strat =
   let revlist = (reverse strat)
       workablelist = filter (\(a,b) -> (a/=1) && (b /= a-1)) revlist in
       if workablelist == [] then [(-1,-1)]
-      else let workableindex = fromJust $ (head $ workablelist) `elemIndex` revlist
-               rift = splitAt workableindex revlist
-               newfst = map (\(e,f) -> if e/=1 then (e,0) else (e,f)) (fst rift)
-               (g,h) = head $ snd rift
+      else let workableindex = fromJust $ (head workablelist) `elemIndex` revlist
+               rift      = splitAt workableindex revlist
+               newfst    = map (\(e,f) -> if e/=1 then (e,0) else (e,f)) (fst rift)
+               (g,h)     = head $ snd rift
                newsnd = (g,h+1) : tail (snd rift) in
                 reverse (newfst++newsnd)
 
 prepNuri :: BaseIslandList -> Nuriboard -> AllIslands
-prepNuri baseislandlist readyboard =
-  let gathereduniverses = gatherAllUniverses baseislandlist readyboard
-      groupeduniverses = groupAllUniverses baseislandlist gathereduniverses
-      cleaneduniverses = cleanGroupedUniverses baseislandlist groupeduniverses
-      in findAllBridges cleaneduniverses readyboard --finally all possible bridges
+prepNuri b r = findAllBridges (cleanGroupedUniverses b $ groupAllUniverses b $ gatherAllUniverses b r) r --finally all possible bridges
+
 
 checkNuri :: Nurikabe ()
 checkNuri = do
@@ -193,11 +189,11 @@ checkNuri = do
       let islandcombination   =  makeAllCellsIslands $ findNextIslandCombination trueislandlist strategy
           groundedboard        = setBoardPossibility readyboard (concat islandcombination)
           nooverlaps          = checkNoIslandOverlapOrAdj islandcombination readyboard
-          nobadwater          = all (==False) (map (\cell -> doesWaterBlockExist cell groundedboard) (filter (\f -> kind f == Water) groundedboard)) in
+          nobadwater          = all (==False) $ map (\cell -> doesWaterBlockExist cell groundedboard) (filter (\f -> kind f == Water) groundedboard) in
           do
-            liftIO $ putStrLn $ "strategy: "++show (strategy)
-            liftIO $ putStrLn $ "nooverlaps: "++show (nooverlaps)
-            liftIO $ putStrLn $ "nobadwater: "++show (nobadwater)
+            liftIO $ putStrLn $ "strategy:   "   ++ show strategy
+            liftIO $ putStrLn $ "nooverlaps: "   ++ show nooverlaps
+            liftIO $ putStrLn $ "nobadwater: "   ++ show nobadwater
             if (nooverlaps && nobadwater)
             then do lift $ put (strategy,groundedboard)
             else let nexstrat = findNextIslandStrategy strategy in
@@ -217,11 +213,8 @@ main = do
  putStrLn " For example: 123,456 would imply: 2nd cell in 1st column is an island of length 3, 5th cell in the 4th column is an island of length 6, etc "
  putStrLn "(Note: Traverse the board from lower left cell, moving left to right for the bottom row, then the next row, etc....)"
  inputValues        <- getLine
- let hollowboard    = createNuriBoard []
-     defaultInput   = inputToDefault inputValues
-     readyboard     = setDefaultIslands defaultInput hollowboard
-     baseislandlist = createBaseIslandList readyboard
-     trueislandlist = prepNuri baseislandlist readyboard
+ let readyboard     = setDefaultIslands (inputToDefault inputValues) $ createNuriBoard []
+     trueislandlist = prepNuri (createBaseIslandList readyboard) readyboard
      strategy       = constructIslandStrategy trueislandlist in
      do
       (finalstrat,finalNurikabeSolution) <- execStateT (runReaderT checkNuri trueislandlist) (strategy,readyboard)
