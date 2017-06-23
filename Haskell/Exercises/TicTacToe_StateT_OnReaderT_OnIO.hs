@@ -1,6 +1,8 @@
+{-# LANGUAGE OverloadedStrings #-}
 --Haskell TicTacToe
 
 import Data.Char
+import qualified Data.Text as T    (splitOn, head, last, pack)
 import Control.Monad.Trans.State.Lazy(StateT, put, get, runStateT)
 import Control.Monad.Trans.Reader(ReaderT, runReaderT)
 import Control.Monad.IO.Class(liftIO)
@@ -8,6 +10,7 @@ import Control.Monad.IO.Class(liftIO)
 type T3Cell =  (Int, Int, Char)
 type T3Config = [[(Int, Int)]]
 type TicTacToe a  = StateT [T3Cell] (ReaderT T3Config IO) a
+data EndGame = WIN | STALEMATE | LOSE deriving (Show)
 
 board = [(1,1,' '),(2,1,' '),(3,1,' '),(1,2,' '),(2,2,' '),(3,2,' '),(1,3,' '),(2,3,' '),(3,3,' ')]
 victoryindexes = [[(1,1),(2,1),(3,1)],[(1,2),(2,2),(3,2)],[(1,3),(2,3),(3,3)],
@@ -54,11 +57,10 @@ runTicTacToe :: TicTacToe ()
 runTicTacToe = do
     brd <- get
     liftIO $ showBoard brd
-    liftIO $ putStrLn "Put an 'X' on the board (Hint: Bottom Left Square is 1,1)"
     input <- liftIO $ getLine
     if input /= ""
-      then let (a:_:b:_) = input in
-           put (replaceCellInBoard (digitToInt a, digitToInt b, 'X') board)
+      then let inp = T.splitOn "," $ T.pack input in
+               put (replaceCellInBoard (digitToInt $ T.head (head inp), digitToInt $ T.last (last inp), 'X') brd)
     else return ()
     usermodified <- get
     if isGameOver victoryindexes usermodified
@@ -73,5 +75,6 @@ runTicTacToe = do
 main :: IO()
 main = do
     putStrLn "----/ WELCOME TO HASKELL HIC-HAC-MISTLE-TOE /----"
+    putStrLn "Put an 'X' on the board (Hint: Bottom Left Square is 1,1)"
     _ <- runReaderT (runStateT runTicTacToe board) victoryindexes
     putStrLn "GAME OVER"
