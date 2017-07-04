@@ -37,7 +37,7 @@ fillInRegions celldata =
 --Used in the fillInRegions function to give back a list like this, given [1,2,3]: [1,1,1,2,2,2,3,3,3,1,1,1,2,2,2,3,3,3,1,1,1,2,2,2,3,3,3]
 -- the value 3 used in the function is the height of any 1 region on the sudoku board, a region comprising of a 3x3 square of sudoku cells
 createRawRegionValues :: [Int] -> [Int]
-createRawRegionValues r = concat $ concat $ replicate 3 $ map (\x -> replicate 3 x) r
+createRawRegionValues r = concat . concat . replicate 3 $ map (\x -> replicate 3 x) r
 
 --function to give the list of SudoCells that are in the same row as the given SudoCell, all except the row that is used as the reference request
 sameRowCells :: SudoCell -> [SudoCell] -> [SudoCell]

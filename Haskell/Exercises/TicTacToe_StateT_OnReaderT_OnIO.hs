@@ -1,9 +1,9 @@
 --Haskell TicTacToe
 
 import Data.Char
-import Control.Monad.Trans.State.Lazy(StateT, put, get, runStateT)
-import Control.Monad.Trans.Reader(ReaderT, runReaderT)
-import Control.Monad.IO.Class(liftIO)
+import Control.Monad.Trans.State.Lazy            (StateT, put, get, runStateT)
+import Control.Monad.Trans.Reader                (ReaderT, runReaderT)
+import Control.Monad.IO.Class                    (liftIO)
 
 type T3Cell =  (Int, Int, Char)
 type T3Config = [[(Int, Int)]]
@@ -16,7 +16,12 @@ victoryindexes = [[(1,1),(2,1),(3,1)],[(1,2),(2,2),(3,2)],[(1,3),(2,3),(3,3)],
 
 --Function to place an X on the board when user specifies a coordinate
 replaceCellInBoard :: T3Cell -> [T3Cell] -> [T3Cell]
-replaceCellInBoard (a,b,i) brd = map (\(x,y,z) -> if (x==a && y==b && z/='O' && z/='X') then (x,y,i)  else (x,y,z)) brd
+replaceCellInBoard _ []                    = []
+replaceCellInBoard cell@(a,b,i) brd@((x,y,z):rs)
+ | (x==a && y==b && z/='O' && z/='X')      = (x,y,i) : replaceCellInBoard cell rs
+ | otherwise                               = (x,y,z) : replaceCellInBoard cell rs
+
+--map (\(x,y,z) -> if (x==a && y==b && z/='O' && z/='X') then (x,y,i)  else (x,y,z)) brd
 
 --Function for the computer to make a move
 botPlayMove :: [T3Cell] -> [T3Cell]
