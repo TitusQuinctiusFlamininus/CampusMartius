@@ -2,12 +2,12 @@
 --
 --
 --this function will create continuations from a list, given a fulcrum
-createContinuation :: Int  -> [Int] -> [(Int  -> Int)]
+createContinuation :: (Num a, Ord a) => a -> [a] -> [(a -> a)]
 createContinuation  _     [] = []
-createContinuation  fulc inp = map (*) . filter (< fulc) $ inp
+createContinuation  fulc inp = map ((*)) . filter (< fulc) $ inp
 
 --this function will create a suspended computation from a single input
-suspend :: Int  -> ((Int  -> Int) -> Int)
+suspend :: (Num a, Ord a) => a  -> ((a -> a) -> a)
 suspend x            = ($ x)
 
 main :: IO ()
