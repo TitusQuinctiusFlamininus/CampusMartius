@@ -28,3 +28,14 @@ Haskell/Nurikabe/Nurikabe.o
 Haskell/Nurikabe/Nurikabe
 
 Haskell/Nurikabe/Nurikabe.hi
+Java/ConwaysGameOfLife/ConwaysGameOfLife.iml
+Java/ConwaysGameOfLife/.idea/misc.xml
+Java/ConwaysGameOfLife/.idea/modules.xml
+Java/ConwaysGameOfLife/.idea/workspace.xml
+Java/ConwaysGameOfLife/out/production/ConwaysGameOfLife/Conway.class
+Java/ConwaysGameOfLife/out/production/ConwaysGameOfLife/GOLExecutor$1.class
+Java/ConwaysGameOfLife/out/production/ConwaysGameOfLife/GOLExecutor.class
+Java/ConwaysGameOfLife/out/production/ConwaysGameOfLife/Grid.class
+Java/ConwaysGameOfLife/out/production/ConwaysGameOfLife/Music.class
+Java/ConwaysGameOfLife/out/production/ConwaysGameOfLife/engine/Cell.class
+Java/ConwaysGameOfLife/out/production/ConwaysGameOfLife/engine/GameofLife.class

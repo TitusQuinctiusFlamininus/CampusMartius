@@ -24,11 +24,12 @@ createNuriBoard board
                                   createNuriBoard (board ++ noRegionBoard)
 
 --function to update a board with the default nurikabe values
-setDefaultIslands :: [(Int, Int, Int)] -> Nuriboard -> Nuriboard
-setDefaultIslands [] rest = rest
-setDefaultIslands def@((a,b,c):ys) (cell@(NuriCell {locX=x, locY=y, size=z, kind=g}):xs)
- | a == x && b == y       = (NuriCell {locX=x, locY=y, size=c, kind=Island}) : setDefaultIslands ys xs
- | otherwise              = cell : setDefaultIslands def xs
+setDefaultIslands :: Nuriboard -> [(Int, Int, Int)] -> Nuriboard -> Nuriboard
+setDefaultIslands n [] _ = n
+setDefaultIslands n _ [] = n
+setDefaultIslands n def@((a,b,c):ys) (cell@(NuriCell {locX=x, locY=y, size=z, kind=g}):xs)
+  | a == x && b == y       = setDefaultIslands ((NuriCell {locX=x, locY=y, size=c, kind=Island}):n) ys xs
+  | otherwise              = setDefaultIslands (cell:n) def xs
 
 
 --function to convert string input for defaut cell values to a format we know about
@@ -214,7 +215,7 @@ main = do
  putStrLn " For example: 123,456 would imply: 2nd cell in 1st column is an island of length 3, 5th cell in the 4th column is an island of length 6, etc "
  putStrLn "(Note: Traverse the board from lower left cell, moving left to right for the bottom row, then the next row, etc....)"
  inputValues        <- getLine
- let readyboard     = setDefaultIslands (inputToDefault inputValues) $ createNuriBoard []
+ let readyboard     = setDefaultIslands [] (inputToDefault inputValues) $ createNuriBoard []
      trueislandlist = prepNuri (createBaseIslandList readyboard) readyboard
      strategy       = constructIslandStrategy trueislandlist in
      do
