@@ -1,17 +1,17 @@
 
 data Michael a                       = First a | Second a (Michael a)
 
-instance (Show a) =>Show (Michael a) where
-  show (First a)                     = "First ["++(show a)++"] "
-  show (Second a tree)               = "Second ["++(show a)++(show tree)++"] "
+instance (Show a) => Show (Michael a) where
+  show (First a)                     = " First [ "++(show a)++" ] "
+  show (Second a tree)               = " Second [ "++(show a)++(show tree)++" ] "
 
 --fmap       :: (Functor f) => (a -> b) -> fa -> fb
 instance Functor Michael where
   fmap f (First a)                   = First (f a)
   fmap f (Second a tree)             = Second (f a) (fmap f tree)
 
--- pure      :: (Applicative f) => a          -> fa
--- (<*>)     :: (Applicative f) => f (a -> b) -> fa -> fb
+-- pure      :: (Functor f) => a          -> fa
+-- (<*>)     :: (Functor f) => f (a -> b) -> fa -> fb
 instance Applicative Michael where
   pure                               = First
   (First f)    <*> (First a)         = pure (f a)
@@ -43,7 +43,7 @@ main =                    let nyika  = Second "Whatever bro" (Second "What's goi
                               nyika2 = Second [23,4,6,3,57,45,8,2,47,9] (Second [-1,-3,-9,-12,-2,-1,2,5,3,9,7,2,3,6] (First [5,1,17,8,2,-6,-8,-2]))
                           in  do
                              --Lets experiment with our Functor
-                                putStrLn . show $ (\cont -> "<=:=>"++(reverse cont)++"<=:=>") <$> nyika
+                                putStrLn . show $ fmap (\cont -> "<=:=>"++(reverse cont)++"<=:=>") nyika
                              --Lets experiment with our Applicative
                                 putStrLn . show $ pure (\x -> ((*3).(+4).(/2)) <$> x) <*> nyika2
          
