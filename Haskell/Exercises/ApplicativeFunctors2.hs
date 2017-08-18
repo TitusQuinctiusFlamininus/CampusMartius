@@ -8,7 +8,7 @@ instance (Show a) =>Show (Michael a) where
 --fmap :: (Functor f) => (a -> b) -> fa -> fb
 instance Functor Michael where
   fmap f (First a)        = First (f a)
-  fmap f (Second a name)  = Second (f a) (fmap f name)
+  fmap f (Second a tree)  = Second (f a) (fmap f tree)
 
 -- pure  :: (Applicative f) => a          -> fa
 -- (<*>) :: (Applicative f) => f (a -> b) -> fa -> fb
