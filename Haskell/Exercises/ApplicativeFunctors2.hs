@@ -43,7 +43,7 @@ main =                    let nyika  = Second "Whatever bro" (Second "What's goi
                               nyika2 = Second [23,4,6,3,57,45,8,2,47,9] (Second [-1,-3,-9,-12,-2,-1,2,5,3,9,7,2,3,6] (First [5,1,17,8,2,-6,-8,-2]))
                           in  do
                              --Lets experiment with our Functor
-                                putStrLn . show $ fmap (\cont -> "<=:=>"++(reverse cont)++"<=:=>") nyika
+                                putStrLn . show $ fmap (\cont -> "<reversed>"++(reverse cont)++"<reversed>") nyika
                              --Lets experiment with our Applicative
                                 putStrLn . show $ pure (\x -> ((*3).(+4).(/2)) <$> x) <*> nyika2
          
