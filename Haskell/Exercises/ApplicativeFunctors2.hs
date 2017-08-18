@@ -2,8 +2,8 @@
 data Michael a = First a | Second a (Michael a)
 
 instance (Show a) =>Show (Michael a) where
-  show (First a)       = "First "++(show a)++" "
-  show (Second a tree) = "Second "++(show a)++(show tree)++" "
+  show (First a)       = "First ["++(show a)++"] "
+  show (Second a tree) = "Second ["++(show a)++(show tree)++"] "
 
 --fmap :: (Functor f) => (a -> b) -> fa -> fb
 instance Functor Michael where
@@ -40,7 +40,7 @@ instance Monad Michael where
 
 main :: IO ()
 main =  let nyika  = Second "Whatever bro" (Second "What's going on" (First "That's a first!"))
-            nyika2 = Second [23,4,6,3,57,45,8,2,47,9] (Second [-1,-3,-9,-12,-2,-1,2,6,3,6,7,2,3,6] (First [5,1,5,8,2,-6,-8,-2]))
+            nyika2 = Second [23,4,6,3,57,45,8,2,47,9] (Second [-1,-3,-9,-12,-2,-1,2,5,3,9,7,2,3,6] (First [5,1,17,8,2,-6,-8,-2]))
         in  do
               --Lets experiment with our Functor
               putStrLn . show $ (\cont -> "<=:=>"++(reverse cont)++"<=:=>") <$> nyika
