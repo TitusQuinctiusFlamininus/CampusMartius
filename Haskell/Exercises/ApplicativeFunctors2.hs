@@ -1,3 +1,4 @@
+import Data.List (intersperse)
 
 data Michael a                       = First a | Second a (Michael a)
 
@@ -28,8 +29,10 @@ instance Foldable Michael where
 --traverse   :: (Applicative f, Traversable t) => (a -> fb) -> ta -> f(tb)
 --sequenceA  :: (Applicative f, Traversable t) => t(fa)     -> f(ta)
 instance Traversable Michael where
-  traverse f (First a)               = sequenceA $ (\x -> First x) (f a)
-  traverse f (Second a tree)         = sequenceA $ (\x -> Second x ((pure f) <*> tree)) (f a)
+  traverse g (First a)               = First  <$> (g a)
+  traverse g (Second a tree)         = Second <$> (g a) <*> (traverse g tree)
+  
+  
 
 -- return                 :: a  -> ma
 -- monadic bind (>=)      :: ma -> (a -> mb) -> mb
@@ -43,7 +46,20 @@ main =                    let nyika  = Second "Whatever bro" (Second "What's goi
                               nyika2 = Second [23,4,6,3,57,45,8,2,47,9] (Second [-1,-3,-9,-12,-2,-1,2,5,3,9,7,2,3,6] (First [5,1,17,8,2,-6,-8,-2]))
                           in  do
                              --Lets experiment with our Functor
+                                putStrLn " :: FUNCTOR :: " 
                                 putStrLn . show $ fmap (\cont -> "<reversed>"++(reverse cont)++"<reversed>") nyika
                              --Lets experiment with our Applicative
+                                putStrLn " :: APPLICATIVE :: " 
                                 putStrLn . show $ pure (\x -> ((*3).(+4).(/2)) <$> x) <*> nyika2
-         
+                             --Lets experiment with our Foldable
+                                putStrLn " :: FOLDABLE :: " 
+                                putStrLn . show $ foldr (+) 0 $ foldMap (\x -> (*7) <$> x) nyika2
+                                putStrLn . show $ foldMap (\x -> [length x]) nyika
+                             --Lets experiment with our Traversable
+                                putStrLn " :: TRAVERSABLE :: "
+                                putStrLn . show $ traverse (\x -> intersperse '-' x) (First "eroijeorere")
+                                --putStrLn . show $ traverse (\x -> (+1) <$> x) nyika2  -- output is too long
+                             --Lets experiment with our Monad
+                                putStrLn " :: MONAD :: "
+                                putStrLn . show $ nyika >>= (\_ -> return "nothing")
+                                putStrLn . show $ nyika2 >>= (\s -> return (map (^2) s))
