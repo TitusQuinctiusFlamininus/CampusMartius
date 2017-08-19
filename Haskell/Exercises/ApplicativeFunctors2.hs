@@ -43,12 +43,14 @@ instance Monad Michael where
   (Second a tree) >>= f              = (f a) >>= (\x -> Second x (tree >>= f))
 
 main :: IO ()
-main =                    let nyika  = Second "Whatever bro" (Second "What's going on" (First "That's a first!"))
+main =                    let nyika0 = First "It has been a long day, hasn't it?"
+                              nyika1  = Second "Whatever bro" (Second "What's going on" (First "That's a first!"))
                               nyika2 = Second [23,4,6,3,57,45,8,2,47,9] (Second [-1,-3,-9,-12,-2,-1,2,5,3,9,7,2,3,6] (First [5,1,17,8,2,-6,-8,-2]))
                           in  do
                              --Lets experiment with our Functor
+                                putStrLn " "
                                 putStrLn " :: FUNCTOR :: " 
-                                putStrLn . show $ fmap (\cont -> "<reversed>"++(reverse cont)++"<reversed>") nyika
+                                putStrLn . show $ fmap (\cont -> "<reversed>"++(reverse cont)++"<reversed>") nyika1
                                 putStrLn " "
                              --Lets experiment with our Applicative
                                 putStrLn " :: APPLICATIVE :: " 
@@ -58,16 +60,16 @@ main =                    let nyika  = Second "Whatever bro" (Second "What's goi
                                 putStrLn " :: FOLDABLE :: " 
                                 putStrLn . show $ foldr (+) 0 $ foldMap (\x -> (*7) <$> x) nyika2
                                 putStrLn " "
-                                putStrLn . show $ foldMap (\x -> [length x]) nyika
+                                putStrLn . show $ foldMap (\x -> [length x]) nyika1
                                 putStrLn " "
                              --Lets experiment with our Traversable
                                 putStrLn " :: TRAVERSABLE :: "
-                                putStrLn . show $ traverse (\z -> intersperse '-' z) (First "It has been a long day, hasn't it?")
+                                putStrLn . show $ traverse (\z -> intersperse '-' z) nyika0
                                 putStrLn " "
                                 --putStrLn . show $ traverse (\x -> (+1) <$> x) nyika2  -- output is too long
                              --Lets experiment with our Monad
                                 putStrLn " :: MONAD :: "
-                                putStrLn . show $ nyika >>= (\a -> return $ map toUpper a) >>= (\b -> return $ map ord b)
+                                putStrLn . show $ nyika1 >>= (\a -> return $ map toUpper a) >>= (\b -> return $ map ord b)
                                 putStrLn " "
                                 putStrLn . show $ nyika2 >>= (\s -> return (map (^2) s))
                                 putStrLn " "
