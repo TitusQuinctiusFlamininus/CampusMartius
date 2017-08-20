@@ -71,5 +71,5 @@ main =                    let nyika0 = First  "It has been a long day, hasn't it
                                 putStrLn " :: MONAD :: "
                                 putStrLn . show $ nyika1 >>= (\a -> return $ map toUpper a) >>= (\b -> return $ map ord b)
                                 putStrLn " "
-                                putStrLn . show $ nyika2 >>= (\s -> return (map (^2) s))
+                                putStrLn . show $ nyika2 >>= (\s -> return $ map (^2) s)
                                 putStrLn " "
