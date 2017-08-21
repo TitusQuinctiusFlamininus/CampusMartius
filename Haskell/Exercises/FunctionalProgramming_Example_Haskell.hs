@@ -15,10 +15,11 @@ instance Functor Michael where
 -- pure      :: (Functor f) => a          -> fa
 -- (<*>)     :: (Functor f) => f (a -> b) -> fa -> fb
 instance Applicative Michael where
-  pure                               = First
-  (First f)    <*> (First a)         = pure (f a)
-  (First f)    <*> (Second a tree)   = Second (f a) ((pure f) <*> tree)
-  (Second f _) <*> (Second a tree)   = Second (f a) ((pure f) <*> tree)
+  pure                                    = First
+  (First f)        <*> (First a)          = pure (f a)
+  (First f)        <*> (Second a tree)    = Second (f a) ((pure f) <*> tree)
+  (Second f tree)  <*> (First a)          = pure (f a)
+  (Second f tree1) <*> (Second a tree2)   = Second (f a) ((pure f) <$> tree1 <*> tree2)
 
 
 --foldMap    :: (Monoid m) => (a -> m) -> ta -> m
