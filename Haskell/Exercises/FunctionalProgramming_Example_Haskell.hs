@@ -48,6 +48,7 @@ main =                    let nyika0 = First  "It has been a long day, hasn't it
                               nyika1 = Second "Whatever bro" (Second "What's going on" (First "That's a first!"))
                               nyika2 = Second [23,4,6,3,57,45,8,2,47,9] (Second [-1,-3,-9,-12,-2,-1,2,5,3,9,7,2,3,6] (First [5,1,17,8,2,-6,-8,-2]))
                               nyika3 = First [23,4,6,3,57,45,8,2,47,9]
+                              func   = (\x -> map (+9) x)
                           in  do
                              --Lets experiment with our Functor
                                 putStrLn " "
@@ -58,6 +59,7 @@ main =                    let nyika0 = First  "It has been a long day, hasn't it
                                 putStrLn " :: APPLICATIVE :: " 
                                 putStrLn . show $ pure (\y -> (*3).(+4).(/2) <$> y) <*> nyika2
                                 putStrLn . show $ (First (\x -> map (*9) x)) <*> nyika3
+                                putStrLn . show $ (Second func (First func)) <*> nyika3
                                 putStrLn " "
                              --Lets experiment with our Foldable
                                 putStrLn " :: FOLDABLE :: " 
