@@ -55,7 +55,7 @@ main =                    let nyika0 = First  "It has been a long day, hasn't it
                                 putStrLn " "
                              --Lets experiment with our Applicative
                                 putStrLn " :: APPLICATIVE :: " 
-                                putStrLn . show $ pure (\y -> ((*3).(+4).(/2)) <$> y) <*> nyika2
+                                putStrLn . show $ pure (\y -> (*3).(+4).(/2) <$> y) <*> nyika2
                                 putStrLn " "
                              --Lets experiment with our Foldable
                                 putStrLn " :: FOLDABLE :: " 
