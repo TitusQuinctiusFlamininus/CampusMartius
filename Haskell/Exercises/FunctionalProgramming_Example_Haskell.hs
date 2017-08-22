@@ -59,7 +59,7 @@ main =                    let nyika0 = First  "It has been a long day, hasn't it
                                 putStrLn " :: APPLICATIVE :: " 
                                 putStrLn . show $ pure (\y -> (*3).(+4).(/2) <$> y) <*> nyika2
                                 putStrLn . show $ (First (\x -> map (*9) x)) <*> nyika3
-                                putStrLn . show $ (Second func (First func)) <*> nyika3
+                                putStrLn . show $ (Second func (First func)) <*> nyika2
                                 putStrLn " "
                              --Lets experiment with our Foldable
                                 putStrLn " :: FOLDABLE :: " 
