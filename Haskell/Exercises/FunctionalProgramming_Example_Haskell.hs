@@ -100,4 +100,6 @@ main =                    let nyika0 = First  "It has been a long day, hasn't it
                                 putStrLn . show $ view _mikey nyika1
                                 putStrLn . show $ set  _mikey "my new value" nyika1
                                 putStrLn . show $ over _mikey (++"...yeehaa!") nyika0
+                                putStrLn . show $ view traverse nyika1
+                                putStrLn . show $ view traverse nyika2
                                 putStrLn " "
