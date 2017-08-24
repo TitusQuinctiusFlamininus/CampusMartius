@@ -4,15 +4,17 @@ import Control.Lens.Type             (Lens)
 import Control.Lens.Getter           (view)
 import Control.Lens.Setter           (set, over)
 
+--arbitrarily chosen value constructors
 data Michael a                       = First a | Second a (Michael a)
 
+--show       :: a -> String
 instance (Show a) => Show (Michael a) where
   show (First a)                     = " First  [ "++(show a)++" ] "
   show (Second a tree)               = " Second [ "++(show a)++(show tree)++" ] "
 
 --fmap       :: (Functor f) => (a -> b) -> fa -> fb
 instance Functor Michael where
-  fmap f (First a)                   = First (f a)
+  fmap f (First a)                   = First  (f a)
   fmap f (Second a tree)             = Second (f a) (fmap f tree)
 
 -- pure      :: (Functor f) => a          -> fa
@@ -27,7 +29,7 @@ instance Applicative Michael where
 
 --foldMap    :: (Monoid m) => (a -> m) -> ta -> m
 instance Foldable Michael where
-  foldMap f (First a)                = f a
+  foldMap f (First a)                = (f a)
   foldMap f (Second a tree)          = (f a) `mappend` (foldMap f tree)
 
 
@@ -42,7 +44,7 @@ instance Traversable Michael where
 -- monadic bind (>=)      :: ma -> (a -> mb) -> mb
 instance Monad Michael where
   return a                           = First a
-  (First a) >>= f                    = f a
+  (First a) >>= f                    = (f a)
   (Second a tree) >>= f              = (f a) >>= (\x -> Second x (tree >>= f))
 
 -- Lens s a = (a -> fa) -> s -> fs
@@ -73,7 +75,7 @@ main =                    let nyika0 = First  "It has been a long day, hasn't it
                              --Lets experiment with our Applicative
                                 putStrLn " :: APPLICATIVE :: " 
                                 putStrLn . show $ pure (\y -> (*3).(+4).(/2) <$> y) <*> nyika2
-                                putStrLn . show $ (First (\x -> map (*9) x)) <*> nyika3
+                                putStrLn . show $ (First func) <*> nyika3
                                 putStrLn . show $ (Second func (First func)) <*> nyika2
                                 putStrLn " "
                              --Lets experiment with our Foldable
