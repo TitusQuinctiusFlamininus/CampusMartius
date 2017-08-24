@@ -1,5 +1,8 @@
 import Data.List                     (intersperse)
 import Data.Char                     (toUpper, ord)
+import Control.Lens.Type             (Lens)
+import Control.Lens.Getter           (view)
+import Control.Lens.Setter           (set, over)
 
 data Michael a                       = First a | Second a (Michael a)
 
@@ -34,7 +37,6 @@ instance Traversable Michael where
   traverse g (First a)               = First  <$> (g a)
   traverse g (Second a tree)         = Second <$> (g a) <*> (traverse g tree)
   
-  
 
 -- return                 :: a  -> ma
 -- monadic bind (>=)      :: ma -> (a -> mb) -> mb
@@ -42,6 +44,13 @@ instance Monad Michael where
   return a                           = First a
   (First a) >>= f                    = f a
   (Second a tree) >>= f              = (f a) >>= (\x -> Second x (tree >>= f))
+
+-- Lens s a = (a -> fa) -> s -> fs
+_mikey :: Functor f => (a -> f a) -> (Michael a) -> f (Michael a)
+_mikey f (First a)                   = fmap (\a -> First a) (f a)
+_mikey f (Second a tree)             = fmap (\a -> Second a tree) (f a) 
+
+
 
 main :: IO ()
 main =                    let nyika0 = First  "It has been a long day, hasn't it?"
@@ -84,4 +93,11 @@ main =                    let nyika0 = First  "It has been a long day, hasn't it
                                 putStrLn . show $ nyika1 >>= (\a -> return $ map toUpper a) >>= (\b -> return $ map ord b)
                                 putStrLn " "
                                 putStrLn . show $ nyika2 >>= (\s -> return $ map (^2) s)
+                                putStrLn " "
+                             --Lets experiment with our Monad
+                                putStrLn " :: LENSES :: "
+                                putStrLn . show $ view _mikey nyika0
+                                putStrLn . show $ view _mikey nyika1
+                                putStrLn . show $ set  _mikey "my new value" nyika1
+                                putStrLn . show $ over _mikey (++"...yeehaa!") nyika0
                                 putStrLn " "
