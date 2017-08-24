@@ -50,6 +50,11 @@ main =                    let nyika0 = First  "It has been a long day, hasn't it
                               nyika3 = First [23,4,6,3,57,45,8,2,47,9]
                               func   = (\x -> map (+9) x)
                           in  do
+                             --Lets experiment with our Showable
+                                putStrLn " "
+                                putStrLn " :: SHOW :: " 
+                                putStrLn . show $ (First  [["one"], ["two"], ["three"]])
+                                putStrLn " "
                              --Lets experiment with our Functor
                                 putStrLn " "
                                 putStrLn " :: FUNCTOR :: " 
