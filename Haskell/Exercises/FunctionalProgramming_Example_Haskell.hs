@@ -36,21 +36,21 @@ instance Foldable Michael where
 --traverse   :: (Traversable t, Applicative f) => (a -> fb) -> ta -> f(tb)
 --sequenceA  :: (Traversable t, Applicative f) => t(fa)     -> f(ta)
 instance Traversable Michael where
-  traverse g (First a)               = First  <$> (g a)
-  traverse g (Second a tree)         = Second <$> (g a) <*> (traverse g tree)
+  traverse f (First a)               = First  <$> (f a)
+  traverse f (Second a tree)         = Second <$> (f a) <*> (traverse f tree)
   
 
 -- return                 :: a  -> ma
 -- monadic bind (>=)      :: ma -> (a -> mb) -> mb
 instance Monad Michael where
-  return a                           = First a
+  return                             = First
   (First a) >>= f                    = (f a)
   (Second a tree) >>= f              = (f a) >>= (\x -> Second x (tree >>= f))
 
 -- Lens s a = (a -> fa) -> s -> fs
 _mikey :: Functor f => (a -> f a) -> (Michael a) -> f (Michael a)
-_mikey f (First a)                   = fmap (\a -> First a) (f a)
-_mikey f (Second a tree)             = fmap (\a -> Second a tree) (f a) 
+_mikey f (First a)                   = (\a -> First a) <$> (f a)
+_mikey f (Second a tree)             = (\a -> Second a tree) <$> (f a) 
 
 
 
