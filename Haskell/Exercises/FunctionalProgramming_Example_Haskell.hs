@@ -49,7 +49,7 @@ instance Monad Michael where
 
 -- Lens s a = (a -> fa) -> s -> fs
 _mikey :: Functor f => (a -> f a) -> (Michael a) -> f (Michael a)
-_mikey f (First a)                   = (\a -> First a) <$> (f a)
+_mikey f (First a)                   = (\a -> First a)       <$> (f a)
 _mikey f (Second a tree)             = (\a -> Second a tree) <$> (f a) 
 
 
