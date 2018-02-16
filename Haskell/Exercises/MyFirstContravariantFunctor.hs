@@ -5,7 +5,7 @@ import Data.Functor.Contravariant
 data MyContraThing a b = MyContraThing { getIt :: (b -> a) }
 
 instance Contravariant (MyContraThing a) where
- contramap f (MyContraThing c)      =   MyContraThing (c . f) 
+ contramap f (MyContraThing c)      =   MyContraThing (c . f) -- the input (6) will be applied to f first, not c !
 
 doSomething :: MyContraThing [String] Int
 doSomething = contramap (*2)  MyContraThing { getIt = (\i -> replicate i "here") }
