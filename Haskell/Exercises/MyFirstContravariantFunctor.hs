@@ -1,4 +1,4 @@
-module OtherFunctors where
+module MyFirstContravariantFunctor where
 
 import Data.Functor.Contravariant 
 
