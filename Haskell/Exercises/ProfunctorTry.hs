@@ -21,8 +21,8 @@ spinner i = replicate i $ "thetruth"
 resulter :: [String] -> String
 resulter = concat 
 
-mything :: L Int String
-mything = dimap  (const 6) (reverse) (L resulter spinner)
+mything :: Int -> L Int String
+mything how = dimap  (const how) (reverse) (L resulter spinner)
 
 
-main = runTheP mything 4
+main = runTheP (mything 7) 5
