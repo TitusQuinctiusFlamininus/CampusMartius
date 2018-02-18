@@ -13,7 +13,7 @@ instance Profunctor L where
  
  
 runTheP :: L Int String -> Int -> String
-runTheP (L result spin) input  = result (spin input)
+runTheP (L result spin) input  = result . spin $ input
 
 
 spinner :: Int -> [String]
