@@ -15,11 +15,14 @@ instance Profunctor L where
 runTheP :: L Int String -> Int -> String
 runTheP (L result spin) input  = result . spin $ input
 
-
 spinner :: Int -> [String]
 spinner i = replicate i $ "thetruth"
 
 resulter :: [String] -> String
 resulter = concat 
 
-main = runTheP (L resulter spinner) 100
+mything :: L Int String
+mything = dimap  (const 6) (reverse) (L resulter spinner)
+
+
+main = runTheP mything 4
