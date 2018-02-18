@@ -22,7 +22,7 @@ resulter :: [String] -> String
 resulter = concat 
 
 mything :: Int -> String -> L Int String
-mything how thestr = dimap  (const how) (reverse) (L resulter (\i -> spinner i thestr))
+mything how thestr = dimap  (const how) reverse (L resulter (\i -> spinner i thestr))
 
 
 main = runTheP (mything 7 "heyhowareyoudoing") 5
