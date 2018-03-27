@@ -1,4 +1,4 @@
---functions to illustrate the use of contiuations
+--functions to illustrate the use of continuations
 --
 --
 --this function will create continuations from a list, given a fulcrum
