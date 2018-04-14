@@ -21,9 +21,7 @@ data Piece = Piece {   name       :: PieceType,
 
 --create all major pieces (white and black)
 setBoard :: [Piece]
-setBoard       = let blackpieces = zipWith (\p l -> p {location = (l,8)}) bNoLocPieces [1..8]
-                     whitepieces = zipWith (\p l -> p {location = (l,1)}) wNoLocPieces [1..8] in 
-                     bPawns ++ blackpieces ++ wPawns ++ whitepieces
+setBoard             = bPawns ++ blackpieces ++ wPawns ++ whitepieces
  where rkbTypes      = [ROOK, KNIGHT, BISHOP]
        rkbWorths     = [5, 3, 3]
        nameList      = rkbTypes ++ [QUEEN, KING] ++ reverse rkbTypes
@@ -34,6 +32,8 @@ setBoard       = let blackpieces = zipWith (\p l -> p {location = (l,8)}) bNoLoc
        wzipper       = \n c w -> Piece { name  = n, color = c, worth = w, location = (0,1)} 
        bNoLocPieces  = zipWith3 bzipper nameList bColorList worthList
        wNoLocPieces  = zipWith3 wzipper nameList wColorList worthList
+       blackpieces   = zipWith (\p l -> p {location = (l,8)}) bNoLocPieces [1..8]
+       whitepieces   = zipWith (\p l -> p {location = (l,1)}) wNoLocPieces [1..8]
        
 --BLACK PAWNS
 bPawns :: [Piece]
