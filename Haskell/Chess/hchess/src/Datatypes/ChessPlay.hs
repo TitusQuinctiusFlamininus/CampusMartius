@@ -26,7 +26,5 @@ class Promotable p where
     promote :: p -> PieceType -> Location -> Piece
     
 instance Promotable Piece where
-    promote p@Piece{name= PAWN} QUEEN  l  = p {name= QUEEN,  location = l}
-    promote p@Piece{name= PAWN} ROOK   l  = p {name= ROOK,   location = l}
-    promote p@Piece{name= PAWN} BISHOP l  = p {name= BISHOP, location = l}
-    promote p@Piece{name= PAWN} KNIGHT l  = p {name= KNIGHT, location = l}
+    promote p t l  = p {name= t,  location = l}
+   
