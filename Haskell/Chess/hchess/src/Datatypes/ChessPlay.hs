@@ -21,11 +21,12 @@ instance Movable Piece where
     move p@_  (x,y) = p { location = (x,y)} 
     capture k v l   = (k {location = location v}, (v:l))
 
---pawns can be promoted to other pieces
-class Promotable p where
-    promote :: p -> PieceType -> Location -> p
+--typeclass representing minor pieces (i.e pawns). Major pieces are any pieces that are NOT pawns, since we c
+class Promotable t where
+    promote :: t -> PieceType -> Location -> Piece
     
-
---lets make pawns promotable
 instance Promotable Piece where
-    promote p t l = p {name = t, location = l} 
+    promote p@Piece{name= PAWN} QUEEN l = p {name= QUEEN, location = l}
+    promote p@Piece{name= PAWN} ROOK l = p {name= ROOK, location = l}
+    promote p@Piece{name= PAWN} BISHOP l = p {name= BISHOP, location = l}
+    promote p@Piece{name= PAWN} KNIGHT l = p {name= KNIGHT, location = l}
