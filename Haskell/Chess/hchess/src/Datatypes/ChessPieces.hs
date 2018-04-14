@@ -54,6 +54,9 @@ bkRook =  Piece { name  = ROOK, color = BLACK, worth = 5, location = (8,8)}
 bqRook :: Piece
 bqRook =  Piece { name  = ROOK, color = BLACK, worth = 5, location = (1,8)} 
 
+--BLACK PAWNS
+bPawns :: [Piece]
+bPawns = map (\x -> Piece { name  = PAWN, color = BLACK, worth = 1, location = (x,7)} ) [1..8]
 
 {-WHITE CHESS PIECES-}
 
@@ -89,3 +92,6 @@ wkRook =  Piece { name  = ROOK, color = WHITE, worth = 5, location = (8,1)}
 wqRook :: Piece
 wqRook =  Piece { name  = ROOK, color = WHITE, worth = 5, location = (1,1)} 
 
+--WHITE PAWNS
+wPawns :: [Piece]
+wPawns = map (\x -> Piece { name  = PAWN, color = WHITE, worth = 1, location = (x,2)} ) [1..8]
