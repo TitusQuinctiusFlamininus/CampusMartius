@@ -17,80 +17,28 @@ data Piece = Piece {   name       :: PieceType,
                        color      :: Color, 
                        worth      :: Value, 
                        location   :: Location
-                   }
-                      
-                      
-{-BLACK CHESS PIECES-}
+                   } deriving (Show, Eq)
 
---BLACK KING
-bKing :: Piece
-bKing =  Piece { name  = KING, color = BLACK, worth = 1000, location = (5,8)} 
-
---BLACK QUEEN
-bQueen :: Piece
-bQueen =  Piece { name  = QUEEN, color = BLACK, worth = 10, location = (4,8)} 
-
---BLACK KING BISHOP
-bkBishop :: Piece
-bkBishop =  Piece { name  = BISHOP, color = BLACK, worth = 3, location = (6,8)} 
-
---BLACK QUEEN  BISHOP
-bqBishop :: Piece
-bqBishop =  Piece { name  = BISHOP, color = BLACK, worth = 3, location = (3,8)} 
-
---BLACK KING KNIGHT
-bkKnight :: Piece
-bkKnight =  Piece { name  = KNIGHT, color = BLACK, worth = 3, location = (7,8)} 
-
---BLACK QUEEN KNIGHT
-bqKnight :: Piece
-bqKnight =  Piece { name  = KNIGHT, color = BLACK, worth = 3, location = (2,8)} 
-
---BLACK KING ROOK
-bkRook :: Piece
-bkRook =  Piece { name  = ROOK, color = BLACK, worth = 5, location = (8,8)} 
-
---BLACK QUEEN ROOK
-bqRook :: Piece
-bqRook =  Piece { name  = ROOK, color = BLACK, worth = 5, location = (1,8)} 
-
+--create all major pieces (white and black)
+setBoard :: [Piece]
+setBoard       = let blackpieces = zipWith (\p l -> p {location = (l,8)}) bNoLocPieces [1..8]
+                     whitepieces = zipWith (\p l -> p {location = (l,1)}) wNoLocPieces [1..8] in 
+                     bPawns ++ blackpieces ++ wPawns ++ whitepieces
+ where rkbTypes      = [ROOK, KNIGHT, BISHOP]
+       rkbWorths     = [5, 3, 3]
+       nameList      = rkbTypes ++ [QUEEN, KING] ++ reverse rkbTypes
+       bColorList    = replicate 8 BLACK
+       wColorList    = replicate 8 WHITE
+       worthList     = rkbWorths ++ [10, 1000] ++ reverse rkbWorths
+       bzipper       = \n c w -> Piece { name  = n, color = c, worth = w, location = (0,8)} 
+       wzipper       = \n c w -> Piece { name  = n, color = c, worth = w, location = (0,1)} 
+       bNoLocPieces  = zipWith3 bzipper nameList bColorList worthList
+       wNoLocPieces  = zipWith3 wzipper nameList wColorList worthList
+       
 --BLACK PAWNS
 bPawns :: [Piece]
 bPawns = map (\x -> Piece { name  = PAWN, color = BLACK, worth = 1, location = (x,7)} ) [1..8]
 
-{-WHITE CHESS PIECES-}
-
---WHITE KING
-wKing :: Piece
-wKing =  Piece { name  = KING, color = WHITE, worth = 1000, location = (5,1)} 
-
---WHITE QUEEN
-wQueen :: Piece
-wQueen =  Piece { name  = QUEEN, color = WHITE, worth = 10, location = (4,1)} 
-
---WHITE KING BISHOP
-wkBishop :: Piece
-wkBishop =  Piece { name  = BISHOP, color = WHITE, worth = 3, location = (6,1)} 
-
---WHITE QUEEN  BISHOP
-wqBishop :: Piece
-wqBishop =  Piece { name  = BISHOP, color = WHITE, worth = 3, location = (3,1)} 
-
---WHITE KING KNIGHT
-wkKnight :: Piece
-wkKnight =  Piece { name  = KNIGHT, color = WHITE, worth = 3, location = (7,1)} 
-
---WHITE QUEEN KNIGHT
-wqKnight :: Piece
-wqKnight =  Piece { name  = KNIGHT, color = WHITE, worth = 3, location = (2,1)} 
-
---WHITE KING ROOK
-wkRook :: Piece
-wkRook =  Piece { name  = ROOK, color = WHITE, worth = 5, location = (8,1)} 
-
---WHITE QUEEN ROOK
-wqRook :: Piece
-wqRook =  Piece { name  = ROOK, color = WHITE, worth = 5, location = (1,1)} 
 
 --WHITE PAWNS
 wPawns :: [Piece]
