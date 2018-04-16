@@ -12,8 +12,11 @@ type Value = Int
 --type of pieces the pawns are (it is used as a phantom, for promotion rules)
 data MINOR = MINOR
 
---any piece that is not a pawn, is of this type (it is used as a phantom, for promotion rules)
+--any piece that is not a pawn, except the king, is of this type (it is used as a phantom, for promotion rules)
 data MAJOR = MAJOR
+
+--the type describing the piece that is the goal of chess
+data ZIEL  = ZIEL
 
 --colors of the pieces on the chess board
 data Color = BLACK | WHITE deriving (Show, Eq)
