@@ -26,8 +26,8 @@ data Piece a = Piece {   name       :: PieceType,
                      }   deriving (Show, Eq)
 
 --create all major pieces (white and black)
-setBoard :: [Piece Major]
-setBoard             = blackpieces ++ whitepieces
+allMajorPieces :: [Piece Major]
+allMajorPieces       = blackpieces ++ whitepieces
  where rkbTypes      = [ROOK, KNIGHT, BISHOP]
        rkbWorths     = [5, 3, 3]
        nameList      = rkbTypes ++ [QUEEN, KING] ++ reverse rkbTypes
