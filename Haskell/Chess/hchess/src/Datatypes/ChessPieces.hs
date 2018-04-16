@@ -21,7 +21,7 @@ data Major = Major
 data Color = BLACK | WHITE deriving (Show, Eq)
 
 --fundamental kinds of chess pieces in the game
-data PieceType =  KING   | QUEEN  | ROOK  | BISHOP | KNIGHT | PAWN  deriving (Show, Eq)
+data PieceType =  KING  | QUEEN  | ROOK  | BISHOP | KNIGHT | PAWN  deriving (Show, Eq)
 
 --a typical chess piece
 data Piece a = Piece {   name       :: PieceType,
