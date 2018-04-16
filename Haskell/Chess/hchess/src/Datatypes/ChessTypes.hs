@@ -27,15 +27,19 @@ data Color = BLACK | WHITE deriving (Show, Eq)
 --fundamental kinds of chess pieces in the game
 data PieceType =  KING  | QUEEN  | ROOK  | BISHOP | KNIGHT | PAWN  deriving (Show, Eq)
 
+--typeclass for minor pieces
 class Minor a where
     moveBack :: a -> Bool
- 
+
+--making only minor pieces a member 
 instance Minor MINOR where
     moveBack MINOR = False
 
+--typeclass for major pieces
 class Major a where
     moveAnyDirection :: a -> Bool
 
+--making only major pieces a member 
 instance Major MAJOR where
     moveAnyDirection MAJOR = True
 
@@ -45,3 +49,13 @@ data Piece a = Piece {   name       :: PieceType,
                          worth      :: Value, 
                          location   :: Location
                      }   deriving (Show, Eq)
+
+--the type that we use to gather all Piece types in a single list
+data Board = K (Piece ZIEL) | MI (Piece MINOR) | MA (Piece MAJOR)
+
+--to show us the board, we are only interested in the pieces
+instance Show Board where
+    show (K p)   = show p
+    show (MI p)  = show p
+    show (MA p)  = show p
+  

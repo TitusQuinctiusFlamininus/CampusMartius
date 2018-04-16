@@ -24,6 +24,12 @@ makeMajors c r = zipWith5 zipper nameList (mult c) worthList nonKingFiles (mult 
 --function to create all major pieces, white and black (Rooks, Knights, Bishops, Queens, Kings)
 allMajorPieces :: [Piece MAJOR]
 allMajorPieces = makeMajors BLACK 8 ++ makeMajors WHITE 1
- 
-     
+
+--function to gather all pieces and place them on the chess board
+setChessBoard :: [Board]
+setChessBoard = let kings   = map (\k  -> K k   ) allKings
+                    minors  = map (\mi -> MI mi ) allMinorPieces
+                    majors  = map (\ma -> MA ma ) allMajorPieces in 
+                     kings++minors++majors
+                
 
