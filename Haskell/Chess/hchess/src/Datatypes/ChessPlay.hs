@@ -25,11 +25,11 @@ class Promotable p t where
 --promoting pawns to different major pieces
 instance (Minor a, Major b) => Promotable (Piece a) (Piece b) where
     promote p@Piece {name=PAWN} r@Piece{name=ROOK}   = 
-     Piece {name=ROOK, color=(color p), worth=(worth r),   location=(fst (location p), (if (color p == BLACK) then 1 else 8))}
+     Piece {name=ROOK, color=(color p), worth=(worth r),   location=((fst $ location p), (if (color p == BLACK) then 1 else 8))}
     promote p@Piece {name=PAWN} r@Piece{name=KNIGHT} = 
-     Piece {name=KNIGHT, color=(color p), worth=(worth r), location=(fst (location p), (if (color p == BLACK) then 1 else 8))}
+     Piece {name=KNIGHT, color=(color p), worth=(worth r), location=((fst $ location p), (if (color p == BLACK) then 1 else 8))}
     promote p@Piece {name=PAWN} r@Piece{name=BISHOP} = 
-     Piece {name=BISHOP, color=(color p), worth=(worth r), location=(fst (location p), (if (color p == BLACK) then 1 else 8))}
+     Piece {name=BISHOP, color=(color p), worth=(worth r), location=((fst $ location p), (if (color p == BLACK) then 1 else 8))}
     promote p@Piece {name=PAWN} r@Piece{name=QUEEN}  = 
-     Piece {name=QUEEN, color=(color p), worth=(worth r),  location=(fst (location p), (if (color p == BLACK) then 1 else 8))}
-     
+     Piece {name=QUEEN, color=(color p), worth=(worth r),  location=((fst $ location p), (if (color p == BLACK) then 1 else 8))}
+    
