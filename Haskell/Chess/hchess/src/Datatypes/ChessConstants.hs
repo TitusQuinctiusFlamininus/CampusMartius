@@ -21,3 +21,6 @@ bPawnsRank   = 7 :: Rank
 
 wPawnsRank   = 2 :: Rank
 
+--function to replicate some type 8 times
+mult :: a -> [a]
+mult = replicate 8 

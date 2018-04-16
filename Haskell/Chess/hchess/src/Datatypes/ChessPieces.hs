@@ -5,11 +5,6 @@ import Datatypes.ChessConstants
 
 import Data.List     (zipWith5)
 
-
---function to replicate a coordinate 8 times
-mult :: a -> [a]
-mult = replicate 8 
-
 --function to create the Kings
 allKings :: [Piece ZIEL]
 allKings = zipWith (\c y -> Piece { name=KING, color=c, worth=1000, location=(5,y)} ) [BLACK, WHITE] [8,1]
