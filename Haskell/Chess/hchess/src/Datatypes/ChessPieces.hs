@@ -1,5 +1,7 @@
 module Datatypes.ChessPieces where
 
+import Data.List     (zipWith4)
+
 --a specific square on the boar
 type Location = (Int, Int)
 
@@ -34,10 +36,9 @@ allMajorPieces       = blackpieces ++ whitepieces
        bColorList    = replicate 8 BLACK
        wColorList    = replicate 8 WHITE
        worthList     = rkbWorths ++ [10, 1000] ++ reverse rkbWorths
-       bzipper       = \n c w -> Piece { name  = n, color = c, worth = w, location = (0,8)} 
-       wzipper       = \n c w -> Piece { name  = n, color = c, worth = w, location = (0,1)} 
-       bNoLocPieces  = zipWith3 bzipper nameList bColorList worthList
-       wNoLocPieces  = zipWith3 wzipper nameList wColorList worthList
+       zipper       = \n c w i-> Piece { name  = n, color = c, worth = w, location = (0,i)} 
+       bNoLocPieces  = zipWith4 zipper nameList bColorList worthList (replicate 8 8)
+       wNoLocPieces  = zipWith4 zipper nameList wColorList worthList (replicate 8 1)
        blackpieces   = zipWith (\p l -> p {location = (l,8)}) bNoLocPieces [1..8]
        whitepieces   = zipWith (\p l -> p {location = (l,1)}) wNoLocPieces [1..8]
        
