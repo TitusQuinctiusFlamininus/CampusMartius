@@ -36,4 +36,5 @@ instance Promotable (Piece a) (Piece b) where
     promote p@Piece {name=PAWN} r@Piece{name=QUEEN}  = 
      Piece {name=QUEEN, color=(color p), worth=(worth r),  location=(fst (location p), (if (color p == BLACK) then 1 else 8))}
     
-   
+promoteThePiece :: Piece Minor -> Piece Major -> Piece Major
+promoteThePiece =  promote   

@@ -21,9 +21,9 @@ data PieceType =  KING   | QUEEN  | ROOK  | BISHOP | KNIGHT | PAWN  deriving (Sh
 --a typical chess piece
 data Piece a = Piece {   name       :: PieceType,
                          color      :: Color, 
-                       worth      :: Value, 
-                       location   :: Location
-                   } deriving (Show, Eq)
+                         worth      :: Value, 
+                         location   :: Location
+                     }   deriving (Show, Eq)
 
 --create all major pieces (white and black)
 setBoard :: [Piece Major]
