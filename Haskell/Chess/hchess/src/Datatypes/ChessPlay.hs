@@ -22,7 +22,7 @@ instance Movable (Piece a)where
 class Promotable p t where
     promote :: p -> t -> Piece a
     
-instance (MINOR a, MAJOR b) => Promotable (Piece a) (Piece b) where
+instance (Minor a, Major b) => Promotable (Piece a) (Piece b) where
     promote p@Piece {name=PAWN} r@Piece{name=ROOK}   = 
      Piece {name=ROOK, color=(color p), worth=(worth r),   location=(fst (location p), (if (color p == BLACK) then 1 else 8))}
     promote p@Piece {name=PAWN} r@Piece{name=KNIGHT} = 

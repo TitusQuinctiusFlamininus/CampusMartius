@@ -12,10 +12,10 @@ type Row = Int
 type Value = Int
 
 --type of pieces the pawns are (it is used as a phantom, for promotion rules)
-data Minor = Minor
+data MINOR = MINOR
 
 --any piece that is not a pawn, is of this type (it is used as a phantom, for promotion rules)
-data Major = Major
+data MAJOR = MAJOR
 
 --colors of the pieces on the chess board
 data Color = BLACK | WHITE deriving (Show, Eq)
@@ -23,17 +23,17 @@ data Color = BLACK | WHITE deriving (Show, Eq)
 --fundamental kinds of chess pieces in the game
 data PieceType =  KING  | QUEEN  | ROOK  | BISHOP | KNIGHT | PAWN  deriving (Show, Eq)
 
-class MINOR a where
+class Minor a where
     moveBack :: a -> Bool
  
-instance MINOR Minor where
-    moveBack Minor = False
+instance Minor MINOR where
+    moveBack MINOR = False
 
-class MAJOR a where
+class Major a where
     moveAnyDirection :: a -> Bool
 
-instance MAJOR Major where
-    moveAnyDirection Major = True
+instance Major MAJOR where
+    moveAnyDirection MAJOR = True
 
 --a typical chess piece
 data Piece a = Piece {   name       :: PieceType,
@@ -43,7 +43,7 @@ data Piece a = Piece {   name       :: PieceType,
                      }   deriving (Show, Eq)
 
 --function to create all major pieces, white and black (Rooks, Knights, Bishops, Queens, Kings)
-allMajorPieces :: [Piece Major]
+allMajorPieces :: [Piece MAJOR]
 allMajorPieces       = blackpieces ++ whitepieces
  where rkbTypes      = [ROOK, KNIGHT, BISHOP]
        rkbWorths     = [5, 3, 3]
@@ -58,6 +58,6 @@ allMajorPieces       = blackpieces ++ whitepieces
        whitepieces   = zipWith (\p l -> p {location = (l,1)}) wNoLocPieces [1..8]
        
 --function to create all minor pieces, white and black (pawns)       
-allMinorPieces :: [Piece Minor]
+allMinorPieces :: [Piece MINOR]
 allMinorPieces    = pawner 7 BLACK ++ pawner 2 WHITE
  where pawner r c = map (\x -> Piece { name  = PAWN, color = c, worth = 1, location = (x,r)} ) [1..8]
