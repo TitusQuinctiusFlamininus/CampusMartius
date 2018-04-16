@@ -25,7 +25,7 @@ allMajorPieces ::    [Piece MAJOR]
 allMajorPieces       = blackpieces ++ whitepieces
  where rkbTypes      = [ROOK, KNIGHT, BISHOP]
        rkbWorths     = [5, 3, 3]
-       nameList      = rkbTypes  ++ [QUEEN]    ++ reverse rkbTypes
+       nameList      = rkbTypes  ++   [QUEEN]  ++ reverse rkbTypes
        worthList     = rkbWorths ++ [10, 1000] ++ reverse rkbWorths
        zipper        = \n c w i-> Piece { name  = n, color = c, worth = w, location = (0,i)} 
        bNoLocPieces  = zipWith4 zipper nameList (mult BLACK) worthList (mult 8)
