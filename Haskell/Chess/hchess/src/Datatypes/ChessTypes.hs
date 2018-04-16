@@ -4,7 +4,7 @@ module Datatypes.ChessTypes where
 type Location = (Int, Int)
 
 --the numeral representing the row a piece is in
-type Row = Int
+type Rank = Int
 
 --the value of the chess piece
 type Value = Int

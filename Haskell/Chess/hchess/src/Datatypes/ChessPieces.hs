@@ -12,18 +12,18 @@ mult = replicate 8
 
 --function to create the Kings
 allKings :: [Piece ZIEL]
-allKings = zipWith (\c y -> Piece { name  = KING, color = c, worth = 1000, location = (5,y)} ) [BLACK, WHITE] [8,1]
+allKings = zipWith (\c y -> Piece { name=KING, color=c, worth=1000, location=(5,y)} ) [BLACK, WHITE] [8,1]
 
 --function to create all minor pieces, white and black (pawns)       
 allMinorPieces :: [Piece MINOR]
 allMinorPieces = pawner BLACK 7 ++ pawner WHITE 2
 
 --function to create pawns of a certain color, placed on a specific row
-pawner :: Color -> Row -> [Piece MINOR]
-pawner c r = zipWith3 (\c x y -> Piece { name  = PAWN, color = c, worth = 1, location = (x,y)} ) (mult c) [1..8] (mult r)
+pawner :: Color -> Rank -> [Piece MINOR]
+pawner c r = zipWith3 (\c x y -> Piece { name=PAWN, color=c, worth=1, location=(x,y)}) (mult c) [1..8] (mult r)
 
---function to make 
-makeMajors :: Color -> Row -> [Piece MAJOR]
+--function to make all major pieces, except the king
+makeMajors :: Color -> Rank -> [Piece MAJOR]
 makeMajors c r = zipWith5 zipper nameList (mult c) worthList ([1..4]++[6..8]) (mult r)
 
 --function to create all major pieces, white and black (Rooks, Knights, Bishops, Queens, Kings)
