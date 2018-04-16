@@ -15,7 +15,7 @@ class Movable p where
 
 --lets make all our pieces movable and the ability to capture other pieces
 instance Movable (Piece a)where
-    move p@_  (x,y) = p { location = (x,y)} 
+    move p (x,y)    = p { location = (x,y)} 
     capture k v l   = (k {location = location v}, (v:l))
 
 --typeclass representing minor pieces (i.e pawns). Major pieces are any pieces that are NOT pawns, since we c

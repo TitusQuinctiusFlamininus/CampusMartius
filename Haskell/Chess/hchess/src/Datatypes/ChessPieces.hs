@@ -47,9 +47,5 @@ allMajorPieces       = blackpieces ++ whitepieces
        
 --function to create all minor pieces, white and black (pawns)       
 allMinorPieces :: [Piece Minor]
-allMinorPieces = pawner 7 BLACK ++ pawner 2 WHITE
-
---function to create pawns
-pawner :: Row -> Color -> [Piece Minor]
-pawner r c = map (\x -> Piece { name  = PAWN, color = c, worth = 1, location = (x,r)} ) [1..8]
-
+allMinorPieces    = pawner 7 BLACK ++ pawner 2 WHITE
+ where pawner r c = map (\x -> Piece { name  = PAWN, color = c, worth = 1, location = (x,r)} ) [1..8]
