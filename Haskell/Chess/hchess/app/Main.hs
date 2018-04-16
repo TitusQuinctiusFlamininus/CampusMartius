@@ -4,9 +4,15 @@ import Datatypes.ChessPlay
 import Datatypes.ChessPieces
 
 
-raisePiece :: Piece
-raisePiece = let king = Piece {name=KING, color=BLACK, worth=1000, location=(5,8)} in 
-    promote king BISHOP (6,1)
+promoteThePiece :: Piece Minor -> Piece Major -> Piece Major
+promoteThePiece =  promote
+
+
+promoted :: Piece Major
+promoted = Piece {name=ROOK, color=BLACK, worth=5, location=(0,0)}
+
+promoter :: Piece Minor
+promoter = Piece {name=PAWN, color=BLACK, worth=1, location=(6,2)}
 
 main :: IO ()
-main = putStrLn $ show raisePiece
+main = putStrLn $ show $ promoteThePiece promoter promoted

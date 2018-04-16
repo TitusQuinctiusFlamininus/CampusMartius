@@ -1,3 +1,4 @@
+{-# LANGUAGE MultiParamTypeClasses #-}
 
 
 module Datatypes.ChessPlay where
@@ -17,14 +18,22 @@ class Movable p where
     capture :: p -> p -> [p] -> (p, [p])
 
 --lets make all our pieces movable and the ability to capture other pieces
-instance Movable Piece where
+instance Movable (Piece a)where
     move p@_  (x,y) = p { location = (x,y)} 
     capture k v l   = (k {location = location v}, (v:l))
 
 --typeclass representing minor pieces (i.e pawns). Major pieces are any pieces that are NOT pawns, since we c
-class Promotable p where
-    promote :: p -> PieceType -> Location -> Piece
+class Promotable p t where
+    promote :: p -> t -> Piece a
     
-instance Promotable Piece where
-    promote p t l  = p {name= t,  location = l}
+instance Promotable (Piece a) (Piece b) where
+    promote p@Piece {name=PAWN} r@Piece{name=ROOK}   = 
+     Piece {name=ROOK, color=(color p), worth=(worth r),   location=(fst (location p), (if (color p == BLACK) then 1 else 8))}
+    promote p@Piece {name=PAWN} r@Piece{name=KNIGHT} = 
+     Piece {name=KNIGHT, color=(color p), worth=(worth r), location=(fst (location p), (if (color p == BLACK) then 1 else 8))}
+    promote p@Piece {name=PAWN} r@Piece{name=BISHOP} = 
+     Piece {name=BISHOP, color=(color p), worth=(worth r), location=(fst (location p), (if (color p == BLACK) then 1 else 8))}
+    promote p@Piece {name=PAWN} r@Piece{name=QUEEN}  = 
+     Piece {name=QUEEN, color=(color p), worth=(worth r),  location=(fst (location p), (if (color p == BLACK) then 1 else 8))}
+    
    
