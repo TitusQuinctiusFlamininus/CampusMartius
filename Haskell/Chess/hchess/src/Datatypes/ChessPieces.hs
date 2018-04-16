@@ -23,6 +23,18 @@ data Color = BLACK | WHITE deriving (Show, Eq)
 --fundamental kinds of chess pieces in the game
 data PieceType =  KING  | QUEEN  | ROOK  | BISHOP | KNIGHT | PAWN  deriving (Show, Eq)
 
+class MINOR a where
+    moveBack :: a -> Bool
+ 
+instance MINOR Minor where
+    moveBack Minor = False
+
+class MAJOR a where
+    moveAnyDirection :: a -> Bool
+
+instance MAJOR Major where
+    moveAnyDirection Major = True
+
 --a typical chess piece
 data Piece a = Piece {   name       :: PieceType,
                          color      :: Color, 
