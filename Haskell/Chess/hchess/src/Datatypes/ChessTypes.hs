@@ -6,6 +6,9 @@ type Location = (Int, Int)
 --the numeral representing the row a piece is in
 type Rank = Int
 
+--the numeral representing the file (column) a piece is in
+type File = Int 
+
 --the value of the chess piece
 type Value = Int
 

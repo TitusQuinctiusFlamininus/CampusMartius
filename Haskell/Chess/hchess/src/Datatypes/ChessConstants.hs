@@ -3,12 +3,21 @@ module Datatypes.ChessConstants where
 import Datatypes.ChessTypes 
 
 
-rkbTypes   = [ROOK, KNIGHT, BISHOP]
+rkb     = [ROOK, KNIGHT, BISHOP] :: [PieceType]
 
-rkbWorths  = [5, 3, 3]
+rkbWorths    = [5, 3, 3]
 
-nameList   = rkbTypes  ++   [QUEEN]  ++ reverse rkbTypes
+nameList     = rkb  ++   [QUEEN]  ++ reverse rkb  :: [PieceType]
 
-worthList  = rkbWorths ++     [10]   ++ reverse rkbWorths :: [Value]
+worthList    = rkbWorths ++     [10]   ++ reverse rkbWorths :: [Value]
 
-zipper     = \n c w col row -> Piece { name  = n, color = c, worth = w, location = (col,row)} 
+zipper       = \n c w file rank -> Piece { name  = n, color = c, worth = w, location = (file,rank)} 
+
+nonKingFiles = [1..4]++[6..8] :: [File]
+
+allFiles     = [1..8] :: [File]
+
+bPawnsRank   = 7 :: Rank
+
+wPawnsRank   = 2 :: Rank
+
