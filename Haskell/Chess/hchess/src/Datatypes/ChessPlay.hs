@@ -3,7 +3,7 @@
 
 module Datatypes.ChessPlay where
 
-import Datatypes.ChessPieces
+import Datatypes.ChessTypes
 
 --typeclass embodying the ability of a piece to translocate from one square to another
 --either to capture or simply to move
