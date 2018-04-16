@@ -5,6 +5,9 @@ import Data.List     (zipWith4)
 --a specific square on the boar
 type Location = (Int, Int)
 
+--the numeral representing the row a piece is in
+type Row = Int
+
 --the value of the chess piece
 type Value = Int
 
@@ -27,7 +30,7 @@ data Piece a = Piece {   name       :: PieceType,
                          location   :: Location
                      }   deriving (Show, Eq)
 
---create all major pieces (white and black)
+--function to create all major pieces, white and black (Rooks, Knights, Bishops, Queens, Kings)
 allMajorPieces :: [Piece Major]
 allMajorPieces       = blackpieces ++ whitepieces
  where rkbTypes      = [ROOK, KNIGHT, BISHOP]
@@ -36,17 +39,17 @@ allMajorPieces       = blackpieces ++ whitepieces
        bColorList    = replicate 8 BLACK
        wColorList    = replicate 8 WHITE
        worthList     = rkbWorths ++ [10, 1000] ++ reverse rkbWorths
-       zipper       = \n c w i-> Piece { name  = n, color = c, worth = w, location = (0,i)} 
+       zipper        = \n c w i-> Piece { name  = n, color = c, worth = w, location = (0,i)} 
        bNoLocPieces  = zipWith4 zipper nameList bColorList worthList (replicate 8 8)
        wNoLocPieces  = zipWith4 zipper nameList wColorList worthList (replicate 8 1)
        blackpieces   = zipWith (\p l -> p {location = (l,8)}) bNoLocPieces [1..8]
        whitepieces   = zipWith (\p l -> p {location = (l,1)}) wNoLocPieces [1..8]
        
---BLACK PAWNS
-bPawns :: [Piece Minor]
-bPawns = map (\x -> Piece { name  = PAWN, color = BLACK, worth = 1, location = (x,7)} ) [1..8]
+--function to create all minor pieces, white and black (pawns)       
+allMinorPieces :: [Piece Minor]
+allMinorPieces = pawner 7 BLACK ++ pawner 2 WHITE
 
+--function to create pawns
+pawner :: Row -> Color -> [Piece Minor]
+pawner r c = map (\x -> Piece { name  = PAWN, color = c, worth = 1, location = (x,r)} ) [1..8]
 
---WHITE PAWNS
-wPawns :: [Piece Minor]
-wPawns = map (\x -> Piece { name  = PAWN, color = WHITE, worth = 1, location = (x,2)} ) [1..8]

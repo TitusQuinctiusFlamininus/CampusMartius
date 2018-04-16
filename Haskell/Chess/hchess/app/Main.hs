@@ -10,6 +10,6 @@ promoter :: Piece Minor
 promoter = Piece {name=PAWN, color=BLACK, worth=1, location=(6,2)}
 
 main :: IO ()
-main = putStrLn $ show $ promoteThePiece (head bPawns) (head allMajorPieces)
+main = putStrLn $ show $ promoteThePiece (head allMinorPieces) (head allMajorPieces)
        --putStrLn $ show $ promoteThePiece (head allMajorPieces) (head allMajorPieces)
-       --putStrLn $ show $ promoteThePiece (head allMajorPieces) (head bPawns)
+       --putStrLn $ show $ promoteThePiece (head allMajorPieces) (head allMinorPieces)
