@@ -20,7 +20,7 @@ instance Movable (Piece a) where
 
 --typeclass representing minor pieces (i.e pawns). Major pieces are any pieces that are NOT pawns, since we c
 class Promotable p t where
-    promote :: p -> t -> Piece a
+    promote :: p -> t -> t
 
 --promoting pawns to different major pieces
 instance (Minor a, Major b) => Promotable (Piece a) (Piece b) where
