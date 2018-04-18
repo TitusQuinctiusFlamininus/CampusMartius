@@ -1,13 +1,13 @@
 module Datatypes.ChessTypes where
 
---a specific square on the boar
-type Location = (Int, Int)
-
 --the numeral representing the row a piece is in
 type Rank = Int
 
 --the numeral representing the file (column) a piece is in
 type File = Int 
+
+--a specific square on the board
+type Location = (File, Rank)
 
 --the value of the chess piece
 type Value = Int
