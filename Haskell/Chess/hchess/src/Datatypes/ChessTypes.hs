@@ -39,10 +39,15 @@ instance Minor MINOR where
 class Major a where
     moveAnyDirection :: a -> Bool
 
---making only major pieces a member 
+--making major pieces a member 
 instance Major MAJOR where
     moveAnyDirection MAJOR = True
 
+--making Kings a member 
+instance Major ZIEL where
+    moveAnyDirection ZIEL = True
+
+ 
 --a typical chess piece
 data Piece a = Piece {   name       :: PieceType,
                          color      :: Color, 
@@ -50,12 +55,12 @@ data Piece a = Piece {   name       :: PieceType,
                          location   :: Location
                      }   deriving (Show, Eq)
 
---the type that we use to gather all Piece types in a single list
+--the type that we use to gather all chess types together
 data Board = K (Piece ZIEL) | MI (Piece MINOR) | MA (Piece MAJOR)
 
 --to show us the board, we are only interested in the pieces
 instance Show Board where
-    show (K p)   = show p
-    show (MI p)  = show p
-    show (MA p)  = show p
+    show (K  p)   = show p
+    show (MI p)   = show p
+    show (MA p)   = show p
   
