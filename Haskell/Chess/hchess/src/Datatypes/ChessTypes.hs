@@ -56,7 +56,7 @@ data Piece a = Piece {   name       :: PieceType,
                      }   deriving (Show, Eq)
 
 --the type that we use to gather all chess types together
-data BoardPiece = K (Piece ZIEL) | MI (Piece MINOR) | MA (Piece MAJOR)
+data BoardPiece = K (Piece ZIEL) | MI (Piece MINOR) | MA (Piece MAJOR) deriving (Eq)
 
 --to show us the board, we are only interested in the pieces
 instance Show BoardPiece where

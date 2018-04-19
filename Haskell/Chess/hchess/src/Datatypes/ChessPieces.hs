@@ -3,7 +3,7 @@ module Datatypes.ChessPieces where
 import Datatypes.ChessTypes 
 import Datatypes.ChessConstants
 
-import Data.List     (zipWith5)
+import Data.List     (zipWith5, nub)
 
 --function to create the Kings
 allKings :: [Piece ZIEL]
@@ -27,7 +27,7 @@ allMajorPieces = makeMajors BLACK 8 ++ makeMajors WHITE 1
 
 --function to gather all pieces and place them on the chess board
 setChessBoard :: [BoardPiece]
-setChessBoard = [K k | k  <- allKings] ++ [MI mi | mi <- allMinorPieces] ++ [MA ma | ma <- allMajorPieces]
+setChessBoard = nub $ concat [ [K k, MI mi, MA ma] | k  <- allKings, mi <- allMinorPieces, ma <- allMajorPieces]
                 
                 
 
