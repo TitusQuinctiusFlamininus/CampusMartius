@@ -26,7 +26,7 @@ allMajorPieces :: [Piece MAJOR]
 allMajorPieces = makeMajors BLACK 8 ++ makeMajors WHITE 1
 
 --function to gather all pieces and place them on the chess board
-setChessBoard :: [Board]
+setChessBoard :: [BoardPiece]
 setChessBoard = [K k | k  <- allKings] ++ [MI mi | mi <- allMinorPieces] ++ [MA ma | ma <- allMajorPieces]
                 
                 
