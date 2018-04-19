@@ -18,7 +18,7 @@ instance Movable (Piece a) where
     move p l        = p  { location = l } 
     capture k v l   = (k {location = location v}, (v:l))
 
---typeclass representing minor pieces (i.e pawns). Major pieces are any pieces that are NOT pawns, since we c
+--typeclass representing the promotion of minor pieces (i.e pawns). Major pieces are any pieces that are NOT pawns (and not the King)
 class Promotable p t where
     promote :: p -> t -> t
 
