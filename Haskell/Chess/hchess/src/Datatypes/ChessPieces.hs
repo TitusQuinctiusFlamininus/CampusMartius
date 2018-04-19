@@ -27,7 +27,7 @@ allMajorPieces = makeMajors BLACK 8 ++ makeMajors WHITE 1
 
 --function to gather all pieces and place them on the chess board
 setChessBoard :: [BoardPiece]
-setChessBoard = nub $ concat [ [K k, MI mi, MA ma] | k  <- allKings, mi <- allMinorPieces, ma <- allMajorPieces]
+setChessBoard = nub $ concat [[K k, MI mi, MA ma] | k <- allKings, mi <- allMinorPieces, ma <- allMajorPieces]
                 
                 
 
