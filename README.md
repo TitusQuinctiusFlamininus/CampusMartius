@@ -24,3 +24,5 @@ Simple Addition Calculator using Monad Transformers
 Reading Configuration using Reader Monad Transformer
 
 TicTaCToe Game: Using Stacked Monad Transformers
+
+Haskell Chess
