@@ -10,4 +10,12 @@ cFile = fst . location
 --function that gives the rank for any piece
 cRank :: Piece a -> Rank
 cRank = snd . location
+
+--function to filter out all all bad ranks (ranks that are outside the board)
+outerRanks :: [Location] -> [Location]
+outerRanks = filter (\k -> snd k >= 1) . filter (\k -> snd k <= 8)
+
+--function to filter out all all bad files (files that are outside the board)
+outerFiles :: [Location] -> [Location]
+outerFiles = filter (\k -> fst k >= 1) . filter (\k -> fst k <= 8)
                            

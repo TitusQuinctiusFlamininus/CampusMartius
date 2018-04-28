@@ -11,3 +11,7 @@ mPossibility p@Piece{name=KNIGHT} = return $ zipWith (\f r -> (f,r)) fileList ra
                                           rankList = concat . replicate 2 $  [(rk+1), (rk-1), (rk+2), (rk-2)]
                                           fl = cFile p
                                           rk = cRank p
+ 
+--filter out all locations outside the board, given as locations in the list 
+filterNoBoard :: [Location] -> Moves [Location]
+filterNoBoard l = return $ outerRanks . outerFiles $ l 
