@@ -4,8 +4,6 @@ module Datatypes.ChessPlay where
 import Datatypes.ChessTypes
 import Utilities.ChessUtils
 
-import Control.Monad    (join)
-
 --determine unmodified (raw) possible moves of a piece, based on its current position 
 mPossibility :: Piece a -> Moves [Location]
 mPossibility p@Piece{name=KNIGHT} = return $ zipWith (\f r -> (f,r)) fileList rankList
