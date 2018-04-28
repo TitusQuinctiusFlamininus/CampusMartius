@@ -7,7 +7,7 @@ import Data.List     (zipWith5, nub)
 
 --function to create the Kings
 allKings :: [Piece ZIEL]
-allKings = zipWith (\c y -> Piece { name=KING, color=c, worth=1000, location=(5,y)} ) [BLACK, WHITE] [8,1]
+allKings = zipWith (\c y -> Piece { name=KING, color=c, worth=1000, location=(5,y)} ) [BLACK, WHITE] [uBound,lBound]
 
 --function to create all minor pieces, white and black (pawns)       
 allMinorPieces :: [Piece MINOR]
@@ -23,7 +23,7 @@ makeMajors c r = zipWith5 zipper nameList (mult c) worthList nonKingFiles (mult 
 
 --function to create all major pieces, white and black (Rooks, Knights, Bishops, Queens, Kings)
 allMajorPieces :: [Piece MAJOR]
-allMajorPieces = makeMajors BLACK 8 ++ makeMajors WHITE 1
+allMajorPieces = makeMajors BLACK uBound ++ makeMajors WHITE lBound
 
 --function to gather all pieces and place them on the chess board
 setChessBoard :: [BoardPiece]

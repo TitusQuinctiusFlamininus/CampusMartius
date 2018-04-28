@@ -2,6 +2,12 @@
 
 module Datatypes.ChessTypes where
 
+--the highest rank or file any piece can reach
+uBound = 8
+
+--the lowest rank or file any piece can reach
+lBound = 1
+
 --the numeral representing the row a piece is in
 type Rank = Int
 
@@ -107,5 +113,5 @@ class Promotable p t where
 
 --promoting a minor piece to major piece
 instance (Minor a, Major b) => Promotable (Piece a) (Piece b) where
-    promote p r = Piece {name=name r, color=color p, worth=worth r, location=(fst $ location p, if (color p == BLACK) then 1 else 8)}
+    promote p r = Piece {name=name r, color=color p, worth=worth r, location=(fst $ location p, if (color p == BLACK) then uBound else lBound)}
     

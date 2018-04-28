@@ -14,7 +14,7 @@ mPossibility p@Piece{name=KNIGHT} = return $ zipWith (\f r -> (f,r)) fileList ra
  
 --filter out all locations outside the board, given as locations in the list 
 filterNoBoard :: [Location] -> Moves [Location]
-filterNoBoard l = return $ outerRanks . outerFiles $ l 
+filterNoBoard l = return $ filterOuterBoard fst . filterOuterBoard snd $ l 
 
 --function to filter out all locations that have already been occupied one's own color pieces 
 --for example, if black wants to move, then he can only do so to a sqaure not occupied by his own pieces
