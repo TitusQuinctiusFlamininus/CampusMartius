@@ -113,5 +113,9 @@ class Promotable p t where
 
 --promoting a minor piece to major piece
 instance (Minor a, Major b) => Promotable (Piece a) (Piece b) where
-    promote p r = Piece {name=name r, color=color p, worth=worth r, location=(fst $ location p, if (color p == BLACK) then uBound else lBound)}
+    promote p r = Piece { name     =  name r, 
+                          color    =  color p, 
+                          worth    =  worth r, 
+                          location =  (fst $ location p, if (color p == BLACK) then uBound else lBound)
+                         }
     
