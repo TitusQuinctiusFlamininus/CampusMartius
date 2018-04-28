@@ -21,11 +21,11 @@ filterNoBoard l = return $ filterOuterBoard fst . filterOuterBoard snd $ l
 --first parameter = from the Moves monad
 --second parameter = the list of all colored locations
 filterOwnOccupied :: [Location] -> [Location] -> Moves [Location]
-filterOwnOccupied l cl = return $ findEmpty l cl 
+filterOwnOccupied l c = return $ findEmpty l c
 
 findEmpty :: [Location] -> [Location] -> [Location]
 findEmpty   []   _  = []
 findEmpty   _    [] = []
-findEmpty (x:xs) cl = case x `elem` cl of 
-                        True  -> findEmpty xs cl
-                        False -> x : findEmpty xs cl
+findEmpty (x:xs) c  = case x `elem` c of 
+                        True  ->     findEmpty xs c
+                        False -> x : findEmpty xs c
