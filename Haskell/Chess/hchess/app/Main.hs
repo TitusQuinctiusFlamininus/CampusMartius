@@ -2,6 +2,7 @@ module Main where
 
 import Datatypes.ChessPlay
 import Datatypes.ChessPieces
+import Datatypes.ChessTypes
 
 
 main :: IO ()
