@@ -4,6 +4,8 @@ module Datatypes.ChessPlay where
 import Datatypes.ChessTypes
 import Utilities.ChessUtils
 
+import Control.Monad    (join)
+
 --determine unmodified (raw) possible moves of a piece, based on its current position 
 mPossibility :: Piece a -> Moves [Location]
 mPossibility p@Piece{name=KNIGHT} = return $ zipWith (\f r -> (f,r)) fileList rankList
@@ -18,5 +20,14 @@ filterNoBoard l = return $ filterOuterBoard fst . filterOuterBoard snd $ l
 
 --function to filter out all locations that have already been occupied one's own color pieces 
 --for example, if black wants to move, then he can only do so to a sqaure not occupied by his own pieces
-filterOwnOccupied :: [Location] -> Moves [Location]
-filterOwnOccupied = undefined
+--first parameter = from the Moves monad
+--second parameter = the list of all colored locations
+filterOwnOccupied :: [Location] -> [Location] -> Moves [Location]
+filterOwnOccupied l cl = return $ findEmpty l cl 
+
+findEmpty :: [Location] -> [Location] -> [Location]
+findEmpty   []   _  = []
+findEmpty   _    [] = []
+findEmpty (x:xs) cl = case x `elem` cl of 
+                        True  -> findEmpty xs cl
+                        False -> x : findEmpty xs cl
