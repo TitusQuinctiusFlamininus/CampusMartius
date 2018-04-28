@@ -64,7 +64,7 @@ instance Show BoardPiece where
     show (MA p)   = show p
  
 
---designates the moves possible by any piece
+--designates the locations possible by any piece, at any one time
 data Moves s = Moves s deriving (Show, Eq)
  
 --functor instance
