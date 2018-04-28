@@ -1,5 +1,3 @@
-{-# LANGUAGE ViewPatterns #-}
-
 module Utilities.ChessUtils where
 
 import Datatypes.ChessTypes
@@ -26,11 +24,13 @@ allColorLocations :: [BoardPiece] -> Color -> [Location]
 allColorLocations [] _  = []
 allColorLocations (x:xs) c =  if (getColor x == c) then (getLocation x : allColorLocations xs c) else allColorLocations xs c
 
+--function to get the color of any board piece
 getColor :: BoardPiece -> Color
 getColor (K p)  = color p
 getColor (MI p) = color p
 getColor (MA p) = color p
 
+--function to get the location of any board piece
 getLocation :: BoardPiece -> Location
 getLocation (K p)  = location p
 getLocation (MI p) = location p
