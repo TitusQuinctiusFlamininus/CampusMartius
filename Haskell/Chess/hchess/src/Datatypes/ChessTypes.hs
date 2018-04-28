@@ -84,14 +84,14 @@ instance Functor Moves where
 -- pure :: (Applicative f) => a -> f a
 -- <*>  :: (Applicative f) => f(a -> b) -> f a -> f b
 instance Applicative Moves where
-    pure a  = Moves a
+    pure = Moves
     Moves f <*> Moves s = Moves (f s)
     
 --monad instance
 -- return :: (Monad m) => a -> m a
 -- (>>=)  :: m a -> (a -> m b) -> m b
 instance Monad Moves where
-    return a = Moves a
+    return = Moves
     Moves s >>= f = f s
     
 --typeclass embodying the ability of a piece to translocate from one square to another
