@@ -47,7 +47,6 @@ instance Major MAJOR where
 instance Major ZIEL where
     moveAnyDirection ZIEL = True
 
- 
 --a typical chess piece
 data Piece a = Piece {   name       :: PieceType,
                          color      :: Color, 
@@ -63,4 +62,26 @@ instance Show BoardPiece where
     show (K  p)   = show p
     show (MI p)   = show p
     show (MA p)   = show p
-  
+ 
+
+--designates the moves possible by any piece
+data Moves s = Moves s deriving (Show, Eq)
+ 
+--functor instance
+--fmap :: (Functor f) => (a -> b) -> fa -> fb
+instance Functor Moves where
+    fmap f (Moves p) = Moves (f p)
+
+--applicative instance
+-- pure :: (Applicative f) => a -> f a
+-- <*>  :: (Applicative f) => f(a -> b) -> f a -> f b
+instance Applicative Moves where
+    pure a  = Moves a
+    Moves f <*> Moves s = Moves (f s)
+    
+--monad instance
+-- return :: (Monad m) => a -> m a
+-- (>>=)  :: m a -> (a -> m b) -> m b
+instance Monad Moves where
+    return a = Moves a
+    Moves s >>= f = f s
