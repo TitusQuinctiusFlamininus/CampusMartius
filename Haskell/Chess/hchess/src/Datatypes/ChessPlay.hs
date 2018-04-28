@@ -19,4 +19,4 @@ filterNoBoard l = return $ outerRanks . outerFiles $ l
 --function to filter out all locations that have already been occupied one's own color pieces 
 --for example, if black wants to move, then he can only do so to a sqaure not occupied by his own pieces
 filterOwnOccupied :: [Location] -> Moves [Location]
-filterOwnOccupied l = undefined
+filterOwnOccupied = undefined
