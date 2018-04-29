@@ -20,6 +20,8 @@ worthList    = rkbWorths ++     [10]   ++ reverse rkbWorths :: [Value]
 
 zipper       = \n c w file rank -> Piece { name  = n, color = c, worth = w, location = (file,rank)} 
 
+locZipper    = \f r -> (f,r)
+
 nonKingFiles = [1..4]++[6..8] :: [File]
 
 allFiles     = [1..8] :: [File]

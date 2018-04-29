@@ -1,18 +1,29 @@
+{-# LANGUAGE ViewPatterns #-}
 
 module Datatypes.ChessPlay where
 
 import Datatypes.ChessTypes
+import Datatypes.ChessConstants
 import Utilities.ChessUtils
 
+
 --determine unmodified (raw) possible moves of a piece, based on its current position 
-mPossibility :: Piece a -> Moves [Location]
-mPossibility k@Piece{name=KNIGHT} = return $ zipWith (\f r -> (f,r)) fileList rankList
-                                    where fileList = (zipWith ($) (mult 2 (+2) ++ mult 2 (+1)) $ mult 4 $ fl) ++
-                                                      mult 2 (fl-2) ++ mult 2 (fl-1)
-                                          rankList = concat . replicate 2 $  [(rk+1), (rk-1), (rk+2), (rk-2)]
-                                          fl = cFile k
-                                          rk = cRank k
- 
+mPossibility :: Location -> PieceType -> Moves [Location]
+mPossibility (fl,rk) ((KNIGHT==) -> True) = return $ zipWith locZipper kFiles kRanks
+                                            where kFiles = (zipWith ($) (mult 2 (+2)   ++ mult 2 (+1)) $ mult 4 $ fl) ++
+                                                                         mult 2 (fl-2) ++ mult 2 (fl-1)
+                                                  kRanks = concat . replicate 2 $  [(rk+1), (rk-1), (rk+2), (rk-2)]
+mPossibility (fb,rb) ((BISHOP==) -> True) = return $ zipWith locZipper bFiles bRanks
+                                            where bFiles =  concat . mult 2 $ zipWith ($) (mult uBound (+fb)) boardSpan ++
+                                                                              zipWith ((-)) (mult uBound fb)  boardSpan
+                                                  bRanks =  zipWith ($)   (mult uBound (+rb)) boardSpan  ++ 
+                                                            zipWith ((-)) (mult uBound rb)    boardSpan  ++
+                                                            zipWith ((-)) (mult uBound rb)    boardSpan  ++
+                                                            zipWith ($)   (mult uBound (+rb)) boardSpan
+                                                            
+                                                 
+
+
 --filter out all locations outside the board, given as locations in the list 
 filterNoBoard :: [Location] -> Moves [Location]
 filterNoBoard l = return $ filterOuterBoard fst . filterOuterBoard snd $ l 

@@ -7,14 +7,6 @@ import Datatypes.ChessConstants
 mult :: Int -> a -> [a]
 mult = replicate 
 
---function that gives the file for any piece
-cFile :: Piece a -> File
-cFile = fst . location
-                                          
---function that gives the rank for any piece
-cRank :: Piece a -> Rank
-cRank = snd . location
-
 filterOuterBoard :: (Location -> RankOrFile) -> [Location] -> [Location]
 filterOuterBoard f = filter (\k -> f k >= lBound) . filter (\k -> f k <= uBound)
 
