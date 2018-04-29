@@ -8,6 +8,7 @@ uBound = 8
 --the lowest rank or file any piece can reach
 lBound = 1
 
+--an integer that describes a part of a location tuple, either rank or file 
 type RankOrFile = Int
 
 --the numeral representing the row a piece is in
