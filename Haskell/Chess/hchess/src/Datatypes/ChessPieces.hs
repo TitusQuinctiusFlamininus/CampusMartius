@@ -16,11 +16,11 @@ allMinorPieces = pawner BLACK bPawnsRank ++ pawner WHITE wPawnsRank
 
 --function to create pawns of a certain color, placed on a specific row
 pawner :: Color -> Rank -> [Piece MINOR]
-pawner c r = zipWith3 (\c x y -> Piece { name=PAWN, color=c, worth=1, location=(x,y)}) ((<->) 8 c) allFiles ((<->) 8 r)
+pawner c r = zipWith3 (\c x y -> Piece { name=PAWN, color=c, worth=1, location=(x,y)}) ((<->) uBound c) allFiles ((<->) uBound r)
 
 --function to make all major pieces, except the king
 makeMajors :: Color -> Rank -> [Piece MAJOR]
-makeMajors c r = zipWith5 zipper nameList ((<->) 8 c) worthList nonKingFiles ((<->) 8 r)
+makeMajors c r = zipWith5 zipper nameList ((<->) uBound c) worthList nonKingFiles ((<->) uBound r)
 
 --function to create all major pieces, white and black (Rooks, Knights, Bishops, Queens, Kings)
 allMajorPieces :: [Piece MAJOR]
