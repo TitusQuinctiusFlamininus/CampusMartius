@@ -19,8 +19,6 @@ mPossibility (f,r) t
                        bRanks = zipWith ($)   (mult uBound (+r)) boardSpan ++ zipWith ((-)) (mult uBound r)    boardSpan ++
                                 zipWith ((-)) (mult uBound r)   boardSpan ++ zipWith ($)   (mult uBound (+r)) boardSpan
                                                            
-                                                 
-
 
 --filter out all locations outside the board, given as locations in the list 
 filterNoBoard :: [Location] -> Moves [Location]
