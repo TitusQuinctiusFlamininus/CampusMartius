@@ -67,10 +67,12 @@ data Piece a = Piece {   name       :: PieceType,
 --the type that we use to gather all chess types together
 data BoardPiece = K (Piece ZIEL) | MI (Piece MINOR) | MA (Piece MAJOR) deriving (Eq)
 
+--typeclass to help us get behaviour out of the higher level board piece types
 class Boarder a where
     paint  :: a -> Color
     locate :: a -> Location
 
+--instances of board pieces
 instance Boarder BoardPiece where
     paint  (K p)   = color p
     paint  (MI p)  = color p
