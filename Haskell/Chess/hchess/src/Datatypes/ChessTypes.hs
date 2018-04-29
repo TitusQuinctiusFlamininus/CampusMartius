@@ -18,6 +18,10 @@ majNames     = rkb  ++   [QUEEN]  ++ reverse rkb  :: [PieceType]
 
 majWorths    = rkbWorths ++     [10]   ++ reverse rkbWorths :: [Value]
 
+kingWorth    = 1000      :: Value
+
+pawnWorth    = 1         :: Value
+
 zipper       = \n c w file rank -> Piece { name  = n, color = c, worth = w, location = (file,rank)} 
 
 locZipper    = \f r -> (f,r)
