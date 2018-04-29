@@ -10,14 +10,15 @@ import Utilities.ChessUtils
 --determine unmodified (raw) possible moves of a piece, based on its current position 
 mPossibility :: Location -> PieceType -> Moves [Location]
 mPossibility (f,r) t
- | t == KNIGHT = return $ zipWith locZipper kFiles kRanks
- | t == BISHOP = return $ zipWith locZipper bFiles bRanks
+ | t == KNIGHT = return $ poss kFiles kRanks
+ | t == BISHOP = return $ poss bFiles bRanks
  | otherwise   = return [] 
-                 where kFiles = (zipWith ($) (mult 2 (+2) ++ mult 2 (+1)) $ mult 4 $ f) ++ mult 2 (f-2) ++ mult 2 (f-1)
+                 where poss   = zipWith locZipper 
+                       kFiles = (zipWith ($) (mult 2 (+2) ++ mult 2 (+1)) $ mult 4 $ f) ++ mult 2 (f-2) ++ mult 2 (f-1)
                        kRanks = concat . replicate 2 $  [(r+1), (r-1), (r+2), (r-2)]
                        bFiles = concat . mult 2 $ zipWith ($) (mult uBound (+f)) boardSpan ++ zipWith ((-)) (mult uBound f) boardSpan
                        bRanks = zipWith ($)   (mult uBound (+r)) boardSpan ++ zipWith ((-)) (mult uBound r)    boardSpan ++
-                                zipWith ((-)) (mult uBound r)   boardSpan ++ zipWith ($)   (mult uBound (+r)) boardSpan
+                                zipWith ((-)) (mult uBound r)    boardSpan ++ zipWith ($)   (mult uBound (+r)) boardSpan
                                                            
 
 --filter out all locations outside the board, given as locations in the list 
