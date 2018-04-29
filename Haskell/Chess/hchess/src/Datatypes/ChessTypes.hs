@@ -8,6 +8,8 @@ uBound = 8
 --the lowest rank or file any piece can reach
 lBound = 1
 
+type RankOrFile = Int
+
 --the numeral representing the row a piece is in
 type Rank = Int
 

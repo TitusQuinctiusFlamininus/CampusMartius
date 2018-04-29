@@ -10,7 +10,7 @@ cFile = fst . location
 cRank :: Piece a -> Rank
 cRank = snd . location
 
-filterOuterBoard :: (Location -> Int) -> [Location] -> [Location]
+filterOuterBoard :: (Location -> RankOrFile) -> [Location] -> [Location]
 filterOuterBoard f = filter (\k -> f k >= lBound) . filter (\k -> f k <= uBound)
 
 --function to obtain all locations for black pieces                 
