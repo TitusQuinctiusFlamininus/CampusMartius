@@ -14,17 +14,17 @@ mPossibility (f,r) t
  | t == BISHOP = return $ poss bFiles bRanks
  | otherwise   = return [] 
                  where poss   = zipWith locZipper 
-                       kFiles = (zipWith ($) (mult 2 (+2) ++ mult 2 (+1)) $ mult 4 $ f) ++ mult 2 (f-2) ++ mult 2 (f-1)
-                       kRanks = concat . mult 2 $ [(r+1), (r-1), (r+2), (r-2)]
-                       bFiles = concat . mult 2 $ zipWith ($) (mult uBound (+f)) boardSpan ++ zipWith ((-)) (mult uBound f) boardSpan
-                       bRPos  = zipWith ($)   (mult uBound (+r)) boardSpan 
-                       bRNeg  = zipWith ((-)) (mult uBound r)    boardSpan
+                       kFiles = (zipWith ($) ((<||>) 2 (+2) ++ (<||>) 2 (+1)) $ (<||>) 4 $ f) ++ (<||>) 2 (f-2) ++ (<||>) 2 (f-1)
+                       kRanks = concat . (<||>) 2 $ [(r+1), (r-1), (r+2), (r-2)]
+                       bFiles = concat . (<||>) 2 $ zipWith ($) ((<||>) uBound (+f)) boardSpan ++ zipWith ((-)) ((<||>) uBound f) boardSpan
+                       bRPos  = zipWith ($)   ((<||>) uBound (+r)) boardSpan 
+                       bRNeg  = zipWith ((-)) ((<||>) uBound r)    boardSpan
                        bRanks = bRPos ++ bRNeg ++ bRNeg ++ bRPos -- <- this is NOT a reversed list 
                                                            
 
 --filter out all locations outside the board, given as locations in the list 
 filterNoBoard :: [Location] -> Moves [Location]
-filterNoBoard l = return $ filterOuterBoard fst . filterOuterBoard snd $ l 
+filterNoBoard l = return $ (\/) fst . (\/) snd $ l 
 
 --function to filter out all locations that have already been occupied one's own color pieces 
 --for example, if black wants to move, then he can only do so to a sqaure not occupied by his own pieces
