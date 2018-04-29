@@ -1,6 +1,7 @@
 module Utilities.ChessUtils where
 
 import Datatypes.ChessTypes
+import Datatypes.ChessConstants
 
 --function to replicate some type 8 times
 mult :: Int -> a -> [a]

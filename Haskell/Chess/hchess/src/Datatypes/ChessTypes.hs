@@ -2,11 +2,40 @@
 
 module Datatypes.ChessTypes where
 
---the highest rank or file any piece can reach
-uBound = 8
+import Datatypes.ChessConstants
 
---the lowest rank or file any piece can reach
-lBound = 1
+{--
+*****************************
+*****************************
+******HCHESS CONSTANTS*******
+*****************************
+*****************************
+--}
+
+rkb     = [ROOK, KNIGHT, BISHOP] :: [PieceType]
+
+nameList     = rkb  ++   [QUEEN]  ++ reverse rkb  :: [PieceType]
+
+worthList    = rkbWorths ++     [10]   ++ reverse rkbWorths :: [Value]
+
+zipper       = \n c w file rank -> Piece { name  = n, color = c, worth = w, location = (file,rank)} 
+
+nonKingFiles = [1..4]++[6..8] :: [File]
+
+allFiles     = [1..8] :: [File]
+
+bPawnsRank   = 7 :: Rank
+
+wPawnsRank   = 2 :: Rank
+
+
+{--
+*****************************
+*****************************
+***HCHESS TYPE SYNONYMS******
+*****************************
+*****************************
+--}
 
 --an integer that describes a part of a location tuple, either rank or file 
 type RankOrFile = Int
@@ -23,6 +52,14 @@ type Location = (File, Rank)
 --the value of the chess piece
 type Value = Int
 
+{--
+*****************************
+*****************************
+******HCHESS DATA TYPES******
+*****************************
+*****************************
+--}
+
 --type of pieces the pawns are (it is used as a phantom, for promotion rules)
 data MINOR = MINOR
 
@@ -38,26 +75,6 @@ data Color = BLACK | WHITE deriving (Show, Eq)
 --fundamental kinds of chess pieces in the game
 data PieceType =  KING  | QUEEN  | ROOK  | BISHOP | KNIGHT | PAWN  deriving (Show, Eq)
 
---typeclass for minor pieces
-class Minor a where
-    moveBack :: a -> Bool
-
---making only minor pieces a member 
-instance Minor MINOR where
-    moveBack MINOR = False
-
---typeclass for major pieces
-class Major a where
-    moveAnyDirection :: a -> Bool
-
---making major pieces a member 
-instance Major MAJOR where
-    moveAnyDirection MAJOR = True
-
---making Kings a member 
-instance Major ZIEL where
-    moveAnyDirection ZIEL = True
-
 --a typical chess piece
 data Piece a = Piece {   name       :: PieceType,
                          color      :: Color, 
@@ -68,10 +85,65 @@ data Piece a = Piece {   name       :: PieceType,
 --the type that we use to gather all chess types together
 data BoardPiece = K (Piece ZIEL) | MI (Piece MINOR) | MA (Piece MAJOR) deriving (Eq)
 
+--designates the locations possible by any piece, at any one time
+data Moves s = Moves s deriving (Show, Eq)
+ 
+
+{--
+*****************************
+*****************************
+****HCHESS TYPE CLASSES******
+*****************************
+*****************************
+--}
+
+--typeclass for minor pieces
+class Minor a where
+    moveBack :: a -> Bool
+
+--typeclass for major pieces
+class Major a where
+    moveAnyDirection :: a -> Bool
+
 --typeclass to help us get behaviour out of the higher level board piece types
 class Boarder a where
     paint  :: a -> Color
     locate :: a -> Location
+
+--typeclass embodying the ability of a piece to migrate from one square to another
+--either to capture or simply to move
+--for move:  --a piece to move and its intended location
+--for capture:  -- a killer, a victim, a list of all victims captured so far
+class Movable p where
+    move    :: p -> Location -> p
+    capture :: p -> p -> [p] -> (p, [p])
+
+--typeclass representing the promotion of minor pieces (i.e pawns). Major pieces are any pieces that are NOT pawns (and not the King)
+class Promotable p t where
+    promote :: p -> t -> t
+
+
+{--
+*****************************
+*****************************
+**HCHESS TYPECLASS INSTANCES*
+*****************************
+*****************************
+--}
+
+
+--making only minor pieces a member 
+instance Minor MINOR where
+    moveBack MINOR = False
+
+
+--making major pieces a member 
+instance Major MAJOR where
+    moveAnyDirection MAJOR = True
+
+--making Kings a member 
+instance Major ZIEL where
+    moveAnyDirection ZIEL = True
 
 --instances of board pieces
 instance Boarder BoardPiece where
@@ -88,9 +160,7 @@ instance Show BoardPiece where
     show (MI p)   = show p
     show (MA p)   = show p
 
---designates the locations possible by any piece, at any one time
-data Moves s = Moves s deriving (Show, Eq)
- 
+
 --functor instance
 --fmap :: (Functor f) => (a -> b) -> fa -> fb
 instance Functor Moves where
@@ -110,22 +180,12 @@ instance Monad Moves where
     return = Moves
     Moves s >>= f = f s
     
---typeclass embodying the ability of a piece to migrate from one square to another
---either to capture or simply to move
---for move:  --a piece to move and its intended location
---for capture:  -- a killer, a victim, a list of all victims captured so far
-class Movable p where
-    move    :: p -> Location -> p
-    capture :: p -> p -> [p] -> (p, [p])
 
 --lets make all our pieces movable and the ability to capture other pieces
 instance Movable (Piece a) where
     move p l        = p  { location = l } 
     capture k v l   = (k {location = location v}, (v:l))
 
---typeclass representing the promotion of minor pieces (i.e pawns). Major pieces are any pieces that are NOT pawns (and not the King)
-class Promotable p t where
-    promote :: p -> t -> t
 
 --promoting a minor piece to major piece
 instance (Minor a, Major b) => Promotable (Piece a) (Piece b) where
