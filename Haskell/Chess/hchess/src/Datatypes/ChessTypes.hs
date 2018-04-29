@@ -65,12 +65,23 @@ data Piece a = Piece {   name       :: PieceType,
 --the type that we use to gather all chess types together
 data BoardPiece = K (Piece ZIEL) | MI (Piece MINOR) | MA (Piece MAJOR) deriving (Eq)
 
+class Boarder a where
+    paint  :: a -> Color
+    locate :: a -> Location
+
+instance Boarder BoardPiece where
+    paint  (K p)   = color p
+    paint  (MI p)  = color p
+    paint  (MA p)  = color p
+    locate (K p)   = location p
+    locate (MI p)  = location p
+    locate (MA p)  = location p
+
 --to show us the board, we are only interested in the pieces
 instance Show BoardPiece where
     show (K  p)   = show p
     show (MI p)   = show p
     show (MA p)   = show p
- 
 
 --designates the locations possible by any piece, at any one time
 data Moves s = Moves s deriving (Show, Eq)
