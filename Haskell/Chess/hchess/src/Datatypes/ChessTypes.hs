@@ -14,9 +14,9 @@ import Datatypes.ChessConstants
 
 rkb     = [ROOK, KNIGHT, BISHOP] :: [PieceType]
 
-nameList     = rkb  ++   [QUEEN]  ++ reverse rkb  :: [PieceType]
+majNames     = rkb  ++   [QUEEN]  ++ reverse rkb  :: [PieceType]
 
-worthList    = rkbWorths ++     [10]   ++ reverse rkbWorths :: [Value]
+majWorths    = rkbWorths ++     [10]   ++ reverse rkbWorths :: [Value]
 
 zipper       = \n c w file rank -> Piece { name  = n, color = c, worth = w, location = (file,rank)} 
 

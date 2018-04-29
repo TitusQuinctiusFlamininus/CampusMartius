@@ -20,7 +20,7 @@ pawner c r = zipWith3 (\c x y -> Piece { name=PAWN, color=c, worth=1, location=(
 
 --function to make all major pieces, except the king
 makeMajors :: Color -> Rank -> [Piece MAJOR]
-makeMajors c r = zipWith5 zipper nameList ((<->) uBound c) worthList nonKingFiles ((<->) uBound r)
+makeMajors c r = zipWith5 zipper majNames ((<->) uBound c) majWorths nonKingFiles ((<->) uBound r)
 
 --function to create all major pieces, white and black (Rooks, Knights, Bishops, Queens, Kings)
 allMajorPieces :: [Piece MAJOR]
