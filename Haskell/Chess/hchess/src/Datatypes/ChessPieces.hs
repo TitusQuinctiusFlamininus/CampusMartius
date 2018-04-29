@@ -8,7 +8,7 @@ import Data.List     (zipWith5, nub)
 
 --function to create the Kings
 allKings :: [Piece ZIEL]
-allKings = zipWith (\c y -> Piece { name=KING, color=c, worth=kingWorth, location=(5,y)} ) [BLACK, WHITE] [uBound,lBound]
+allKings = zipWith (\c y -> Piece { name=KING, color=c, worth=kingWorth, location=(kingFile,y)} ) [BLACK, WHITE] [uBound,lBound]
 
 --function to create all minor pieces, white and black (pawns)       
 allMinorPieces :: [Piece MINOR]
