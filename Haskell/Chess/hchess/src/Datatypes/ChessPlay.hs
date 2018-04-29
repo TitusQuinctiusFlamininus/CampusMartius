@@ -7,8 +7,9 @@ import Utilities.ChessUtils
 --determine unmodified (raw) possible moves of a piece, based on its current position 
 mPossibility :: Piece a -> Moves [Location]
 mPossibility p@Piece{name=KNIGHT} = return $ zipWith (\f r -> (f,r)) fileList rankList
-                                    where fileList = [(fl+2), (fl+2), (fl+1), (fl+1), (fl-2), (fl-2), (fl-1), (fl-1)]
+                                    where fileList = (zipWith ($) (mult 2 (+2) ++ mult 2 (+1)) $ mult 4 $ cFile p) ++ f2
                                           rankList = concat . replicate 2 $  [(rk+1), (rk-1), (rk+2), (rk-2)]
+                                          f2 = [(fl-2), (fl-2), (fl-1), (fl-1)]
                                           fl = cFile p
                                           rk = cRank p
  

@@ -2,6 +2,7 @@ module Datatypes.ChessPieces where
 
 import Datatypes.ChessTypes 
 import Datatypes.ChessConstants
+import Utilities.ChessUtils
 
 import Data.List     (zipWith5, nub)
 
@@ -15,11 +16,11 @@ allMinorPieces = pawner BLACK bPawnsRank ++ pawner WHITE wPawnsRank
 
 --function to create pawns of a certain color, placed on a specific row
 pawner :: Color -> Rank -> [Piece MINOR]
-pawner c r = zipWith3 (\c x y -> Piece { name=PAWN, color=c, worth=1, location=(x,y)}) (mult c) allFiles (mult r)
+pawner c r = zipWith3 (\c x y -> Piece { name=PAWN, color=c, worth=1, location=(x,y)}) (mult 8 c) allFiles (mult 8 r)
 
 --function to make all major pieces, except the king
 makeMajors :: Color -> Rank -> [Piece MAJOR]
-makeMajors c r = zipWith5 zipper nameList (mult c) worthList nonKingFiles (mult r)
+makeMajors c r = zipWith5 zipper nameList (mult 8 c) worthList nonKingFiles (mult 8 r)
 
 --function to create all major pieces, white and black (Rooks, Knights, Bishops, Queens, Kings)
 allMajorPieces :: [Piece MAJOR]
