@@ -31,12 +31,5 @@ filterNoBoard l = return $ (\/) fst . (\/) snd $ l
 --first parameter = from the Moves monad
 --second parameter = the list of all colored locations
 filterOwnOccupied :: [Location] -> [Location] -> Moves [Location]
-filterOwnOccupied l c = return $ findPresentEliminate l c
+filterOwnOccupied l c = return $ (!>) l c
 
---function to find and eliminate any elements
-findPresentEliminate :: [Location] -> [Location] -> [Location]
-findPresentEliminate   []   _  = []
-findPresentEliminate   _    [] = []
-findPresentEliminate (x:xs) c  = case x `elem` c of 
-                        True  ->     findPresentEliminate xs c
-                        False -> x : findPresentEliminate xs c
