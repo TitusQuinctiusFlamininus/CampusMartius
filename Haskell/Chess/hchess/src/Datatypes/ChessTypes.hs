@@ -105,7 +105,7 @@ instance Monad Moves where
     return = Moves
     Moves s >>= f = f s
     
---typeclass embodying the ability of a piece to translocate from one square to another
+--typeclass embodying the ability of a piece to migrate from one square to another
 --either to capture or simply to move
 --for move:  --a piece to move and its intended location
 --for capture:  -- a killer, a victim, a list of all victims captured so far
