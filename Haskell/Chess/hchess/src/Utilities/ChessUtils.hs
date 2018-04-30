@@ -18,12 +18,14 @@ notOnBoard f = filter (\k -> f k >= lBound) . filter (\k -> f k <= uBound)
 (>!<) :: [Location] -> [Location] -> [Location]
 (>!<)   []   _    = []
 (>!<)   _    []   = []
-(>!<)   c (x:xs)  = case x `elem` c of 
-                        True  ->     (>!<) c xs
-                        False -> x : (>!<) c xs
+(>!<)   c (x:xs)
+ | (x `elem` c) == True =      (>!<) c xs
+ | otherwise            =  x : (>!<) c xs
 
---function to obtain all locations for black pieces                 
-colouredLocations :: [BoardPiece] -> Color -> [Location]
-colouredLocations [] _  = []
-colouredLocations (x:xs) c =  if (paint x == c) then (locate x : colouredLocations xs c) else colouredLocations xs c
+--function to obtain the locations of all pieces of the same color, that are on the board (not including captured pieces)           
+territory :: [BoardPiece] -> Color -> [Location]
+territory [] _  = []
+territory (x:xs) c
+ | paint x == c  =  locate x : territory xs c
+ | otherwise     =  territory xs c
 
