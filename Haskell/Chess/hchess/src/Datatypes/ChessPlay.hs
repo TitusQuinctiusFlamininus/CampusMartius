@@ -15,16 +15,12 @@ import Utilities.ChessUtils
  | t == ROOK   = return $ poss rFiles rRanks
  | otherwise   = return [] 
                  where poss    = zipWith locZipper
-                       iFile   = zipWith ($) ((<->) uBound (+f)) boardSpan
-                       dFile   = zipWith (-) ((<->) uBound f   ) boardSpan
-                       iRank   = zipWith ($) ((<->) uBound (+r)) boardSpan
-                       dRank   = zipWith (-) ((<->) uBound r   ) boardSpan
                        knFiles = (zipWith ($) ((<->) 2 (+2) ++ (<->) 2 (+1)) $ (<->) 4 $ f) ++ (<->) 2 (f-2) ++ (<->) 2 (f-1)
                        knRanks = concat . (<->) 2 $ [(r+1), (r-1), (r+2), (r-2)]
-                       bFiles  = concat . (<->) 2 $ iFile ++ dFile
-                       bRanks  = iRank ++ dRank ++ dRank ++ iRank 
-                       rFiles  = iFile ++ dFile ++ ((concat . (<->) 2) $ ((<->) uBound f))
-                       rRanks  = ((concat . (<->) 2) $ ((<->) uBound r)) ++ iRank ++ dRank
+                       bFiles  = concat . (<->) 2 $ ((|+|) (+f)) ++ ((|-|) f)
+                       bRanks  = ((|+|) (+r)) ++ ((|-|) r) ++ ((|-|) r) ++ ((|+|) (+r)) 
+                       rFiles  = ((|+|) (+f)) ++ ((|-|) f) ++ ((concat . (<->) 2) $ ((<->) uBound f))
+                       rRanks  = ((concat . (<->) 2) $ ((<->) uBound r)) ++ ((|+|) (+r)) ++ ((|-|) r)
                                                            
 
 --FILTER OUT ALL CELLS THAT ARE NOT ON THE BOARD

@@ -29,3 +29,14 @@ territory (x:xs) c
  | paint x == c  =  locate x : territory xs c
  | otherwise     =  territory xs c
 
+--function that will zip values from 2 lists:
+--first list is a list of functions (each representing a binary addition operation with one value already bound )
+--second list is a list of spans
+(|+|) :: (RankOrFile -> RankOrFile) -> [RankOrFile]
+(|+|) h = zipWith ($) ((<->) uBound h) boardSpan
+
+--function that will zip values from 2 lists:
+--first list is a list of values (representing either files or ranks)
+--second list is a list of spans
+(|-|) :: RankOrFile -> [RankOrFile]
+(|-|) g = zipWith (-) ((<->) uBound g) boardSpan 
