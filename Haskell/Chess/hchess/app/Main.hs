@@ -15,5 +15,8 @@ main = do mapM_ (putStrLn . show) setChessBoard
 
 
 --function to determine the actual moves possible for any piece, from any current position
+--First Parameter  ::  The LOCATION of the piece that wants to make a move
+--Second Parameter ::  The list of locations for all pieces of the same color, as the piece that wants to make a move
+--Third Parameter  ::  The PieceType of the piece that wants to make a move
 anyPieceMoves :: Location -> [Location] -> PieceType -> Moves [Location]
 anyPieceMoves l c =  (<-?->) l >=> (.<->.) >=> (<-!->) c
