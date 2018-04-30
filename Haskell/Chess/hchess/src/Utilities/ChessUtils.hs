@@ -8,17 +8,19 @@ import Datatypes.ChessConstants
 (<->) = replicate 
 
 --function to filter out all locations (or cells) that are completely outside the 8x8 board
-(/|) :: (Location -> RankOrFile) -> [Location] -> [Location]
-(/|) f = filter (\k -> f k >= lBound) . filter (\k -> f k <= uBound)
+notOnBoard :: (Location -> RankOrFile) -> [Location] -> [Location]
+notOnBoard f = filter (\k -> f k >= lBound) . filter (\k -> f k <= uBound)
 
 --function to check if any elements from one list appear in the second list; and return only those elements that
 --do not appear in the second list
+--First parameter = the list of all colored location
+--Second parameter = the list of all locations that a piece can move to
 (>!<) :: [Location] -> [Location] -> [Location]
-(>!<)   []   _  = []
-(>!<)   _    [] = []
-(>!<) (x:xs) c  = case x `elem` c of 
-                        True  ->     (>!<) xs c
-                        False -> x : (>!<) xs c
+(>!<)   []   _    = []
+(>!<)   _    []   = []
+(>!<)   c (x:xs)  = case x `elem` c of 
+                        True  ->     (>!<) c xs
+                        False -> x : (>!<) c xs
 
 --function to obtain all locations for black pieces                 
 colouredLocations :: [BoardPiece] -> Color -> [Location]

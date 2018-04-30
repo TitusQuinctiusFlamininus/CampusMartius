@@ -6,10 +6,10 @@ import Datatypes.ChessTypes
 import Datatypes.ChessConstants
 import Utilities.ChessUtils
 
-
---determine unmodified (raw) possible moves of a piece, based on its current position 
-mPossibility :: Location -> PieceType -> Moves [Location]
-mPossibility (f,r) t
+--RAW POSSIBILITIES ACROSS ALL CELLS, in an 8x8 SPACE, regardless of whether the cells are on the board or not
+--determine unmodified (raw) possible moves of a piece, based on its current position
+(<-?->) :: Location -> PieceType -> Moves [Location]
+(<-?->) (f,r) t
  | t == KNIGHT = return $ poss kFiles kRanks
  | t == BISHOP = return $ poss bFiles bRanks
  | otherwise   = return [] 
@@ -22,14 +22,15 @@ mPossibility (f,r) t
                        bRanks = bRPos ++ bRNeg ++ bRNeg ++ bRPos -- <- this is NOT a reversed list 
                                                            
 
+--FILTER OUT ALL CELLS THAT ARE NOT ON THE BOARD
 --filter out all locations outside the board, given as locations in the list 
-filterNoBoard :: [Location] -> Moves [Location]
-filterNoBoard l = return $ (/|) fst . (/|) snd $ l 
+(.<->.) :: [Location] -> Moves [Location]
+(.<->.) l = return $ notOnBoard fst . notOnBoard snd $ l 
 
+--FILTER OUT ALL CELLS ALREADY OCCUPIED BY YOUR (BLACK OR WHITE) OWN PIECES
 --function to filter out all locations that have already been occupied one's own color pieces 
 --for example, if black wants to move, then he can only do so to a sqaure not occupied by his own pieces
---first parameter = from the Moves monad
---second parameter = the list of all colored locations
-filterOwnOccupied :: [Location] -> [Location] -> Moves [Location]
-filterOwnOccupied l c = return $ (>!<) l c
-
+--First parameter  = the list of all colored locations
+--Second parameter = the list of locations from the moves monad
+(<-!->) :: [Location] -> [Location] -> Moves [Location]
+(<-!->) c l = return $ (>!<) c l
