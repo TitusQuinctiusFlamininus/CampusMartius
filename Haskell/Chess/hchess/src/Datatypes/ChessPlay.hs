@@ -10,7 +10,7 @@ import Utilities.ChessUtils
 --determine unmodified (raw) possible moves of a piece, based on its current position
 (<-?->) :: Location -> PieceType -> Moves [Location]
 (<-?->) (f,r) t
- | t == KNIGHT = return $ poss kFiles kRanks
+ | t == KNIGHT = return $ poss knFiles knRanks
  | t == BISHOP = return $ poss bFiles bRanks
  | t == ROOK   = return $ poss rFiles rRanks
  | otherwise   = return [] 
@@ -19,8 +19,8 @@ import Utilities.ChessUtils
                        dFile  = zipWith ((-)) ((<->) uBound f) boardSpan
                        iRank  = zipWith ($) ((<->) uBound (+r)) boardSpan
                        dRank  = zipWith ((-)) ((<->) uBound r) boardSpan
-                       kFiles = (zipWith ($) ((<->) 2 (+2) ++ (<->) 2 (+1)) $ (<->) 4 $ f) ++ (<->) 2 (f-2) ++ (<->) 2 (f-1)
-                       kRanks = concat . (<->) 2 $ [(r+1), (r-1), (r+2), (r-2)]
+                       knFiles = (zipWith ($) ((<->) 2 (+2) ++ (<->) 2 (+1)) $ (<->) 4 $ f) ++ (<->) 2 (f-2) ++ (<->) 2 (f-1)
+                       knRanks = concat . (<->) 2 $ [(r+1), (r-1), (r+2), (r-2)]
                        bFiles = concat . (<->) 2 $ iFile ++ dFile
                        bRanks = iRank ++ dRank ++ dRank ++ iRank 
                        rFiles = iFile ++ dFile ++ ((concat . (<->) 2) $ ((<->) uBound f))
