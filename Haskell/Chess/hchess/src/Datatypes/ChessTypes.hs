@@ -194,7 +194,7 @@ instance Functor PossibleMoves where
 
 -- | Applicativive instance
 --   pure :: (Applicative f) => a -> f a
---   <*>  :: (Applicative f) => f(a -> b) -> f a -> f b
+--   \<\*>  :: (Applicative f) => f(a -> b) -> f a -> f b
 instance Applicative PossibleMoves where
     pure = PossibleMoves
     PossibleMoves f <*> PossibleMoves s = PossibleMoves (f s)
