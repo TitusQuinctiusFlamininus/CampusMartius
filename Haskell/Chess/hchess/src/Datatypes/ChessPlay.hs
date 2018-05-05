@@ -11,10 +11,10 @@ import Utilities.ChessUtils
 (<-?->) :: Location -> PieceType -> Moves [Location]
 (<-?->) (f,r) t
  | t == KNIGHT = return $ poss knFiles knRanks
+ | t == KING   = return $ poss kFiles kRanks
+ | t == QUEEN  = return $ bMoves ++ rMoves
  | t == BISHOP = return bMoves
  | t == ROOK   = return rMoves
- | t == QUEEN  = return $ bMoves ++ rMoves
- | t == KING   = return $ poss kFiles kRanks
  | otherwise   = return [] 
                  where poss    = zipWith locZipper
                        knFiles = (zipWith ($) ((<->) 2 (+2) ++ (<->) 2 (+1)) $ (<->) 4 $ f) ++ (<->) 2 (f-2) ++ (<->) 2 (f-1)
