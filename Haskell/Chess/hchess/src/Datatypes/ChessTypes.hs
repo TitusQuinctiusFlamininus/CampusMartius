@@ -94,8 +94,9 @@ data Piece a = Piece {   name       :: PieceType,
 data BoardPiece = K (Piece ZIEL) | MI (Piece MINOR) | MA (Piece MAJOR) deriving (Eq)
 
 --designates the locations possible by any piece, at any one time
-data Moves s = Moves s deriving (Show, Eq)
- 
+data PossibleMoves s = PossibleMoves s deriving (Show, Eq)
+
+data GameTree m c d s = Move m c d s [GameTree m c d s] deriving (Show, Eq)
 
 {--
 *****************************
@@ -171,22 +172,22 @@ instance Show BoardPiece where
 
 --functor instance
 --fmap :: (Functor f) => (a -> b) -> fa -> fb
-instance Functor Moves where
-    fmap f (Moves p) = Moves (f p)
+instance Functor PossibleMoves where
+    fmap f (PossibleMoves p) = PossibleMoves (f p)
 
 --applicative instance
 -- pure :: (Applicative f) => a -> f a
 -- <*>  :: (Applicative f) => f(a -> b) -> f a -> f b
-instance Applicative Moves where
-    pure = Moves
-    Moves f <*> Moves s = Moves (f s)
+instance Applicative PossibleMoves where
+    pure = PossibleMoves
+    PossibleMoves f <*> PossibleMoves s = PossibleMoves (f s)
     
 --monad instance
 -- return :: (Monad m) => a -> m a
 -- (>>=)  :: m a -> (a -> m b) -> m b
-instance Monad Moves where
-    return = Moves
-    Moves s >>= f = f s
+instance Monad PossibleMoves where
+    return = PossibleMoves
+    PossibleMoves s >>= f = f s
     
 
 --lets make all our pieces movable and the ability to capture other pieces
