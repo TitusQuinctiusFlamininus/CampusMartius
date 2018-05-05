@@ -1,6 +1,6 @@
 module Datatypes.ChessConstants where
 
--- | The rook, knight and bishop worths in a list
+-- | The Rook, Knight and Bishop worths in a list
 rkbWorths    = [5, 3, 3] :: [Int]
 
 
