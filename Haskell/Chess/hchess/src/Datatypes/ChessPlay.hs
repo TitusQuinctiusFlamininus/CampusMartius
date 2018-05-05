@@ -13,6 +13,8 @@ import Utilities.ChessUtils
  | t == KNIGHT = return $ poss knFiles knRanks
  | t == BISHOP = return $ poss bFiles bRanks
  | t == ROOK   = return $ poss rFiles rRanks
+ | t == KING   = return $ poss kFiles kRanks
+ | t == QUEEN  = return $ poss bFiles bRanks ++ poss rFiles rRanks
  | otherwise   = return [] 
                  where poss    = zipWith locZipper
                        knFiles = (zipWith ($) ((<->) 2 (+2) ++ (<->) 2 (+1)) $ (<->) 4 $ f) ++ (<->) 2 (f-2) ++ (<->) 2 (f-1)
@@ -21,6 +23,8 @@ import Utilities.ChessUtils
                        bRanks  = ((|+|) (+r)) ++ ((|-|) r) ++ ((|-|) r) ++ ((|+|) (+r)) 
                        rFiles  = ((|+|) (+f)) ++ ((|-|) f) ++ ((concat . (<->) 2) $ ((<->) uBound f))
                        rRanks  = ((concat . (<->) 2) $ ((<->) uBound r)) ++ ((|+|) (+r)) ++ ((|-|) r)
+                       kFiles  = [f, f+1, f+1, f+1, f, f-1, f-1, f-1]
+                       kRanks  = [r+1, r+1, r, r-1, r-1, r-1, r, r+1]
                                                            
 
 --FILTER OUT ALL CELLS THAT ARE NOT ON THE BOARD
