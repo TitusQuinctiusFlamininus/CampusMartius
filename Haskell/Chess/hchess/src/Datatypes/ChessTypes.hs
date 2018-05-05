@@ -96,6 +96,10 @@ data BoardPiece = K (Piece ZIEL) | MI (Piece MINOR) | MA (Piece MAJOR) deriving 
 --designates the locations possible by any piece, at any one time
 data PossibleMoves s = PossibleMoves s deriving (Show, Eq)
 
+--the type that models the game moves our program can make based on the opponents responses
+--the tree will be formed when we absorb pgn chess game files that have already been played
+--the program will go down a path in the tree depending upon whether we can find a match 
+--with the move just made by the opponent
 data GameTree m c d s = Move m c d s [GameTree m c d s] deriving (Show, Eq)
 
 {--
