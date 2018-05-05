@@ -21,12 +21,12 @@ import Utilities.ChessUtils
                        knRanks = concat . (<->) 2 $ [(r+1), (r-1), (r+2), (r-2)]
                        bFiles  = concat . (<->) 2 $ ((|+|) (+f)) ++ ((|-|) f)
                        bRanks  = ((|+|) (+r)) ++ ((|-|) r) ++ ((|-|) r) ++ ((|+|) (+r))
-                       bMoves  = poss bFiles bRanks
-                       rMoves  = poss rFiles rRanks
                        rFiles  = ((|+|) (+f)) ++ ((|-|) f) ++ ((concat . (<->) 2) $ ((<->) uBound f))
                        rRanks  = ((concat . (<->) 2) $ ((<->) uBound r)) ++ ((|+|) (+r)) ++ ((|-|) r)
                        kFiles  = [f, f+1, f+1, f+1, f, f-1, f-1, f-1]
                        kRanks  = [r+1, r+1, r, r-1, r-1, r-1, r, r+1]
+                       bMoves  = poss bFiles bRanks
+                       rMoves  = poss rFiles rRanks
                                                            
 
 --FILTER OUT ALL CELLS THAT ARE NOT ON THE BOARD
