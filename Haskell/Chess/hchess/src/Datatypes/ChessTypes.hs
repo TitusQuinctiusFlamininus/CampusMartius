@@ -114,7 +114,7 @@ data PossibleMoves s = PossibleMoves s deriving (Show, Eq)
 --   The program will go down a path in the tree depending upon whether we can find a match 
 --   with the move just made by the opponent. We deal with the move made (example, Nf3), the color
 --   of the piece moving and the depth of the move in the tree
-data GameTree m c d = Draw m c d | Mate m c d | StaleMate m d | Move m c d [GameTree m c d] deriving (Show, Eq)
+data GameTree m c d = Draw | Mate | StaleMate | Move m c d [GameTree m c d] deriving (Show, Eq)
 
 {--
 *****************************
