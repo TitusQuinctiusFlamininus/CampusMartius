@@ -11,16 +11,18 @@ import Utilities.ChessUtils
 (<-?->) :: Location -> PieceType -> Moves [Location]
 (<-?->) (f,r) t
  | t == KNIGHT = return $ poss knFiles knRanks
- | t == BISHOP = return $ poss bFiles bRanks
- | t == ROOK   = return $ poss rFiles rRanks
+ | t == BISHOP = return bMoves
+ | t == ROOK   = return rMoves
+ | t == QUEEN  = return $ bMoves ++ rMoves
  | t == KING   = return $ poss kFiles kRanks
- | t == QUEEN  = return $ poss bFiles bRanks ++ poss rFiles rRanks
  | otherwise   = return [] 
                  where poss    = zipWith locZipper
                        knFiles = (zipWith ($) ((<->) 2 (+2) ++ (<->) 2 (+1)) $ (<->) 4 $ f) ++ (<->) 2 (f-2) ++ (<->) 2 (f-1)
                        knRanks = concat . (<->) 2 $ [(r+1), (r-1), (r+2), (r-2)]
                        bFiles  = concat . (<->) 2 $ ((|+|) (+f)) ++ ((|-|) f)
-                       bRanks  = ((|+|) (+r)) ++ ((|-|) r) ++ ((|-|) r) ++ ((|+|) (+r)) 
+                       bRanks  = ((|+|) (+r)) ++ ((|-|) r) ++ ((|-|) r) ++ ((|+|) (+r))
+                       bMoves  = poss bFiles bRanks
+                       rMoves  = poss rFiles rRanks
                        rFiles  = ((|+|) (+f)) ++ ((|-|) f) ++ ((concat . (<->) 2) $ ((<->) uBound f))
                        rRanks  = ((concat . (<->) 2) $ ((<->) uBound r)) ++ ((|+|) (+r)) ++ ((|-|) r)
                        kFiles  = [f, f+1, f+1, f+1, f, f-1, f-1, f-1]
