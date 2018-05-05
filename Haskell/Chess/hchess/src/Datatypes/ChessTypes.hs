@@ -12,28 +12,41 @@ import Datatypes.ChessConstants
 *****************************
 --}
 
+-- | Rook, Knight and Bishop Piece types are a list
 rkb     = [ROOK, KNIGHT, BISHOP] :: [PieceType]
 
+-- | What the back row of a setup chessboard looks like, omitting the King (from left to right, or vice-versa)
 majNames     = rkb  ++   [QUEEN]  ++ reverse rkb  :: [PieceType]
 
+-- | What the back row worths of a setup chessboard looks like, omitting the King (from left to right, or vice-verse)
 majWorths    = rkbWorths ++     [10]   ++ reverse rkbWorths :: [Value]
 
+-- | The King's worth
 kingWorth    = 1000      :: Value
 
+-- | The King's file when the game starts
 kingFile     = 5         :: File
 
+-- | The worth of any Pawn
 pawnWorth    = 1         :: Value
 
+-- | Function to create any piece, given its attributes of name, color, worth and location (formed out of its separate components, 
+--   file and rank)
 zipper       = \n c w file rank -> Piece { name  = n, color = c, worth = w, location = (file,rank)} 
 
+-- | Function to form a location, given a file and rank
 locZipper    = \f r -> (f,r)
 
-nonKingFiles = [1..4]++[6..8] :: [File]
+-- | All files as a list, with the exception of the King's
+nonKingFiles = filter (/=5) allFiles :: [File]
 
+-- | Absolutely all files of all pieces
 allFiles     = [1..8] :: [File]
 
+-- | The rank of all black Pawns at the start of the game
 bPawnsRank   = 7 :: Rank
 
+-- | The rank of all white Pawns at the start of the game
 wPawnsRank   = 2 :: Rank
 
 
@@ -45,19 +58,19 @@ wPawnsRank   = 2 :: Rank
 *****************************
 --}
 
---an integer that describes a part of a location tuple, either rank or file 
+-- | An integer that describes a part of a location tuple, either rank or file 
 type RankOrFile = Int
 
---the numeral representing the row a piece is in
+-- | The numeral representing the row a piece is in
 type Rank = Int
 
---the numeral representing the file (column) a piece is in
+-- | The numeral representing the file (column) a piece is in
 type File = Int 
 
---a specific square on the board
+-- | A specific square on the board
 type Location = (File, Rank)
 
---the value of the chess piece
+-- | The value of the chess piece
 type Value = Int
 
 {--
@@ -68,39 +81,40 @@ type Value = Int
 *****************************
 --}
 
---type of pieces the pawns are (it is used as a phantom, for promotion rules)
+-- | Type of pieces the pawns are (it is used as a phantom, for promotion rules)
 data MINOR = MINOR
 
---any piece that is not a pawn, except the king, is of this type (it is used as a phantom, for promotion rules)
+-- | Any piece that is not a pawn, except the King, is of this type (it is used as a phantom, for promotion rules)
 data MAJOR = MAJOR
 
---the type describing the piece (king), which is the goal of chess
+-- | The type describing the piece (King), which is the goal of chess
 data ZIEL  = ZIEL
 
---colors of the pieces on the chess board
+-- | Colors of the pieces on the chess board
 data Color = BLACK | WHITE deriving (Show, Eq)
 
---fundamental kinds of chess pieces in the game
+-- | Fundamental kinds of chess pieces in the game
 data PieceType =  KING  | QUEEN  | ROOK  | BISHOP | KNIGHT | PAWN  deriving (Show, Eq)
 
---a typical chess piece
+-- | A typical chess piece
 data Piece a = Piece {   name       :: PieceType,
                          color      :: Color, 
                          worth      :: Value, 
                          location   :: Location
                      }   deriving (Show, Eq)
 
---the type that we use to gather all chess types together
+-- | The type that we use to gather all chess types together
 data BoardPiece = K (Piece ZIEL) | MI (Piece MINOR) | MA (Piece MAJOR) deriving (Eq)
 
---designates the locations possible by any piece, at any one time
+-- | Designates the locations possible by any piece, at any one time
 data PossibleMoves s = PossibleMoves s deriving (Show, Eq)
 
---the type that models the game moves our program can make based on the opponents responses
---the tree will be formed when we absorb pgn chess game files that have already been played
---the program will go down a path in the tree depending upon whether we can find a match 
---with the move just made by the opponent
-data GameTree m c d s = Move m c d s [GameTree m c d s] deriving (Show, Eq)
+-- | The type that models the game moves our program can make based on the opponents responses.
+--   The tree will be formed when we absorb pgn chess game files that have already been played.
+--   The program will go down a path in the tree depending upon whether we can find a match 
+--   with the move just made by the opponent. We deal with the move made (example, Nf3), the color
+--   of the piece moving and the depth of the move in the tree
+data GameTree m c d = Mate m c d | StaleMate m c d | Move m c d [GameTree m c d] deriving (Show, Eq)
 
 {--
 *****************************
@@ -110,28 +124,27 @@ data GameTree m c d s = Move m c d s [GameTree m c d s] deriving (Show, Eq)
 *****************************
 --}
 
---typeclass for minor pieces
+-- | Minor pieces behaviour
 class Minor a where
     moveBack :: a -> Bool
 
---typeclass for major pieces
+-- | Major pieces behaviour
 class Major a where
     moveAnyDirection :: a -> Bool
 
---typeclass to help us get behaviour out of the higher level board piece types
+-- | Behaviour out of the higher level board piece types
 class Boarder a where
     paint  :: a -> Color
     locate :: a -> Location
 
---typeclass embodying the ability of a piece to migrate from one square to another
---either to capture or simply to move
---for move:  --a piece to move and its intended location
---for capture:  -- a killer, a victim, a list of all victims captured so far
+-- | Ability of a piece to migrate from one square to another, either to capture or simply to move.
+--   For a simple movement :  a piece to move and its intended location
+--   For a piece capture:  a killer, a victim, a list of all victims captured so far
 class Movable p where
     move    :: p -> Location -> p
     capture :: p -> p -> [p] -> (p, [p])
 
---typeclass representing the promotion of minor pieces (i.e pawns). Major pieces are any pieces that are NOT pawns (and not the King)
+-- | Promotion of Minor pieces (i.e pawns). Major pieces are any pieces that are NOT pawns (and not the King)
 class Promotable p t where
     promote :: p -> t -> t
 
@@ -145,20 +158,20 @@ class Promotable p t where
 --}
 
 
---making only minor pieces a member 
+-- | Making only Minor pieces a member 
 instance Minor MINOR where
     moveBack MINOR = False
 
 
---making major pieces a member 
+-- | Making Major pieces a member 
 instance Major MAJOR where
     moveAnyDirection MAJOR = True
 
---making Kings a member 
+-- | Making Kings a member 
 instance Major ZIEL where
     moveAnyDirection ZIEL = True
 
---instances of board pieces
+-- | Instances of board pieces
 instance Boarder BoardPiece where
     paint  (K p)   = color p
     paint  (MI p)  = color p
@@ -167,40 +180,41 @@ instance Boarder BoardPiece where
     locate (MI p)  = location p
     locate (MA p)  = location p
 
---to show us the board, we are only interested in the pieces
+-- | Display the board, we are only interested in the pieces
 instance Show BoardPiece where
     show (K  p)   = show p
     show (MI p)   = show p
     show (MA p)   = show p
 
 
---functor instance
---fmap :: (Functor f) => (a -> b) -> fa -> fb
+-- | Functor instance
+--   fmap :: (Functor f) => (a -> b) -> fa -> fb
 instance Functor PossibleMoves where
     fmap f (PossibleMoves p) = PossibleMoves (f p)
 
---applicative instance
--- pure :: (Applicative f) => a -> f a
--- <*>  :: (Applicative f) => f(a -> b) -> f a -> f b
+-- | Applicativive instance
+--   pure :: (Applicative f) => a -> f a
+--   <*>  :: (Applicative f) => f(a -> b) -> f a -> f b
 instance Applicative PossibleMoves where
     pure = PossibleMoves
     PossibleMoves f <*> PossibleMoves s = PossibleMoves (f s)
     
---monad instance
--- return :: (Monad m) => a -> m a
--- (>>=)  :: m a -> (a -> m b) -> m b
+-- | Monadic instance
+--   return :: (Monad m) => a -> m a
+--   (>>=)  :: m a -> (a -> m b) -> m b
 instance Monad PossibleMoves where
     return = PossibleMoves
     PossibleMoves s >>= f = f s
     
 
---lets make all our pieces movable and the ability to capture other pieces
+-- | Making all our pieces movable and the ability to capture other pieces
 instance Movable (Piece a) where
     move p l        = p  { location = l } 
     capture k v l   = (k {location = location v}, (v:l))
 
 
---promoting a minor piece to major piece
+-- | Promoting a Minor piece to Major piece
+--   This is the only way we can promote in chess. 
 instance (Minor a, Major b) => Promotable (Piece a) (Piece b) where
     promote p r = Piece { name     =  name r, 
                           color    =  color p, 
