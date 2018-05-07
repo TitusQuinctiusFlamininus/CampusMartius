@@ -109,12 +109,10 @@ data BoardPiece = K (Piece ZIEL) | MI (Piece MINOR) | MA (Piece MAJOR) deriving 
 -- | Designates the locations possible by any piece, at any one time
 data PossibleMoves s = PossibleMoves s deriving (Show, Eq)
 
--- | The type that models the game moves our program can make based on the opponents responses.
---   The tree will be formed when we absorb pgn chess game files that have already been played.
---   The program will go down a path in the tree depending upon whether we can find a match 
---   with the move just made by the opponent. We deal with the move made (example, Nf3), the color
---   of the piece moving and the depth of the move in the tree
-data GameTree m c d = DRAW m d | MATE m d | STALEMATE m d | MOVE m c d [GameTree m c d] deriving (Show, Eq)
+-- | Datastructure that will represent a pair of moves, one from white and the other from black, at 
+--   some stage in the game. For example: 5. Bg5 exf4 would be considered such a move
+--   The n type represents 
+data GameTree n w b = Move n w b deriving (Show, Eq)
 
 {--
 *****************************
