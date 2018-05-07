@@ -111,7 +111,7 @@ data PossibleMoves s = PossibleMoves s deriving (Show, Eq)
 
 -- | Datastructure that will represent a pair of moves, one from white and the other from black, at 
 --   some stage in the game. For example: 5. Bg5 exf4 would be considered such a move
---   The n type represents 
+--   The n type represents the move number
 data GameTree n w b = Move n w b deriving (Show, Eq)
 
 {--
