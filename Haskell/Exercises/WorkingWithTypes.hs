@@ -9,8 +9,8 @@ data Type1 a b  = Type1 {
 
 makeType1 :: (Num x, Num y) => Type1 (x,y) [z]
 makeType1 = Type1 e f
-            where e s (x,y)             = ((($) s (x,y)) , 0)
-                  f ((x,y), [])         = ((x,y), 10)
+            where e s m                 = ((($) s m) , 0)
+                  f (m, [])             = (m, 10)
                   f ((x,y), (a:as))     = (((x+1),(y-1)), 1)
 
 
