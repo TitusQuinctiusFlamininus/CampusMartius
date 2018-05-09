@@ -1,13 +1,13 @@
 
 
-data Type1 a b  = Type1 { 
-                           do1 :: (a -> b) -> a -> (b,Int), 
-                           do2 :: (a, b) -> (a, Int)
+data Type1 a b c = Type1 { 
+                           do1 :: (a -> b) -> a -> (b,c), 
+                           do2 :: (a, b) -> (a, c)
                           }
 
 
 
-makeType1 :: (Num x, Num y) => Type1 (x,y) [z]
+makeType1 :: (Num x, Num y, Num q) => Type1 (x,y) [z] q
 makeType1 = Type1 e f
             where e s m                 = ((($) s m) , 0)
                   f (m, [])             = (m, 10)
