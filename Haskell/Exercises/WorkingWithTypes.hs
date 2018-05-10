@@ -39,15 +39,22 @@ myGarden = Garden pl pr up
                  pl r (c,h,n) s      = ((c,(h+((h+r)/7)),n):s)
                  pr [] _             = []
                  pr ps c             = map c ps
-                 up s                = drop 1 s 
+                 up []               = []
+                 up s                = reverse . drop 1 . reverse $ s 
 
+shearer :: Plant -> Plant
+shearer (c,h,n) =  (c, (h/3), n++"snipped")
 
 main :: IO ()
-main = let do1Res = do1  makeType1 f1 (4,6)
-           do2Res = do2  makeType1 ((8,2), [3,9]) in 
-            do putStrLn ("do1 : " ++ (show do1Res)++ " , do2 : " ++ (show do2Res))
-               let rain   = 75.1 :: Float
-                   myplant  = (Green, 45.9, "Geranium") :: Plant
-                   plantedGarden = plant myGarden rain myplant [] in 
-                 putStrLn ("planted : " ++ (show plantedGarden))
+main = let do1Res        = do1  makeType1 f1 (4,6)
+           do2Res        = do2  makeType1 ((8,2), [3,9])
+           rain          = 75.1
+           myplant       = (Green, 45.9, "Geranium") 
+           plantedGarden = plant myGarden rain myplant [(Red,34.56,"Rose")]
+           snipped       = prune myGarden plantedGarden shearer in 
+            do putStrLn ("do1       : " ++ (show do1Res))
+               putStrLn ("do2       : " ++ (show do2Res))
+               putStrLn ("planted   : " ++ (show plantedGarden))
+               putStrLn ("pruned    : " ++ (show snipped))
+               putStrLn ("uprooted  : " ++ (show $ uproot myGarden snipped))
        
