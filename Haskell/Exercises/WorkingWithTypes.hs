@@ -45,6 +45,16 @@ myGarden = Garden pl pr up
 shearer :: Plant -> Plant
 shearer (c,h,n) =  (c, (h/3), n++"snipped")
 
+
+-- Airline Experiment
+
+data Booking n t = Book {    book     :: n -> t -> (n, [t]),
+                             fChange  :: (n, [t]) -> t -> (n, [t]),
+                             nChange  :: (n, [t]) -> n -> (n, [t]),
+                             cancel   :: (n, [t]) -> (n, [t])
+                        }
+
+
 main :: IO ()
 main = let do1Res        = do1  makeType1 f1 (4,6)
            do2Res        = do2  makeType1 ((8,2), [3,9])
