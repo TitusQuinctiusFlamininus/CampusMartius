@@ -20,6 +20,11 @@ f1 t@(a,b) = concat $ [(replicate a) . (+2) $ fst t] ++ [(replicate b) . (+3) $ 
 
 
 -- Gardening Example
+type Rainfall = Float
+data Color    = Red | Green deriving (Show)
+type Height   = Float
+type Name     = String
+type Plant    = (Color, Height, Name)
 
 data Garden r p =     Garden {
                            plant  :: r -> p -> [p]   -> [p],
@@ -27,11 +32,7 @@ data Garden r p =     Garden {
                            uproot :: [p] -> [p] 
                            } 
                            
-type Rainfall = Float
-data Color    = Red | Green deriving (Show)
-type Height   = Float
-type Name     = String
-type Plant    = (Color, Height, Name)
+
 
 myGarden :: Garden Rainfall Plant
 myGarden = Garden pl pr up 
