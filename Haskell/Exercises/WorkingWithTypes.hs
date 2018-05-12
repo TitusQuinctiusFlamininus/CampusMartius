@@ -48,11 +48,29 @@ shearer (c,h,n) =  (c, (h/3), n++"snipped")
 
 -- Airline Experiment
 
-data Booking n t = Book {    book     :: n -> t -> (n, [t]),
-                             fChange  :: (n, [t]) -> t -> (n, [t]),
-                             nChange  :: (n, [t]) -> n -> (n, [t]),
-                             cancel   :: (n, [t]) -> (n, [t])
+data Booking n f d t = Book {    book     :: n -> f -> d -> (n, [t]),
+                                 fChange  :: (n, [t]) -> f -> (n, [t]),
+                                 nChange  :: (n, [t]) -> n -> (n, [t]),
+                                 cancel   :: (n, [t]) -> (n, [t])
                         }
+
+data Affine s t a b = Affine { preview ::  s      -> Either a t, 
+                               set     ::  (b, s) -> t
+                             }
+
+
+strangeAffine :: Affine (Maybe a, c) (Maybe b, c) a b
+strangeAffine = Affine p st
+                where p (Nothing, c)   = Right (Nothing, c)
+                      p (Just a, c)    = Left a
+                      st (b, (Nothing, c)) = (Nothing, c)
+                      st (b, (Just a, c))  = (Just b, c)
+                     
+                      
+                      
+                      
+                      
+
 
 
 main :: IO ()
