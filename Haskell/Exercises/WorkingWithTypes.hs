@@ -55,6 +55,16 @@ data Booking n f d t = Book {    book     :: n -> f -> d -> (n, [t]),
                                  cancel   :: (n, [t]) -> (n, [t])
                         }
 
+
+
+data Lens s t a b = Lens { view :: s -> a, 
+                           update  :: (b, s) -> t
+                         }
+
+data Prism s t a b = Prism { match :: s -> Either a t, 
+                             build :: b -> t 
+                             }
+
 data Affine s t a b = Affine { preview ::  s      -> Either a t, 
                                set     ::  (b, s) -> t
                              }
