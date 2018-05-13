@@ -55,7 +55,7 @@ data Booking n f d t = Book {    book     :: n -> f -> d -> (n, [t]),
                                  cancel   :: (n, [t]) -> (n, [t])
                         }
 
-
+--- OPTICS
 
 data Lens s t a b = Lens { view :: s -> a, 
                            update  :: (b, s) -> t
