@@ -50,9 +50,9 @@ shearer (c,h,n) =  (c, (h/3), n++"snipped")
 -- Airline Experiment
 
 data Booking n f d t = Book {    book     :: n -> f -> d -> (n, [t]),
-                                 fChange  :: (n, [t]) -> f -> (n, [t]),
-                                 nChange  :: (n, [t]) -> n -> (n, [t]),
-                                 cancel   :: (n, [t]) -> (n, [t])
+                                 fChange  :: (n, [t]) -> n -> f -> (n, [t]),
+                                 nChange  :: (n, [t]) -> n ->(n, [t]),
+                                 cancel   :: (n, [t]) -> n -> t -> (n, [t])
                         }
 
 --- OPTICS
