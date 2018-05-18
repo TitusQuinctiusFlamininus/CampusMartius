@@ -1,4 +1,28 @@
 
+--- OPTICS
+
+data Lens s t a b = Lens { view :: s -> a, 
+                           update  :: (b, s) -> t
+                         }
+
+data Prism s t a b = Prism { match :: s -> Either a t, 
+                             build :: b -> t 
+                             }
+
+data Affine s t a b = Affine { preview ::  s      -> Either a t, 
+                               set     ::  (b, s) -> t
+                             }
+
+
+strangeAffine :: Affine (Maybe a, c) (Maybe b, c) a b
+strangeAffine = Affine p st
+                where p (Nothing, c)   = Right (Nothing, c)
+                      p (Just a, c)    = Left a
+                      st (b, (Nothing, c)) = (Nothing, c)
+                      st (b, (Just a, c))  = (Just b, c)
+
+
+
 -- Random Example 
 data Type1 a b c = Type1 { 
                            do1 :: (a -> b) -> a -> (b,c), 
@@ -49,40 +73,23 @@ shearer (c,h,n) =  (c, (h/3), n++"snipped")
 
 -- Airline Experiment
 
-data Booking n f d t = Book {    book     :: n -> f -> d -> (n, [t]),
-                                 fChange  :: (n, [t]) -> n -> f -> (n, [t]),
-                                 nChange  :: (n, [t]) -> n ->(n, [t]),
-                                 cancel   :: (n, [t]) -> n -> t -> (n, [t])
+data Booking n f d t = Book {    book     :: n -> f -> d -> [t] -> [t],
+                                 fChange  :: (n, [t]) -> f -> d -> [t],
+                                 nChange  :: (n, [t]) -> n ->[t],
+                                 cancel   :: (n, [t]) -> t -> [t]
                         }
 
---- OPTICS
+type BName = String
+type Flight = (String,Int)
+type Destination = String
 
-data Lens s t a b = Lens { view :: s -> a, 
-                           update  :: (b, s) -> t
-                         }
-
-data Prism s t a b = Prism { match :: s -> Either a t, 
-                             build :: b -> t 
-                             }
-
-data Affine s t a b = Affine { preview ::  s      -> Either a t, 
-                               set     ::  (b, s) -> t
-                             }
-
-
-strangeAffine :: Affine (Maybe a, c) (Maybe b, c) a b
-strangeAffine = Affine p st
-                where p (Nothing, c)   = Right (Nothing, c)
-                      p (Just a, c)    = Left a
-                      st (b, (Nothing, c)) = (Nothing, c)
-                      st (b, (Just a, c))  = (Just b, c)
-                     
-                      
-                      
-                      
-                      
-
-
+myBooking :: Booking BName Flight Destination (BName, Flight, Destination)
+myBooking = Book bk fc nc cc 
+            where bk n (fl,fn) d []               = [(n,(fl,fn),d)]
+                  bk n (fl,fn) d lt               = ((n,(fl,fn),d):lt)
+                  fc (n,[]) (fl',fn') d = let s = filter (==)
+                  
+ 
 
 main :: IO ()
 main = let do1Res        = do1  makeType1 f1 (4,6)
