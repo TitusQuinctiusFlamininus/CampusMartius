@@ -35,7 +35,7 @@ import Utilities.ChessUtils
 (.<->.) l = return $ notOnBoard fst . notOnBoard snd $ l 
 
 -- | Function to filter out all locations that have already been occupied one's own color pieces. 
---   For example, if black wants to move, then he can only do so to a sqaure not occupied by his own pieces.
+--   For example, if black wants to move, then he can only do so to a square not occupied by his own pieces.
 --   First parameter  = the list of all colored locations
 --   Second parameter = the list of locations from the moves monad
 (<-!->) :: [Location] -> [Location] -> PossibleMoves [Location]
