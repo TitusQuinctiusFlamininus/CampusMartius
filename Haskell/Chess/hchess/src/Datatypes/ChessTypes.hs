@@ -122,11 +122,9 @@ newtype ChessBoard a = ChessBoard { eval :: (Color, [BoardPiece]) }
 
 -- | Minor pieces behaviour
 class Minor a where
-    moveBack :: a -> Bool
 
 -- | Major pieces behaviour
 class Major a where
-    moveAnyDirection :: a -> Bool
 
 -- | Behaviour out of the higher level board piece types
 class Boarder a where
@@ -157,16 +155,12 @@ class Promotable p t where
 
 -- | Making only Minor pieces a member 
 instance Minor MINOR where
-    moveBack MINOR = False
-
 
 -- | Making Major pieces a member 
-instance Major MAJOR where
-    moveAnyDirection MAJOR = True
+instance Major MAJOR where 
 
 -- | Making Kings a member 
 instance Major ZIEL where
-    moveAnyDirection ZIEL = True
 
 -- | Instances of board pieces
 instance Boarder BoardPiece where
