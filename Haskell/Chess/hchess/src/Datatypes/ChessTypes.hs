@@ -109,10 +109,8 @@ data BoardPiece = K (Piece ZIEL) | MI (Piece MINOR) | MA (Piece MAJOR) deriving 
 -- | Designates the locations possible by any piece, at any one time
 data PossibleMoves s = PossibleMoves s deriving (Show, Eq)
 
--- | Datastructure that will represent a pair of moves, one from white and the other from black, at 
---   some stage in the game. For example: 5. Bg5 exf4 would be considered such a move
---   The n type represents the move number
-data GameTree n w b = Move n w b deriving (Show, Eq)
+-- | Type representing the current state of the game and the color of the side that made the last move
+newtype ChessBoard a = ChessBoard { eval :: (Color, [BoardPiece]) }
 
 {--
 *****************************
@@ -145,6 +143,7 @@ class Movable p where
 -- | Promotion of Minor pieces (i.e pawns). Major pieces are any pieces that are NOT pawns (and not the King)
 class Promotable p t where
     promote :: p -> t -> t
+
 
 
 {--
