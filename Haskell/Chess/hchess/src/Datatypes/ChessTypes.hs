@@ -120,7 +120,7 @@ data Move = Move   {    from  :: Location,
                     } deriving (Show)
 
 -- | Type representing a tree of moves to consider making for an advantage
-data ChessTree a = Draw a | StaleMate a | CheckMate a | ChessMove a (ChessTree a) deriving (Show)
+data ChessTree a = Draw | StaleMate | CheckMate | ChessMove a (ChessTree a) deriving (Show)
 
 {--
 *****************************
