@@ -26,8 +26,18 @@ notOnBoard f = filter (\k -> f k >= lBound) . filter (\k -> f k <= uBound)
 territory :: [BoardPiece] -> Color -> [Location]
 territory [] _  = []
 territory (x:xs) c
- | paint x == c  =  locate x : territory xs c
- | otherwise     =  territory xs c
+ | paintB x == c  =  locationB x : territory xs c
+ | otherwise      =  territory xs c
+
+paintB :: BoardPiece -> Color 
+paintB (K p)  = color p 
+paintB (MI p) = color p 
+paintB (MA p) = color p 
+
+locationB :: BoardPiece -> Location
+locationB  (K p)  = location p 
+locationB  (MI p) = location p 
+locationB  (MA p) = location p 
 
 -- | Zip two lists where:
 --   First list is a list of functions (each representing a binary addition operation with one value already bound )

@@ -136,11 +136,6 @@ class Minor a where
 -- | Major pieces behaviour
 class Major a where
 
--- | Behaviour out of the higher level board piece types
-class Boarder a where
-    paint  :: a -> Color
-    locate :: a -> Location
-
 -- | Ability of a piece to migrate from one square to another, either to capture or simply to move.
 --   For a simple movement :  a piece to move and its intended location
 --   For a piece capture:  a killer, a victim, a list of all victims captured so far
@@ -152,8 +147,6 @@ class Movable p where
 class Promotable p t where
     promote :: p -> t -> t
 
-
-
 {--
 *****************************
 *****************************
@@ -161,7 +154,6 @@ class Promotable p t where
 *****************************
 *****************************
 --}
-
 
 -- | Making only Minor pieces a member 
 instance Minor MINOR where
@@ -171,15 +163,6 @@ instance Major MAJOR where
 
 -- | Making Kings a member 
 instance Major ZIEL where
-
--- | Instances of board pieces
-instance Boarder BoardPiece where
-    paint  (K p)   = color p
-    paint  (MI p)  = color p
-    paint  (MA p)  = color p
-    locate (K p)   = location p
-    locate (MI p)  = location p
-    locate (MA p)  = location p
 
 -- | Display the board, we are only interested in the pieces
 instance Show BoardPiece where
