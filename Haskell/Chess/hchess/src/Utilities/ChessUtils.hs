@@ -22,18 +22,19 @@ notOnBoard f = filter (\k -> f k >= lBound) . filter (\k -> f k <= uBound)
  | (x `elem` c) == True =      (>!<) c xs
  | otherwise            =  x : (>!<) c xs
 
--- | Obtain the locations of all pieces of the same color, that are on the board (not including captured pieces)           
-territory :: [BoardPiece] -> Color -> [Location]
+-- | function to obtain the locations of all pieces of the same color, that are on the board (not including captured pieces) --   territory :: [BoardPiece] -> Color -> [Location]
 territory [] _  = []
 territory (x:xs) c
  | paintB x == c  =  locationB x : territory xs c
  | otherwise      =  territory xs c
 
+-- | function to obtain the color from any boardpiece
 paintB :: BoardPiece -> Color 
 paintB (K p)  = color p 
 paintB (MI p) = color p 
 paintB (MA p) = color p 
 
+-- | function to obtain the location from any boardpiece
 locationB :: BoardPiece -> Location
 locationB  (K p)  = location p 
 locationB  (MI p) = location p 
