@@ -106,14 +106,11 @@ data Piece a = Piece {   name       :: PieceType,
 -- | The type that we use to gather all chess types together
 data BoardPiece = K (Piece ZIEL) | MI (Piece MINOR) | MA (Piece MAJOR) deriving (Eq)
 
--- | Designates the locations possible by any piece, at any one time
-data PossibleMoves s = PossibleMoves s deriving (Show, Eq)
-
 -- | Type representing the current state of the game and the color of the side that made the last move
 newtype CurrChessBoard a = CurrChessBoard { eval :: (Color, [BoardPiece]) }
 
 -- | Type representing a move to make on the board, from one location to another
-data Move = Move   {  from  :: Location, 
+data Move = Move   {    from  :: Location, 
                       to    :: Location,
                       farbe :: Color
                     } deriving (Show)
@@ -185,27 +182,6 @@ instance Show BoardPiece where
     show (K  p)   = show p
     show (MI p)   = show p
     show (MA p)   = show p
-
-
--- | Functor instance
---   fmap :: (Functor f) => (a -> b) -> fa -> fb
-instance Functor PossibleMoves where
-    fmap f (PossibleMoves p) = PossibleMoves (f p)
-
--- | Applicativive instance
---   pure :: (Applicative f) => a -> f a
---   \<\*>  :: (Applicative f) => f(a -> b) -> f a -> f b
-instance Applicative PossibleMoves where
-    pure = PossibleMoves
-    PossibleMoves f <*> PossibleMoves s = PossibleMoves (f s)
-    
--- | Monadic instance
---   return :: (Monad m) => a -> m a
---   (>>=)  :: m a -> (a -> m b) -> m b
-instance Monad PossibleMoves where
-    return = PossibleMoves
-    PossibleMoves s >>= f = f s
-    
 
 -- | Making all our pieces movable and the ability to capture other pieces
 instance Movable (Piece a) where

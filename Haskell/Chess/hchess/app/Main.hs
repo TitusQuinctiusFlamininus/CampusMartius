@@ -5,7 +5,6 @@ import Datatypes.ChessPieces
 import Datatypes.ChessTypes
 import Utilities.ChessUtils
 
-import Control.Monad ((>=>))
 
 main :: IO ()
 main = do mapM_ (putStrLn . show) setChessBoard
@@ -18,8 +17,9 @@ main = do mapM_ (putStrLn . show) setChessBoard
 --Determine the actual moves possible for any piece, from any current position.
 --First Parameter  ::  The piece that wants to make a move
 --Second Parameter ::  The board as it stands currently
-anyPieceMoves :: Piece a -> [BoardPiece] -> PossibleMoves [Location]
-anyPieceMoves p b =  (<-?->) l >=> (.<->.) >=> (<-!->) c $ t
+anyPieceMoves :: Piece a -> [BoardPiece] -> [Location]
+anyPieceMoves p b = (.<->.) . (>!<) c . (<-?->) l $ t
                      where c = territory b $ color p
                            l = location p
                            t = name p
+                           

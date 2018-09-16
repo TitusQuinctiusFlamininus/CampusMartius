@@ -9,14 +9,14 @@ import Utilities.ChessUtils
 -- | Raw possibilities across all cells, in an 8x8 space, regardless of whether the cells are on the board or not.
 --   It determines unmodified possible moves of a piece, based on its current position. Some positions resulting may 
 --   not even be on the board
-(<-?->) :: Location -> PieceType -> PossibleMoves [Location]
+(<-?->) :: Location -> PieceType -> [Location]
 (<-?->) (f,r) t
- | t == KNIGHT = return $ poss knFiles knRanks
- | t == KING   = return $ poss kFiles kRanks
- | t == QUEEN  = return $ bMoves ++ rMoves
- | t == BISHOP = return bMoves
- | t == ROOK   = return rMoves
- | otherwise   = return [] 
+ | t == KNIGHT = poss knFiles knRanks
+ | t == KING   = poss kFiles kRanks
+ | t == QUEEN  = bMoves ++ rMoves
+ | t == BISHOP = bMoves
+ | t == ROOK   = rMoves
+ | otherwise   = [] 
                  where poss    = zipWith locZipper
                        knFiles = (zipWith ($) ((<->) 2 (+2) ++ (<->) 2 (+1)) $ (<->) 4 $ f) ++ (<->) 2 (f-2) ++ (<->) 2 (f-1)
                        knRanks = concat . (<->) 2 $ [(r+1), (r-1), (r+2), (r-2)]
@@ -31,12 +31,6 @@ import Utilities.ChessUtils
                                                            
 
 -- | Filter out all locations outside the board, given as locations in the list 
-(.<->.) :: [Location] -> PossibleMoves [Location]
-(.<->.) l = return $ notOnBoard fst . notOnBoard snd $ l 
+(.<->.) :: [Location] -> [Location]
+(.<->.) l = notOnBoard fst . notOnBoard snd $ l 
 
--- | Function to filter out all locations that have already been occupied one's own color pieces. 
---   For example, if black wants to move, then he can only do so to a square not occupied by his own pieces.
---   First parameter  = the list of all colored locations
---   Second parameter = the list of locations from the moves monad
-(<-!->) :: [Location] -> [Location] -> PossibleMoves [Location]
-(<-!->) c l = return $ (>!<) c l
