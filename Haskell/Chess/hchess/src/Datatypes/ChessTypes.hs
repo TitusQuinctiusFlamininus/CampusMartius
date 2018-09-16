@@ -110,7 +110,16 @@ data BoardPiece = K (Piece ZIEL) | MI (Piece MINOR) | MA (Piece MAJOR) deriving 
 data PossibleMoves s = PossibleMoves s deriving (Show, Eq)
 
 -- | Type representing the current state of the game and the color of the side that made the last move
-newtype ChessBoard a = ChessBoard { eval :: (Color, [BoardPiece]) }
+newtype CurrChessBoard a = CurrChessBoard { eval :: (Color, [BoardPiece]) }
+
+-- | Type representing a move to make on the board, from one location to another
+data Move = Move   {  from  :: Location, 
+                      to    :: Location,
+                      farbe :: Color
+                    } deriving (Show)
+
+-- | Type representing a tree of moves to consider making for an advantage
+data ChessTree a = CheckMate a | ChessMove a (ChessTree a) deriving (Show)
 
 {--
 *****************************
