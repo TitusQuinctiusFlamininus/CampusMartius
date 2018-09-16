@@ -58,6 +58,10 @@ wPawnsRank   = 2 :: Rank
 *****************************
 --}
 
+-- | type that represents who is winning on the board (positive number for White, negative for Black, Zero for 
+--   an equal position)
+type ChessEval = Float
+
 -- | An integer that describes a part of a location tuple, either rank or file 
 type RankOrFile = Int
 
@@ -111,8 +115,8 @@ newtype CurrChessBoard a = CurrChessBoard { eval :: (Color, [BoardPiece]) }
 
 -- | Type representing a move to make on the board, from one location to another
 data Move = Move   {    from  :: Location, 
-                      to    :: Location,
-                      farbe :: Color
+                        to    :: Location,
+                        farbe :: Color
                     } deriving (Show)
 
 -- | Type representing a tree of moves to consider making for an advantage
