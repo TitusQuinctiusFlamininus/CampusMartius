@@ -111,7 +111,7 @@ data Piece a = Piece {   name       :: PieceType,
 data BoardPiece = K (Piece ZIEL) | MI (Piece MINOR) | MA (Piece MAJOR) deriving (Eq)
 
 -- | Type representing the current state of the game and the color of the side that made the last move
-newtype CurrChessBoard a = CurrChessBoard { eval :: (Color, [BoardPiece]) }
+newtype ChessBoard a = ChessBoard { eval :: (Color, [BoardPiece]) }
 
 -- | Type representing a move to make on the board, from one location to another
 data Move = Move   {    from  :: Location, 
