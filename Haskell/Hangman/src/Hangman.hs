@@ -1,6 +1,13 @@
 module Hangman where
     
+type UGuess = Char
 
-data Hangword a = HWord { unhang :: a }
+data HangWord    = HangWord { unhang   :: [Char],
+                              cpos     ::    Int,
+                              solution :: [Char]
+                            }
 
 
+guessLetter :: UGuess -> HangWord -> HangWord
+guessLetter ' '   h  = h
+guessLetter g     h  = undefined
