@@ -33,8 +33,7 @@ jury  g s    = case (locateGuess g $ H.toList s) of
                  Nothing -> Nothing
                  Just x  -> case x of 
                              w@(i:[])  -> Just (i, H.delete w s)
-                             w@(i:is)  -> let s' = H.delete w s in 
-                                                   Just (i, H.insert is g s)
+                             w@(i:is)  -> Just (i, H.insert is g (H.delete w s))
  
 -- | function to find the indices that represent where that character appears in the solution string
 locateGuess :: UGuess -> [([Idx], Char)] -> Maybe [Idx]
