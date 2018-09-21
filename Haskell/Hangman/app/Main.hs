@@ -12,11 +12,7 @@ import Data.Char       (toUpper)
 solutionword = "mississippi"
 
 main :: IO ()
-main = do putStrLn "Welcome To Haskell's Hangman"
-          putStrLn ""
-          putStrLn logo
-          putStrLn ""
-          
+main = do welcome
           let mask      = hideWords solutionword
               initHang  = HangWord {uhang = mask, chances = length hangover} in 
                do putStrLn ("You start with "++(show $ length hangover)++" Chances! ")
@@ -40,6 +36,12 @@ runHangman h                                  s sol  =
                                                     case chances h' == chances h  of
                                                       True  -> runHangman h' s     sol'
                                                       False -> runHangman h' (s+1) sol'
+welcome :: IO ()
+welcome = do putStrLn "Welcome To Haskell's Hangman"
+             putStrLn ""
+             putStrLn logo
+             putStrLn ""
+          
 
 gatherInput :: IO String
 gatherInput = do putStrLn ""
