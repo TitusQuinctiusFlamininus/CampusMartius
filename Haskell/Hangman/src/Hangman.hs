@@ -54,7 +54,14 @@ locateGuess  g   ((ix,v):xs)  = if g == v then (Just ix) else locateGuess g xs
 
 -- | Function that replaces all characters in a solution string with placeholders (so player can see how many characters the word is comprised of, and start guessing that the characters are at the placeholders)
 hideWords :: [UGuess] -> [UGuess]
-hideWords s = (\_ -> '_') <$> s
+hideWords = (<$>) (\_ -> '_')
+
+-- | Function to retrieve the right gallows
+safeRetr :: [String] -> Idx -> String
+safeRetr s n 
+ | (n < 0)    = s !! 0
+ | otherwise  = s !! n
+
 
 -- | Function to take a word (the solution to the word puzzle), and creates a map; the keys represent the indices
 --   of the occurrences of each character value in the list 
@@ -84,5 +91,5 @@ simplify t ((l,c):es) =
 
 -- | Function to present the progress so far
 modProgress :: [UGuess] -> [UGuess]
-modProgress p = intersperse ' ' . (toUpper <$>) $ p
+modProgress = intersperse ' ' . (toUpper <$>)
 

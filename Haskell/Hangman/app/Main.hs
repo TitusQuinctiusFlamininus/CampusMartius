@@ -30,13 +30,16 @@ runHangman h                                  s sol  =
                 let theguess = if guess == [] then '$' else (head guess)
                     (h',sol') = guessLetter (theguess, sol) h in 
                                  do  case chances h' == 0 of 
-                                       True   -> do  putStrLn ((hangover !! s) ++ "    WORD WAS => "++
+                                       True   -> do  putStrLn ((safeRetr hangover s) ++ "    WORD WAS => "++
                                                               (toUpper <$> solutionword)++"")    
                                                      putStrLn gameover >> return ()
                                        False  -> case chances h' == chances h  of
-                                                      True  -> do showProgress (hangover !! (s-1)) (modProgress $ uhang h')                                (chances h')
+                                                      True  -> do putStrLn "about to see..."
+                                                                  showProgress (safeRetr hangover (s-1)) 
+                                                                     (modProgress $ uhang h') (chances h')
                                                                   runHangman h' s     sol'
-                                                      False -> do showProgress (hangover !! s) (modProgress $ uhang h')                                    (chances h')
+                                                      False -> do showProgress (safeRetr hangover s) 
+                                                                     (modProgress $ uhang h') (chances h')
                                                                   runHangman h' (s+1) sol'
 
 -- | Herzlich Wilkommen                                                                  
