@@ -80,3 +80,12 @@ simplify ((l,c):es) = let dups = filter (\(_,c') -> c == c') es
 -- | Function to present the progress so far
 modProgress :: [UGuess] -> [UGuess]
 modProgress p = intersperse ' ' . (toUpper <$>) $ p
+
+-- | Print to the console the progress on the gallows and the word building
+showProgress :: String -> String -> Int -> IO ()
+showProgress gallows w c = 
+    do putStrLn (gallows ++ "    WORD =>["++w++"]") 
+       putStrLn ("Chances Left: "++(show c))
+       putStrLn ""
+       putStrLn ""
+       putStrLn ""
