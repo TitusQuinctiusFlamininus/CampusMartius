@@ -15,7 +15,7 @@ type UGuess = Char
 type Solution    = H.Map [Idx] Char                    
 
 
-data HangWord    = HangWord { unhang   ::[UGuess],    -- <-- The Guess Word Structure so far constructed by Hangman
+data HangWord    = HangWord { uhang    ::[UGuess],    -- <-- The Guess Word Structure so far constructed by Hangman
                               chances  ::      Int    -- <-- The number of tries left before we get hanged (0 = lights out)
                             } deriving (Show)
 
@@ -24,10 +24,11 @@ guessLetter (' ',s )  h       = h
 guessLetter (g  ,s )  h       = 
     case jury g s of 
           Nothing       ->  h { chances = (chances h) - 1 }
-          Just (n, s')  ->  h { unhang = update           }
-    where update = undefined                   
-                        
-                        
+          Just (n, s')  ->  h { uhang = hp ++ hs          }
+            where hp = fst . splitAt n $ uhang h
+                  hs = (g : (drop 1 . snd . splitAt n $ uhang h))                   
+
+
 jury :: UGuess -> Solution -> Maybe (Idx, Solution)
 jury  g s    = case (locateGuess g $ H.toList s) of 
                  Nothing -> Nothing
