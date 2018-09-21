@@ -27,11 +27,11 @@ data HangWord    = HangWord { uhang    ::  [UGuess],  -- <-- The Guess Word Stru
 -- | Formal function to process the guessed letter. UGuess represents the player's guess, 
 --   the Solution represents a map of the dictionary word with character indices. Not making a guess (by 
 --   pressing enter-key), should yield a ' ' as the guess, in which case we will just reject further processing
-guessLetter :: (UGuess, Solution) -> HangWord -> HangWord
+guessLetter :: (UGuess, Solution) -> HangWord -> (HangWord, Solution)
 guessLetter (g  ,s )  h       = 
     case jury g s of 
-          Nothing       ->  h { chances = (chances h) - 1       }
-          Just (n, s')  ->  h { uhang   = l ++ (g : (drop 1 r)) }
+          Nothing       ->  (h { chances = (chances h) - 1       },s )
+          Just (n, s')  ->  (h { uhang   = l ++ (g : (drop 1 r)) },s')
                   where (l,r) = splitAt n $ uhang h
                     
 
@@ -61,7 +61,7 @@ hideWords s = (\_ -> '_') <$> s
 --   of the occurrences of each character value in the list 
 mapify :: [UGuess] -> Solution
 mapify []  = H.empty
-mapify  s  = H.fromList $ crunchMap 0 s
+mapify  s  = H.fromList $ simplify [] . crunchMap 0 $ s
 
 -- | Function to create a list of tuples; first element of each tuple is a list of indexes, in the order in which 
 --   characters appear in a list; second element is the character itself; the first parameter is the starting index
@@ -72,10 +72,17 @@ crunchMap n (s:xs)  = ([n],s) : crunchMap (n+1) xs
 
 
 -- | Function that combines entries of indice lists, if the character is the same for 2 elements
-simplify :: [([Idx], Char)] -> [([Idx], Char)]
-simplify ((l,c):es) = let dups = filter (\(_,c') -> c == c') es
-                          finl = (\(l',_) -> l') <$> dups in 
-                                 ((l++(concat finl)), c) : simplify es
+--   If we process a character then we do not process it again, so we add it to a temporary list
+simplify :: [Char] -> [([Idx], Char)] -> [([Idx], Char)]
+simplify _ []         = []
+simplify t ((l,c):es) =
+   case c `elem` t of 
+    True  ->  simplify t es
+    False ->  let dups = filter (\(_,c') -> c == c') es in 
+                  case dups of 
+                       []  -> (l,c) : simplify (c:t) es
+                       _   -> let finl = (\(l',_) -> l') <$> dups in 
+                                         ((l++(concat finl)), c) : simplify (c:t) es
 
 -- | Function to present the progress so far
 modProgress :: [UGuess] -> [UGuess]
