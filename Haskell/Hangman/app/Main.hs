@@ -28,19 +28,14 @@ main = do putStrLn "Welcome To Haskell's Hangman"
 runHangman :: HangWord -> HangStart -> Solution -> IO ()
 runHangman ((any (== '_') .  uhang) -> False) _ _    = putStrLn (saved++"    WORD =>["++solutionword++"]")
 runHangman h                                  s sol  = 
-             do putStrLn ""
-                putStrLn ("Guess a Letter : ->")
-                guess <- getLine
-                putStrLn ""
-                putStrLn ""
+             do guess <- gatherInput
                 let theguess = if guess == [] then '$' else (head guess)
                     (h',sol') = guessLetter (theguess, sol) h in 
                                  do  case chances h' == 0 of 
                                        True   -> do  putStrLn "" 
                                                      putStrLn ((hangover !! s) ++ "    WORD WAS => "++
                                                               (toUpper <$> solutionword)++"")    
-                                                     putStrLn gameover
-                                                     return ()
+                                                     putStrLn gameover >> return ()
                                        False  -> do case chances h' == chances h  of
                                                       True  -> case s>1 of 
                                                                 True  -> do showProgress (hangover !! (s-1))
@@ -53,3 +48,11 @@ runHangman h                                  s sol  =
                                                                                (chances h')
                                                                   runHangman h' (s+1) sol'
 
+gatherInput :: IO String
+gatherInput = do putStrLn ""
+                 putStrLn ("Guess a Letter : ->")
+                 guess <- getLine
+                 putStrLn ""
+                 putStrLn ""
+                 return guess
+                
