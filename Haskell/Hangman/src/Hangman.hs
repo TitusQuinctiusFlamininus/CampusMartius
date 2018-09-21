@@ -1,5 +1,3 @@
-{-# LANGUAGE ViewPatterns #-}
-
 module Hangman where
 
 import Data.Char
