@@ -87,7 +87,7 @@ simplify t ((l,c):es) =
                        _   -> let finl = (\(l',_) -> l') <$> dups in 
                                          ((l++(concat finl)), c) : simplify (c:t) es
 
--- | Function to present the progress so far
+-- | Function to adjust the visual output of the progress so far
 modProgress :: [UGuess] -> [UGuess]
 modProgress = intersperse ' ' . (toUpper <$>)
 
