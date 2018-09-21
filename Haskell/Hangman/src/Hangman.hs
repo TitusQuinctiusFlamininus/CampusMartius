@@ -88,11 +88,3 @@ simplify t ((l,c):es) =
 modProgress :: [UGuess] -> [UGuess]
 modProgress p = intersperse ' ' . (toUpper <$>) $ p
 
--- | Print to the console the progress on the gallows and the word building
-showProgress :: String -> String -> Int -> IO ()
-showProgress gallows w c = 
-    do putStrLn (gallows ++ "    WORD =>["++w++"]") 
-       putStrLn ("Chances Left: "++(show c))
-       putStrLn ""
-       putStrLn ""
-       putStrLn ""

@@ -37,13 +37,24 @@ runHangman h                                  s sol  =
                                                                   runHangman h' s     sol'
                                                       False -> do showProgress (hangover !! s) (modProgress $ uhang h')                                    (chances h')
                                                                   runHangman h' (s+1) sol'
+
+-- | Herzlich Wilkommen                                                                  
 welcome :: IO ()
 welcome = do putStrLn "Welcome To Haskell's Hangman"
              putStrLn ""
              putStrLn logo
              putStrLn ""
           
+-- | Print to the console the progress on the gallows and the word building
+showProgress :: String -> String -> Int -> IO ()
+showProgress gallows w c = 
+    do putStrLn (gallows ++ "    WORD =>["++w++"]") 
+       putStrLn ("Chances Left: "++(show c))
+       putStrLn ""
+       putStrLn ""
+       putStrLn ""
 
+-- | Get answer from the player
 gatherInput :: IO String
 gatherInput = do putStrLn ""
                  putStrLn ("Guess a Letter : ->")
