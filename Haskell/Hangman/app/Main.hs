@@ -32,7 +32,7 @@ runHangman h s =
                 let h' = guessLetter (if guess == [] then '$' else (head guess), mapify solutionword) h in 
                              do  case chances h' == 0 of 
                                    True   -> do  putStrLn "              " 
-                                                 putStrLn ((hangover !! s) ++ "    WORD =>["++(modProgress $ uhang h')++"]")    
+                                                 putStrLn ((hangover !! s) ++ "    WORD WAS =>["++solutionword++"]")    
                                                  putStrLn "´´´´´´´´´´´´´´´´´´´´´´" 
                                                  putStrLn "  GAME OVER (loser!)  " 
                                                  putStrLn "``````````````````````" 
