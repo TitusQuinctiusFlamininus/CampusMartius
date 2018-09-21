@@ -32,10 +32,11 @@ runHangman h                                  s sol  =
                                                      putStrLn ((hangover !! s) ++ "    WORD WAS => "++
                                                               (toUpper <$> solutionword)++"")    
                                                      putStrLn gameover >> return ()
-                                       False  -> do showProgress (hangover !! s) (modProgress $ uhang h') (chances h')
-                                                    case chances h' == chances h  of
-                                                      True  -> runHangman h' s     sol'
-                                                      False -> runHangman h' (s+1) sol'
+                                       False  -> case chances h' == chances h  of
+                                                      True  -> do showProgress (hangover !! (s-1)) (modProgress $ uhang h')                                (chances h')
+                                                                  runHangman h' s     sol'
+                                                      False -> do showProgress (hangover !! s) (modProgress $ uhang h')                                    (chances h')
+                                                                  runHangman h' (s+1) sol'
 welcome :: IO ()
 welcome = do putStrLn "Welcome To Haskell's Hangman"
              putStrLn ""
