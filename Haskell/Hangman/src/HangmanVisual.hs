@@ -76,3 +76,5 @@ saved = "   saved! yeeh!   " ++
         "         ||        "++
         "        _//        "++
         "___________________"        
+        
+hangover = [one,two,three, four, five, six, seven, eight, nine, ten, elvn, twlv, theen]
