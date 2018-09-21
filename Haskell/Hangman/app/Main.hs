@@ -34,8 +34,7 @@ runHangman h                                  s sol  =
                                                               (toUpper <$> solutionword)++"")    
                                                      putStrLn gameover >> return ()
                                        False  -> case chances h' == chances h  of
-                                                      True  -> do putStrLn "about to see..."
-                                                                  showProgress (safeRetr hangover (s-1)) 
+                                                      True  -> do showProgress (safeRetr hangover (s-1)) 
                                                                      (modProgress $ uhang h') (chances h')
                                                                   runHangman h' s     sol'
                                                       False -> do showProgress (safeRetr hangover s) 
