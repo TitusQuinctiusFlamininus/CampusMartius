@@ -40,7 +40,7 @@ jury  g s    =
           Nothing -> Nothing
           Just x  -> case x of 
                       w@(i:[])  -> Just (i, H.delete w s)
-                      w@(i:is)  -> Just (i, H.insert is g (H.delete w s))
+                      w@(i:is)  -> Just (i, H.insert is g $ H.delete w s)
  
 -- | function to find the indices that represent where that character appears in the solution string. 
 --   If it cannot be found, it means the guess was wrong and we return Nothing, otherwise we return the 
