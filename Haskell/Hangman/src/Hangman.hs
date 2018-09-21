@@ -20,7 +20,8 @@ data HangWord    = HangWord { uhang    ::  [UGuess],  -- <-- The Guess Word Stru
                             } deriving (Show)
 
 -- | Formal function to process the guessed letter. UGuess represents the player's guess, 
---   the Solution represents a map of the dictionary word with character indices
+--   the Solution represents a map of the dictionary word with character indices. Not making a guess (by 
+--   pressing enter-key), should yield a ' ' as the guess, in which case we will just reject further processing
 guessLetter :: (UGuess, Solution) -> HangWord -> HangWord
 guessLetter (' ',s )  h       = h
 guessLetter (g  ,s )  h       = 
