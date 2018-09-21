@@ -30,7 +30,9 @@ guessLetter (g  ,s )  h       =
                   where (l,r) = splitAt n $ uhang h
                     
 
-
+-- | Function that will adjust the solution to reflect whether guess was right or wrong. If guess is correct, then 
+--   the entry (of that character) will be deleted from the map if it occurs only once, otherwise we will just 
+--   remove the foremost index in a list the represents where the character appears multiple times in the word solution
 jury :: UGuess -> Solution -> Maybe (Idx, Solution)
 jury  g s    = 
     case (locateGuess g $ H.toList s) of 
@@ -39,7 +41,9 @@ jury  g s    =
                       w@(i:[])  -> Just (i, H.delete w s)
                       w@(i:is)  -> Just (i, H.insert is g (H.delete w s))
  
--- | function to find the indices that represent where that character appears in the solution string
+-- | function to find the indices that represent where that character appears in the solution string. 
+--   If it cannot be found, it means the guess was wrong and we return Nothing, otherwise we return the 
+--   key in the solutionMap 
 locateGuess :: UGuess -> [([Idx], Char)] -> Maybe [Idx]
 locateGuess  _   []           = Nothing
 locateGuess  g   ((ix,v):xs)  = if g == v then (Just ix) else locateGuess g xs
