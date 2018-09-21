@@ -5,7 +5,7 @@ module Hangman where
 import Data.Char
 import Data.Hashable   (Hashable)
 import Data.List       (intersperse)
-import qualified Data.HashMap as H   (Map, toList, fromList, delete, insert, empty)
+import qualified Data.HashMap as H   (Map, toList, fromList, delete, insert)
 
 -- | Represents an index position of a single character in a string
 type Idx    = Int 
@@ -31,7 +31,7 @@ guessLetter (g  ,s )  h       =
     case jury g s of 
           Nothing       ->  (h { chances = (chances h) - 1       },s )
           Just (n, s')  ->  (h { uhang   = l ++ (g : (drop 1 r)) },s')
-                  where (l,r) = splitAt n $ uhang h
+            where (l,r) = splitAt n $ uhang h
                     
 
 -- | Function that will adjust the solution to reflect whether guess was right or wrong. If guess is correct, then 
@@ -59,7 +59,6 @@ hideWords s = (\_ -> '_') <$> s
 -- | Function to take a word (the solution to the word puzzle), and creates a map; the keys represent the indices
 --   of the occurrences of each character value in the list 
 mapify :: [UGuess] -> Solution
-mapify []  = H.empty
 mapify  s  = H.fromList $ simplify [] . crunchMap 0 $ s
 
 -- | Function to create a list of tuples; first element of each tuple is a list of indexes, in the order in which 
@@ -67,7 +66,7 @@ mapify  s  = H.fromList $ simplify [] . crunchMap 0 $ s
 --   of the first character in a list
 crunchMap :: Idx -> [UGuess] -> [([Idx], Char)]
 crunchMap _  []       = []
-crunchMap n (s:xs)  = ([n],s) : crunchMap (n+1) xs
+crunchMap n (s:xs)    = ([n],s) : crunchMap (n+1) xs
 
 
 -- | Function that combines entries of indice lists, if the character is the same for 2 elements

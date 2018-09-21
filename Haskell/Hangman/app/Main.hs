@@ -30,8 +30,7 @@ runHangman h                                  s sol  =
                 let theguess = if guess == [] then '$' else (head guess)
                     (h',sol') = guessLetter (theguess, sol) h in 
                                  do  case chances h' == 0 of 
-                                       True   -> do  putStrLn "" 
-                                                     putStrLn ((hangover !! s) ++ "    WORD WAS => "++
+                                       True   -> do  putStrLn ((hangover !! s) ++ "    WORD WAS => "++
                                                               (toUpper <$> solutionword)++"")    
                                                      putStrLn gameover >> return ()
                                        False  -> case chances h' == chances h  of
