@@ -14,19 +14,21 @@ type UGuess = Char
 -- | If any word (the solution, or word the user is supposed to guess and get right) is represented as a string of characters, then the keys represent the indices of the occurrences of some character that composes the word. As the player guesses, the type's internal structure will change
 type Solution    = H.Map [Idx] Char                    
 
-
-data HangWord    = HangWord { uhang    ::[UGuess],    -- <-- The Guess Word Structure so far constructed by Hangman
-                              chances  ::      Int    -- <-- The number of tries left before we get hanged (0 = lights out)
+-- | Represents the progress of the player making guesses as the game progresses
+data HangWord    = HangWord { uhang    ::  [UGuess],  -- <-- The Guess Word Structure so far constructed by Hangman
+                              chances  ::  Int        -- <-- The number of tries left before we get hanged (0 = lights out)
                             } deriving (Show)
 
+-- | Formal function to process the guessed letter. UGuess represents the player's guess, 
+--   the Solution represents a map of the dictionary word with character indices
 guessLetter :: (UGuess, Solution) -> HangWord -> HangWord
 guessLetter (' ',s )  h       = h
 guessLetter (g  ,s )  h       = 
     case jury g s of 
           Nothing       ->  h { chances = (chances h) - 1 }
-          Just (n, s')  ->  h { uhang = hp ++ hs          }
-            where hp = fst . splitAt n $ uhang h
-                  hs = (g : (drop 1 . snd . splitAt n $ uhang h))                   
+          Just (n, s')  ->  h { uhang   = l ++ (g : (drop 1 r))         }
+            where (l,r) = splitAt n $ uhang h
+                    
 
 
 jury :: UGuess -> Solution -> Maybe (Idx, Solution)
