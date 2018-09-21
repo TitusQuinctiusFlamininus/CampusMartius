@@ -4,7 +4,7 @@ module Hangman where
 
 import Data.Foldable
 import Data.Hashable   (Hashable)
-import qualified Data.HashMap as H   (Map, toList)
+import qualified Data.HashMap as H   (Map, toList, delete, insert)
 
 -- | Represents an index position of a single character in a string
 type Idx    = Int 
@@ -23,15 +23,18 @@ guessLetter :: (UGuess, Solution) -> HangWord -> HangWord
 guessLetter (' ',s )  h       = h
 guessLetter (g  ,s )  h       = 
     case jury g s of 
-          False    ->  h { chances = (chances h) - 1 }
-          True     ->  h { unhang = update           }
+          Nothing       ->  h { chances = (chances h) - 1 }
+          Just (n, s')  ->  h { unhang = update           }
     where update = undefined                   
                         
                         
-jury :: UGuess -> Solution -> Bool
+jury :: UGuess -> Solution -> Maybe (Idx, Solution)
 jury  g s    = case (locateGuess g $ H.toList s) of 
-                 Nothing -> undefined
-                 Just x  -> undefined
+                 Nothing -> Nothing
+                 Just x  -> case x of 
+                             w@(i:[])  -> Just (i, H.delete w s)
+                             w@(i:is)  -> let s' = H.delete w s in 
+                                                   Just (i, H.insert is g s)
  
 -- | function to find the indices that represent where that character appears in the solution string
 locateGuess :: UGuess -> [([Idx], Char)] -> Maybe [Idx]
