@@ -87,6 +87,10 @@ saved = "   saved! yeeh!      \n"++
         "        \\()/        \n"++
         "         ||          \n"++
         "        _//          \n"++
-        "___________________"        
+        "___________________"  
+        
+gameover = "´´´´´´´´´´´´´´´´´´´´´´\n"++ 
+           "  GAME OVER (loser!)  \n"++  
+           "``````````````````````" 
         
 hangover = [one,two,three, four, five, six, seven, eight, nine, ten, elvn, twlv, theen]
