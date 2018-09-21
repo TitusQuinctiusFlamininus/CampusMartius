@@ -2,9 +2,8 @@
 
 module Hangman where
 
-import Data.Foldable
-import Data.Hashable   (Hashable)
 import Data.Char
+import Data.Hashable   (Hashable)
 import Data.List       (intersperse)
 import qualified Data.HashMap as H   (Map, toList, fromList, delete, insert, empty)
 

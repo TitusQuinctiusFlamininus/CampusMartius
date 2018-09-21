@@ -6,8 +6,10 @@ module Main where
 
 import Hangman
 import HangmanVisual
-import Data.List       (intersperse)
+
 import Data.Char       (toUpper)
+import Data.List       (intersperse)
+
 
 solutionword = "mississippi"
 
