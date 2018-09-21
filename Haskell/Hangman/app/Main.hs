@@ -36,17 +36,10 @@ runHangman h                                  s sol  =
                                                      putStrLn ((hangover !! s) ++ "    WORD WAS => "++
                                                               (toUpper <$> solutionword)++"")    
                                                      putStrLn gameover >> return ()
-                                       False  -> do case chances h' == chances h  of
-                                                      True  -> case s>1 of 
-                                                                True  -> do showProgress (hangover !! (s-1))
-                                                                                         (modProgress $ uhang h') (chances h')
-                                                                            runHangman h' s sol'
-                                                                False -> do showProgress (hangover !! s)
-                                                                                         (modProgress $ uhang h') (chances h')
-                                                                            runHangman h' s sol'
-                                                      False -> do showProgress (hangover !! s) (modProgress $ uhang h')
-                                                                               (chances h')
-                                                                  runHangman h' (s+1) sol'
+                                       False  -> do showProgress (hangover !! s) (modProgress $ uhang h') (chances h')
+                                                    case chances h' == chances h  of
+                                                      True  -> runHangman h' s     sol'
+                                                      False -> runHangman h' (s+1) sol'
 
 gatherInput :: IO String
 gatherInput = do putStrLn ""
