@@ -5,6 +5,7 @@ module Hangman where
 import Data.Foldable
 import Data.Hashable   (Hashable)
 import Data.Char
+import Data.List       (intersperse)
 import qualified Data.HashMap as H   (Map, toList, fromList, delete, insert, empty)
 
 -- | Represents an index position of a single character in a string
@@ -27,7 +28,6 @@ data HangWord    = HangWord { uhang    ::  [UGuess],  -- <-- The Guess Word Stru
 --   the Solution represents a map of the dictionary word with character indices. Not making a guess (by 
 --   pressing enter-key), should yield a ' ' as the guess, in which case we will just reject further processing
 guessLetter :: (UGuess, Solution) -> HangWord -> HangWord
-guessLetter (' ',s )  h       = h
 guessLetter (g  ,s )  h       = 
     case jury g s of 
           Nothing       ->  h { chances = (chances h) - 1       }
@@ -79,4 +79,4 @@ simplify ((l,c):es) = let dups = filter (\(_,c') -> c == c') es
 
 -- | Function to present the progress so far
 modProgress :: [UGuess] -> [UGuess]
-modProgress p = (\c -> toUpper c) <$> p
+modProgress p = intersperse ' ' . (toUpper <$>) $ p
