@@ -26,8 +26,8 @@ guessLetter :: (UGuess, Solution) -> HangWord -> HangWord
 guessLetter (' ',s )  h       = h
 guessLetter (g  ,s )  h       = 
     case jury g s of 
-          Nothing       ->  h { chances = (chances h) - 1 }
-          Just (n, s')  ->  h { uhang   = l ++ (g : (drop 1 r))         }
+          Nothing       ->  h { chances = (chances h) - 1       }
+          Just (n, s')  ->  h { uhang   = l ++ (g : (drop 1 r)) }
                   where (l,r) = splitAt n $ uhang h
                     
 
