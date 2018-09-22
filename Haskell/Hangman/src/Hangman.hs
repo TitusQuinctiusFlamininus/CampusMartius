@@ -1,8 +1,8 @@
 module Hangman where
 
 import Data.Char
-import Data.Hashable   (Hashable)
-import Data.List       (intersperse)
+import Data.Hashable                 (Hashable)
+import Data.List                     (intersperse)
 import qualified Data.HashMap as H   (Map, toList, fromList, delete, insert)
 
 -- | Represents an index position of a single character in a string
