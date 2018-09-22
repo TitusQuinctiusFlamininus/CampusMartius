@@ -6,12 +6,12 @@ import Data.List                     (intersperse)
 import qualified Data.HashMap as H   (Map, toList, fromList, delete, insert)
 
 -- | Represents an index position of a single character in a string
-type Idx    = Int 
+type Idx         = Int 
 -- | Represents a guess by a player, which is always a single character at a time
-type UGuess = Char
+type UGuess      = Char
 
 -- | Starting position of the visual output for the player
-type HangStart = Idx
+type HangStart   = Idx
 
 -- | If any word (the solution, or word the user is supposed to guess and get right) is represented as a string of characters, then the keys represent the indices of the occurrences of some character that composes the word. As the player guesses, the type's internal structure will change
 type Solution    = H.Map [Idx] Char                    
@@ -25,7 +25,7 @@ data HangWord    = HangWord { uhang    ::  [UGuess],  -- <-- The Guess Word Stru
 --   the Solution represents a map of the dictionary word with character indices. Not making a guess (by 
 --   pressing enter-key), should yield a ' ' as the guess, in which case we will just reject further processing
 guessLetter :: (UGuess, Solution) -> HangWord -> (HangWord, Solution)
-guessLetter (g  ,s )  h       = 
+guessLetter (g  ,s )  h  = 
     case jury g s of 
           Nothing       ->  (h { chances = (chances h) - 1       },s )
           Just (n, s')  ->  (h { uhang   = l ++ (g : (drop 1 r)) },s')
