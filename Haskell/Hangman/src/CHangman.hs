@@ -1,3 +1,5 @@
+{-# LANGUAGE RecordWildCards #-}
+
 module CHangman where
 
 import Control.Comonad
@@ -17,5 +19,5 @@ instance Functor HangStuff where
     
     
 instance Comonad HangStuff where
-    extract  (HangStuff {c = y})   = y
-    extend g k@(HangStuff {c = y}) = HangStuff {c =  g k}
+    extract    (HangStuff {c = y}) = y
+    extend z k@(HangStuff {..})    = HangStuff {c = z k}
