@@ -14,9 +14,7 @@ data Chances        = Chances   { ch   :: Int,
                                 } 
 
 data HangStuff a    = HangStuff { g    ::  Char,
-                                  u    ::  [Char], 
-                                  c    ::  a,
-                                  m    ::  H.Map [Int] Char
+                                  c    ::  a
                                 } 
 
 instance Functor HangStuff where
@@ -31,14 +29,14 @@ instance Comonad HangStuff where
 
 guessLetter' :: HangStuff Chances -> Chances
 guessLetter' h  = 
-    case jury (g h) (m h) of 
+    case jury (g h) $ sol (c h) of 
           Nothing       ->  Chances {ch   = (ch (c h)) - 1, 
-                                     uh   = u h, 
-                                     sol  = m h
+                                     uh   = uh (c h), 
+                                     sol  = sol (c h)
                                     } 
-          Just (n, s')  ->  Chances { ch  = (ch (c h)),
+          Just (n, s')  ->  Chances { ch  = ch (c h),
                                       uh  = l ++ ((g h) : (drop 1 r)), 
                                       sol = s'
                                     }
-              where (l,r) = splitAt n $ u h
+              where (l,r) = splitAt n $ uh (c h)
                      
