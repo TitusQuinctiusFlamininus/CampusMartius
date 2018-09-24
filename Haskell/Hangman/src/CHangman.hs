@@ -4,16 +4,18 @@ import Control.Comonad
 import qualified Data.HashMap as H   (Map, toList, fromList)
 
 
-data HangStuff a    = HangStuff { u    ::  [a], 
-                                  c    ::  Int,
-                                  m    ::  H.Map [Int] a
+data Chances = Chances Int
+
+data HangStuff a    = HangStuff { g    ::  Char,
+                                  u    ::  [Char], 
+                                  c    ::  a,
+                                  m    ::  H.Map [Int] Char
                                 } deriving (Show, Eq)
 
 instance Functor HangStuff where
-    fmap f HangStuff {u = x, c = y, m = z}  = HangStuff { u = fmap f x, 
-                                                          c = y, 
-                                                          m = H.fromList $ fmap (\(k,v) -> (k, (f v))) $ H.toList z
-                                                        }
+    fmap f HangStuff {c = y}  = HangStuff {c = f y}
     
     
---instance Comonad HangStuff where   
+instance Comonad HangStuff where
+    extract  (HangStuff {c = y})   = y
+    extend g k@(HangStuff {c = y}) = HangStuff {c =  g k}
