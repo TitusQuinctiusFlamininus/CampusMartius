@@ -8,9 +8,9 @@ import qualified Data.HashMap as H   (Map, toList, fromList)
 
 
 
-data Chances        = Chances   { ch  :: Int,
-                                  uh  ::  [Char],
-                                  sol ::  H.Map [Int] Char
+data Chances        = Chances   { ch   :: Int,
+                                  uh   ::  [Char],
+                                  sol  ::  H.Map [Int] Char
                                 } 
 
 data HangStuff a    = HangStuff { g    ::  Char,
