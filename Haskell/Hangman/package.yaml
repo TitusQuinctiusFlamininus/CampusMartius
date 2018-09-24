@@ -24,6 +24,7 @@ dependencies:
 - containers
 - hashmap
 - hashable
+- comonad
 
 
 library:
