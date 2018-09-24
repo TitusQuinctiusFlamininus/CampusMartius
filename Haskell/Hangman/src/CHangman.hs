@@ -8,10 +8,10 @@ import qualified Data.HashMap as H   (Map, toList, fromList)
 
 
 
-data Chances = Chances {ch  :: Int,
-                        uh  ::  [Char],
-                        sol ::  H.Map [Int] Char
-                       } 
+data Chances        = Chances   { ch  :: Int,
+                                  uh  ::  [Char],
+                                  sol ::  H.Map [Int] Char
+                                } 
 
 data HangStuff a    = HangStuff { g    ::  Char,
                                   u    ::  [Char], 
@@ -38,6 +38,7 @@ guessLetter' h  =
                                     } 
           Just (n, s')  ->  Chances { ch  = (ch (c h)),
                                       uh  = l ++ ((g h) : (drop 1 r)), 
-                                      sol = s' }
+                                      sol = s'
+                                    }
               where (l,r) = splitAt n $ u h
                      
