@@ -37,14 +37,14 @@ main = do welcome
                   runHangmanC initHang 0 
 
 
--- | Function into the wonderful world of hangman
+-- | COMONADIC VERSION :: Function into the wonderful world of hangman
 runHangmanC :: HangStuff Chances -> HangStart -> IO ()
 runHangmanC ((any (== '_') .  uh . extract) -> False) _  = putStrLn (saved++"    WORD =>["++solutionword++"]")
 runHangmanC h                                  s  = 
              do guess <- gatherInput
                 let theguess = if guess == [] then '$' else (head guess)
                     c_old    = extract h
-                    h'       = extend guessLetter' h { g = theguess}
+                    h'       = extend guessLetter' h { g = theguess }
                     c_new    = extract h' in 
                                  do  case ch c_new == 0 of 
                                        True   -> do  putStrLn ((safeRetr hangover s) ++ "    WORD WAS => "++
@@ -59,7 +59,7 @@ runHangmanC h                                  s  =
                                                                   runHangmanC h' (s+1)
 
 
--- | Function into the wonderful world of hangman (comonadic version)
+-- | Function into the wonderful world of hangman 
 runHangman :: HangWord -> HangStart -> Solution -> IO ()
 runHangman ((any (== '_') .  uhang) -> False) _ _    = putStrLn (saved++"    WORD =>["++solutionword++"]")
 runHangman h                                  s sol  = 
