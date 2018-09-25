@@ -81,11 +81,11 @@ simplify _ []         = []
 simplify t ((l,c):es) =
    case c `elem` t of 
     True  ->  simplify t es
-    False ->  let dups = filter (\(_,c') -> c == c') es in 
-                  case dups of 
+    False ->  case dups of 
                        []  -> (l,c) : simplify (c:t) es
-                       _   -> let finl = (\(l',_) -> l') <$> dups in 
-                                         ((l++(concat finl)), c) : simplify (c:t) es
+                       _   -> ((l++(concat finl)), c) : simplify (c:t) es
+                              where finl = (\(l',_) -> l') <$> dups
+              where                 dups = filter (\(_,c') -> c == c') es
 
 -- | Function to adjust the visual output of the progress so far
 modProgress :: [UGuess] -> [UGuess]
