@@ -22,7 +22,7 @@ instance Functor HangStuff where
     
     
 instance Comonad HangStuff where
-    extract    (HangStuff {c = y}) = y
+    extract     HangStuff {c = y}  = y
     extend z k@(HangStuff {..})    = HangStuff {c = z k}
     
     
