@@ -29,7 +29,7 @@ guessLetter (g  ,s )  h  =
     case jury g s of 
           Nothing       ->  (h { chances = (chances h) - 1       },s )
           Just (n, s')  ->  (h { uhang   = l ++ (g : (drop 1 r)) },s')
-            where (l,r) = splitAt n $ uhang h
+                            where (l,r) = splitAt n $ uhang h
                     
 
 -- | Function that will adjust the solution to reflect whether guess was right or wrong. If guess is correct, then 
