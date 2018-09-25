@@ -30,8 +30,7 @@ main = do welcome
 main :: IO ()
 main = do welcome
           let mask      = hideWords solutionword
-              initchz   = Chances   {ch = length hangover, uh = mask, sol = mapify solutionword  }
-              initHang  = HangStuff {g='#', c = initchz} in 
+              initHang  = HangStuff {g='#', c = Chances {ch = length hangover, uh = mask, sol = mapify solutionword }} in 
                do putStrLn ("You start with "++(show $ length hangover)++" Chances! ")
                   putStrLn ("Word Layout : ["++intersperse ' ' mask++"]")
                   runHangmanC initHang 0 
