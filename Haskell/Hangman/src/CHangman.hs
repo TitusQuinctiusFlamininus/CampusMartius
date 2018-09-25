@@ -29,7 +29,6 @@ instance Comonad HangStuff where
 
 guessLetter' :: HangStuff Chances -> Chances
 guessLetter' h  =
- let zoz        = extract h in 
     case jury (g h) $ sol zoz of 
           Nothing       ->  Chances {ch   = (ch zoz) - 1, 
                                      uh   = uh zoz, 
@@ -40,4 +39,4 @@ guessLetter' h  =
                                       sol = s'
                                     }
                             where (l,r) = splitAt n $ uh zoz
-                
+    where zoz                           = extract h            
