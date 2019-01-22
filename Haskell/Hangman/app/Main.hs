@@ -34,7 +34,7 @@ runHangmanC h                                          =
                                                       False -> runHangmanC $ up h'
             
 
--- | Function into the wonderful world of hangman 
+-- | NON-MONADIC :: Function into the wonderful world of hangman 
 runHangman :: HangWord -> HangStart -> Solution -> IO ()
 runHangman ((any (== '_') .  uhang) -> False) _ _    = putStrLn (saved++"    WORD =>["++solutionword++"]")
 runHangman h                                  s sol  = 
