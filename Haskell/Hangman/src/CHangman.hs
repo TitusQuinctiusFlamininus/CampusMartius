@@ -14,19 +14,24 @@ data Chances        = Chances   { ch   ::  Int,
                                 } 
 
 data HangStuff a    = HangStuff { g    ::  Char,
-                                  c    ::  a
+                                  c    ::  a,
+                                  idx  :: HangStart
                                 } 
 
 instance Functor HangStuff where
-    fmap f HangStuff {c = y}  = HangStuff {c = f y}
+    fmap f h@HangStuff {c = y}  = HangStuff {c = f y, idx = idx h, g = g h}
     
     
 instance Comonad HangStuff where
     extract     HangStuff {c = y}  = y
-    extend z k@(HangStuff {..})    = HangStuff {c = z k}
-    
-    
+    extend            z k          = HangStuff {c = z k, idx = idx k, g = g k}
 
+class Advance t where
+    up   :: t -> t
+    
+instance Advance (HangStuff a) where
+    up h   = HangStuff {idx = (idx h)+1, g = g h, c = c h}
+    
 guessLetter' :: HangStuff Chances -> Chances
 guessLetter' h  =
     case jury (g h) $ sol zoz of 

@@ -13,6 +13,8 @@ import Data.Char                     (toUpper)
 import Data.List                     (intersperse)
 import qualified Data.HashMap as H   (empty)
 
+-- improvements: - HangStart into Comonad
+--               - see if we can use a comonad transformer
 
 solutionword = "mississippi"
 
@@ -30,33 +32,26 @@ main = do welcome
 main :: IO ()
 main = do welcome
           let mask      = hideWords solutionword
-              initHang  = HangStuff {g='#', c = Chances {ch = length hangover, uh = mask, sol = mapify solutionword }} in 
+              initHang  = HangStuff {g='#', c = Chances {ch = length hangover, uh = mask, sol = mapify solutionword }, idx = 0} in 
                do putStrLn ("You start with "++(show $ length hangover)++" Chances! ")
                   putStrLn ("Word Layout : ["++intersperse ' ' mask++"]")
-                  runHangmanC initHang 0 
+                  runHangmanC initHang
 
 
 -- | COMONADIC VERSION :: Function into the wonderful world of hangman
-runHangmanC :: HangStuff Chances -> HangStart -> IO ()
-runHangmanC ((any (== '_') .  uh . extract) -> False) _  = putStrLn (saved++"    WORD =>["++solutionword++"]")
-runHangmanC h                                  s  = 
+runHangmanC :: HangStuff Chances -> IO ()
+runHangmanC ((any (== '_') .  uh . extract) -> False)  = putStrLn (saved++"    WORD =>["++solutionword++"]")
+runHangmanC h                                          = 
              do guess <- gatherInput
-                let theguess = if guess == [] then '$' else (head guess)
-                    c_old    = extract h
-                    h'       = guessLetter' <<=  h { g = theguess }
-                    c_new    = extract h' in 
-                                 do  case ch c_new == 0 of 
-                                       True   -> do  putStrLn ((safeRetr hangover s) ++ "    WORD WAS => "++
-                                                              (toUpper <$> solutionword)++"")    
-                                                     putStrLn gameover >> return ()
-                                       False  -> case ch c_new == ch c_old  of
-                                                      True  -> do showProgress (safeRetr hangover (s-1)) 
-                                                                     (modProgress $ uh c_new) (ch c_new)
-                                                                  runHangmanC h' s
-                                                      False -> do showProgress (safeRetr hangover s) 
-                                                                     (modProgress $ uh c_new) (ch c_new)
-                                                                  runHangmanC h' (s+1)
-
+                let h'       = guessLetter' <<=  h { g = if guess == [] then '$' else (head guess) } in 
+                                 do showProgress (safeRetr hangover (idx h')) (modProgress $ uh (extract h')) (ch (extract h')) 
+                                    case ch (extract h') == 0 of 
+                                       True   -> do   putStrLn gameover
+                                                      putStrLn ("THE ANSWER WAS => "++(toUpper <$> solutionword)) >> return ()
+                                       False  -> case ch (extract h') == (ch $ extract h)  of
+                                                      True  -> runHangmanC h'
+                                                      False -> runHangmanC $ up h'
+            
 
 -- | Function into the wonderful world of hangman 
 runHangman :: HangWord -> HangStart -> Solution -> IO ()
