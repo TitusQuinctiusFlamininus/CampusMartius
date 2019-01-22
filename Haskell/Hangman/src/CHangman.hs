@@ -7,6 +7,8 @@ import Control.Comonad
 import qualified Data.HashMap as H   (Map, toList, fromList)
 
 
+class Advance t where
+    up   :: t -> t
 
 data Chances        = Chances   { ch   ::  Int,
                                   uh   ::  [Char],
@@ -26,12 +28,11 @@ instance Comonad HangStuff where
     extract     HangStuff {c = y}  = y
     extend            z k          = HangStuff {c = z k, idx = idx k, g = g k}
 
-class Advance t where
-    up   :: t -> t
     
 instance Advance (HangStuff a) where
     up h   = HangStuff {idx = (idx h)+1, g = g h, c = c h}
     
+
 guessLetter' :: HangStuff Chances -> Chances
 guessLetter' h  =
     case jury (g h) $ sol zoz of 
