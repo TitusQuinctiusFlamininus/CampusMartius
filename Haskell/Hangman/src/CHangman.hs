@@ -7,9 +7,6 @@ import Control.Comonad
 import qualified Data.HashMap as H   (Map, toList, fromList)
 
 
-class Advance t where
-    up   :: t -> t
-
 data Chances        = Chances   { ch   ::  Int,
                                   uh   ::  [Char],
                                   sol  ::  H.Map [Int] Char
@@ -19,6 +16,9 @@ data HangStuff a    = HangStuff { g    ::  Char,
                                   c    ::  a,
                                   idx  :: HangStart
                                 } 
+
+class Advance t where
+    up   :: t -> t
 
 instance Functor HangStuff where
     fmap f h@HangStuff {c = y}  = HangStuff {c = f y, idx = idx h, g = g h}

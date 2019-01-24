@@ -97,3 +97,30 @@ gameover = "´´´´´´´´´´´´´´´´´´´´´´\n"++
            "``````````````````````" 
         
 hangover = [one,two,three, four, five, six, seven, eight, nine, ten, elvn, twlv, theen]
+
+
+-- | Print to the console the progress on the gallows and the word building
+showProgress :: String -> String -> Int -> IO ()
+showProgress gallows w c = 
+    do putStrLn (gallows ++ "    WORD =>["++w++"]") 
+       putStrLn ("Chances Left: "++(show c))
+       putStrLn ""
+       putStrLn ""
+       putStrLn ""
+
+-- | Get answer from the player
+gatherInput :: IO String
+gatherInput = do putStrLn ""
+                 putStrLn ("Guess a Letter : ->")
+                 guess <- getLine
+                 putStrLn ""
+                 putStrLn ""
+                 return guess
+                 
+-- | Herzlich Wilkommen                                                                  
+welcome :: IO ()
+welcome = do putStrLn "Welcome To Haskell's Hangman"
+             putStrLn ""
+             putStrLn logo
+             putStrLn ""
+          

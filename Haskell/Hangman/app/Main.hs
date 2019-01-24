@@ -13,8 +13,7 @@ import Data.Char                     (toUpper)
 import Data.List                     (intersperse)
 import qualified Data.HashMap as H   (empty)
 
--- improvements: - HangStart into Comonad
---               - see if we can use a comonad transformer
+-- improvements: -- see if we can use a comonad transformer with IO
 
 solutionword = "mississippi"
 
@@ -54,23 +53,6 @@ runHangman h                                  s sol  =
                                                                   runHangman h' (s+1) sol'
 
 
--- | Print to the console the progress on the gallows and the word building
-showProgress :: String -> String -> Int -> IO ()
-showProgress gallows w c = 
-    do putStrLn (gallows ++ "    WORD =>["++w++"]") 
-       putStrLn ("Chances Left: "++(show c))
-       putStrLn ""
-       putStrLn ""
-       putStrLn ""
-
--- | Get answer from the player
-gatherInput :: IO String
-gatherInput = do putStrLn ""
-                 putStrLn ("Guess a Letter : ->")
-                 guess <- getLine
-                 putStrLn ""
-                 putStrLn ""
-                 return guess
                 
 {-
 main :: IO ()
@@ -91,10 +73,3 @@ main = do welcome
                   putStrLn ("Word Layout : ["++intersperse ' ' mask++"]")
                   runHangmanC initHang
 
--- | Herzlich Wilkommen                                                                  
-welcome :: IO ()
-welcome = do putStrLn "Welcome To Haskell's Hangman"
-             putStrLn ""
-             putStrLn logo
-             putStrLn ""
-          
