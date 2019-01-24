@@ -17,7 +17,14 @@ import qualified Data.HashMap as H   (empty)
 
 solutionword = "mississippi"
 
-
+-- | Comonadic version
+main :: IO ()
+main = do welcome
+          let mask      = hideWords solutionword
+              initHang  = HangStuff {g='#', c = Chances {ch = length hangover, uh = mask, sol = mapify solutionword }, idx = 0} in 
+               do putStrLn ("You start with "++(show $ length hangover)++" Chances! ")
+                  putStrLn ("Word Layout : ["++intersperse ' ' mask++"]")
+                  runHangmanC initHang
 
 -- | COMONADIC VERSION :: Function into the wonderful world of hangman
 runHangmanC :: HangStuff Chances -> IO ()
@@ -64,12 +71,5 @@ main = do welcome
                   runHangman initHang 0 (mapify solutionword)
 -}
 
--- | Comonadic version
-main :: IO ()
-main = do welcome
-          let mask      = hideWords solutionword
-              initHang  = HangStuff {g='#', c = Chances {ch = length hangover, uh = mask, sol = mapify solutionword }, idx = 0} in 
-               do putStrLn ("You start with "++(show $ length hangover)++" Chances! ")
-                  putStrLn ("Word Layout : ["++intersperse ' ' mask++"]")
-                  runHangmanC initHang
+
 
