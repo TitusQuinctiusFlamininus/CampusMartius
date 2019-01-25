@@ -32,7 +32,7 @@ runHangmanC ((any (== '_') .  uh . extract) -> False)  = putStrLn (saved++"    W
 runHangmanC h                                          = 
              do guess <- gatherInput
                 let h' = guessLetter' <<=  h { g = (<?) guess } in 
-                         do showProgress (safeRetr hangover (idx h')) (modProgress $ uh (extract h')) (ch (extract h')) 
+                         do showProgress (getgallows hangover (idx h')) (modProgress $ uh (extract h')) (ch (extract h')) 
                             case ch (extract h')of 
                                  0 -> putStrLn gameover>>putStrLn ("ANSWER => "++(toUpper <$> solutionword)) >>return ()
                                  _ -> if ch (extract h') == (ch $ extract h) then runHangmanC h' else runHangmanC $ up h'
@@ -47,14 +47,14 @@ runHangman h                                  s sol  =
                 let theguess = if guess == [] then '$' else (head guess)
                     (h',sol') = guessLetter (theguess, sol) h in 
                                  do  case chances h' == 0 of 
-                                       True   -> do  putStrLn ((safeRetr hangover s) ++ "    WORD WAS => "++
+                                       True   -> do  putStrLn ((getgallows hangover s) ++ "    WORD WAS => "++
                                                               (toUpper <$> solutionword)++"")    
                                                      putStrLn gameover >> return ()
                                        False  -> case chances h' == chances h  of
-                                                      True  -> do showProgress (safeRetr hangover (s-1)) 
+                                                      True  -> do showProgress (getgallows hangover (s-1)) 
                                                                      (modProgress $ uhang h') (chances h')
                                                                   runHangman h' s     sol'
-                                                      False -> do showProgress (safeRetr hangover s) 
+                                                      False -> do showProgress (getgallows hangover s) 
                                                                      (modProgress $ uhang h') (chances h')
                                                                   runHangman h' (s+1) sol'
 

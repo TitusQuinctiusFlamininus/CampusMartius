@@ -54,8 +54,8 @@ hideWords :: [UGuess] -> [UGuess]
 hideWords = ((\_ -> '_') <$>)
 
 -- | Function to retrieve the right gallows
-safeRetr :: [String] -> Idx -> String
-safeRetr s n 
+getgallows :: [String] -> Idx -> String
+getgallows s n 
  | (n < 0)    = s !! 0
  | otherwise  = s !! n
 
