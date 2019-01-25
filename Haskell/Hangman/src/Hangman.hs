@@ -27,9 +27,9 @@ data HangWord    = HangWord { uhang    ::  [UGuess],  -- <-- The Guess Word Stru
 guessLetter :: (UGuess, Solution) -> HangWord -> (HangWord, Solution)
 guessLetter (g  ,s )  h  = 
     case jury g s of 
-          Nothing       ->  (h { chances = (chances h) - 1       },s )
+          Nothing       ->  (h { chances = (chances h)-1       },s )
           Just (n, s')  ->  (h { uhang   = l ++ (g : (drop 1 r)) },s')
-                            where (l,r) = splitAt n $ uhang h
+                            where (l,r)  = splitAt n $ uhang h
                     
 
 -- | Function that will adjust the solution to reflect whether guess was right or wrong. If guess is correct, then 
@@ -38,10 +38,9 @@ guessLetter (g  ,s )  h  =
 jury :: UGuess -> Solution -> Maybe (Idx, Solution)
 jury  g s    = 
     case (locateGuess g $ H.toList s) of 
-          Nothing -> Nothing
-          Just x  -> case x of 
-                      w@(i:[])  -> Just (i, H.delete w s)
-                      w@(i:is)  -> Just (i, H.insert is g $ H.delete w s)
+          Nothing        -> Nothing
+          Just w@(i:[])  -> Just (i, H.delete w s)
+          Just w@(i:is)  -> Just (i, H.insert is g $ H.delete w s)
  
 -- | Function to find the indices that represent where that character appears in the solution string. 
 --   If it cannot be found, it means the guess was wrong and we return Nothing, otherwise we return the 
