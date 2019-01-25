@@ -9,6 +9,9 @@ import CHangman
 import HangmanVisual
 
 import Control.Comonad
+import Control.Monad.Co
+import Control.Monad.IO.Class
+import Control.Monad.Trans.Class
 import Data.Char                     (toUpper)
 import Data.List                     (intersperse)
 import qualified Data.HashMap as H   (empty)
@@ -25,7 +28,13 @@ main = do welcome
                do putStrLn ("You start with "++(show $ length hangover)++" Chances! ")
                   putStrLn ("Word Layout : ["++intersperse ' ' mask++"]")
                   runHangmanC initHang
-
+                  
+-- | Comonad transformer from kan-extensions         
+runHangmanCT ::  CoT HangStuff IO ()
+runHangmanCT = do n <- liftCoT1 extract
+                  liftIO $ putStrLn (show  n)
+                  
+                  
 -- | COMONADIC VERSION :: Function into the wonderful world of hangman
 runHangmanC :: HangStuff Chances -> IO ()
 runHangmanC ((any (== '_') .  uh . extract) -> False)  = putStrLn (saved++"    WORD =>["++solutionword++"]")

@@ -25,6 +25,8 @@ dependencies:
 - hashmap
 - hashable
 - comonad
+- kan-extensions
+- transformers
 
 
 library:
