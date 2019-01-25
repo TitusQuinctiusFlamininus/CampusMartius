@@ -31,13 +31,12 @@ runHangmanC :: HangStuff Chances -> IO ()
 runHangmanC ((any (== '_') .  uh . extract) -> False)  = putStrLn (saved++"    WORD =>["++solutionword++"]")
 runHangmanC h                                          = 
              do guess <- gatherInput
-                let h' = guessLetter' <<=  h { g = if guess == [] then '$' else (head guess) } in 
-                                 do showProgress (safeRetr hangover (idx h')) (modProgress $ uh (extract h')) (ch (extract h')) 
-                                    case ch (extract h') == 0 of 
-                                       True   -> putStrLn gameover >> putStrLn ("ANSWER => "++(toUpper <$> solutionword)) >> return ()
-                                       False  -> case ch (extract h') == (ch $ extract h)  of
-                                                      True  -> runHangmanC h'
-                                                      False -> runHangmanC $ up h'
+                let h' = guessLetter' <<=  h { g = (<?) guess } in 
+                         do showProgress (safeRetr hangover (idx h')) (modProgress $ uh (extract h')) (ch (extract h')) 
+                            case ch (extract h') == 0 of 
+                                 True   -> putStrLn gameover >> putStrLn ("ANSWER => "++(toUpper <$> solutionword)) >>                                      return ()
+                                 _      -> if ch (extract h') == (ch $ extract h) then runHangmanC h' else runHangmanC $ up h'
+                                               
             
 
 -- | NON-MONADIC :: Function into the wonderful world of hangman 

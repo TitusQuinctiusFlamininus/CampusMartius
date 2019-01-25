@@ -91,3 +91,7 @@ simplify t ((l,c):es) =
 modProgress :: [UGuess] -> [UGuess]
 modProgress = intersperse ' ' . (toUpper <$>)
 
+-- | Function to guard against useless guesses
+(<?) :: [Char] -> Char
+(<?) []     = '$' 
+(<?) (g:[]) = g
