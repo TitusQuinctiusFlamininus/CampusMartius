@@ -2,20 +2,27 @@ import Data.List
 import Data.Char
 import qualified Data.Sequence as Seq
 import Data.Foldable
+import Control.Lens.Combinators         
+import Control.Lens.Setter    ((.~))
 
---Solving Sudoku in Haskell
-type XLoc = Int     --the X coordinate of the cell
-type YLoc = Int     --the Y coordinate of the cell
-type SValue = Int   --the sudoku value of the cell, a value between 1 and 9 (inclusive of 1 and 9)
-type Region = Int   --the numbered region this cell belongs to; essentially a number given to a group of 9 cells (bottom left bottom = 1, bottom middle bottom = 2, bottom right bottom = 3, middle left middle = 4, dead center = 5, middle right middle = 6, upper left upper = 7, upper middle upper = 8, upper right upper = 9 )
-type Poss = [Int] -- the possibilities (1 through 9) that act as an Svalue
-type Found = Bool   --the indication if the cell's true sudoku value has been found, once this is set to true, then it will not and should not change
+
 type FORWARD = String --We can proceed to the next cell
 type BACK = String --we need to go back and remove the last used possible value in the last cell we processed
 type STAY = String --we will keep processing the same cell
 data Direction = FORWARD | BACK | STAY  deriving (Eq)  --are we processing the board forwards (toward 9,9) or backwards (to correct an earlier cell SValue assumption)
-data SudoCell = SudoCell (XLoc , YLoc , SValue, Region, Poss, Found) deriving (Eq, Show, Ord)   --A typical Sudoku Cell
+data SudoCell = SudoCell { xLoc   :: Int, --the X coordinate of the cell
+                           yLoc   :: Int, --the Y coordinate of the cell
+                           sValue :: Int, --the sudoku value of the cell, a value between 1 and 9 (inclusive of 1 and 9)
+                           region :: Int, --the numbered region this cell belongs to; essentially a number given to a group of 9 cells (bottom left bottom = 1, bottom 
+                           poss   :: [Int], -- the possibilities (1 through 9) that act as an Svalue
+                           found  :: Bool --the indication if the cell's true sudoku value has been found, once this is set to true, then it will not and should not change
+                         } 
 
+makeLenses ''SudoCell
+
+-- | Replace the region of the input SudoCell with the one we are providing
+--replaceRegion :: SudoCell -> Int -> SudoCell
+--replaceRegion s r = SudoCell { xLoc = xLoc s, yLoc = yLoc s, sValue = sValue s, region = r 
 
 --function to generate the board
 --param: the board so far; usually, to start off, we send an empty board
@@ -24,7 +31,7 @@ createBoard board
  | (length board) == 81     = board
  | otherwise                =
      let y = if (board == []) then 1 else ((length board) `div` 9)+1
-         noRegionBoard = map (\x -> SudoCell (x, y, 0, 0, [1..9], False)) [1..9]
+         noRegionBoard = map (\x -> SudoCell {xLoc = x, yLoc = y, sValue = 0, region = 0, poss = [1..9], found = False}) [1..9]
          rdataInc = fillInRegions (board ++ noRegionBoard) in
      createBoard rdataInc
 
@@ -32,7 +39,7 @@ createBoard board
 fillInRegions :: [SudoCell] -> [SudoCell]
 fillInRegions celldata =
  let regiondata = concat $ map (\l -> createRawRegionValues l) [[1..3],[4..6],[7..9]]
- in zipWith (\(SudoCell (a, b, c, _, p, d)) r -> SudoCell (a, b, c, r, p, d)) celldata regiondata
+ in zipWith (\s r -> (~.) r s) celldata regiondata
 
 --Used in the fillInRegions function to give back a list like this, given [1,2,3]: [1,1,1,2,2,2,3,3,3,1,1,1,2,2,2,3,3,3,1,1,1,2,2,2,3,3,3]
 -- the value 3 used in the function is the height of any 1 region on the sudoku board, a region comprising of a 3x3 square of sudoku cells
