@@ -1,0 +1,67 @@
+-- This file has been generated from package.yaml by hpack version 0.28.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 18a10ecd59f1bcd0b2db8937c341c04714e5e7788ef98c19566a13784da51a25
+
+name:           mysudoku
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/githubuser/mysudoku#readme>
+homepage:       https://github.com/githubuser/mysudoku#readme
+bug-reports:    https://github.com/githubuser/mysudoku/issues
+author:         Michael Nyika
+maintainer:     mnyika@gmail.com
+copyright:      2019 Michael Nyika
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+cabal-version:  >= 1.10
+extra-source-files:
+    ChangeLog.md
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/mysudoku
+
+library
+  exposed-modules:
+      Sudoku
+  other-modules:
+      Paths_mysudoku
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , lens
+  default-language: Haskell2010
+
+executable mysudoku-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_mysudoku
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , lens
+    , mysudoku
+  default-language: Haskell2010
+
+test-suite mysudoku-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_mysudoku
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , lens
+    , mysudoku
+  default-language: Haskell2010
