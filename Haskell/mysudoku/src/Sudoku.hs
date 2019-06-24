@@ -5,12 +5,12 @@ module Sudoku where
 
 import Data.List
 import Data.Char
-import Data.Function             ((&))
-import qualified Data.Sequence as Seq
+import Control.Lens.TH  
 import Data.Foldable
-import Control.Lens.Type         (Lens')
-import Control.Lens              ((^.),(.~))
-import Control.Lens.TH           
+import Data.Function                    ((&))
+import Control.Lens.Type                (Lens')
+import Control.Lens                     ((^.), (.~))
+import qualified Data.Sequence as Seq
 
 type FORWARD = String --We can proceed to the next cell
 type BACK = String --we need to go back and remove the last used possible value in the last cell we processed
@@ -33,7 +33,7 @@ createBoard board
  | (length board) == 81     = board
  | otherwise                = createBoard $ fillInRegions (board ++ noRegionBoard)
                               where noRegionBoard = func <$> [1..9]
-                                    func          = (\x -> SudoCell {_xLoc = x, _yLoc = y, _poss = [1..9]})
+                                    func          = (\x -> SudoCell {_xLoc = x, _yLoc = y, _sValue = 0, _region = 0, _poss = [1..9], _found = False})
                                     y             = if (board == []) then 1 else ((length board) `div` 9)+1
      
 
