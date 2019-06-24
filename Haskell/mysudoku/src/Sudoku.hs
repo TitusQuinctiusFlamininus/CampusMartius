@@ -71,11 +71,12 @@ setDefaultSudokuValues def@((a,b,c):ys) (cell:xs) =
 
 --function to convert string input for defaut cell values to a format we know about
 inputToDefault :: String -> [(Int, Int, Int)]
-inputToDefault ""  = []
-inputToDefault " " = []
-inputToDefault (x:y:z:xs)
- | x == ',' = inputToDefault (y:z:xs)
- | otherwise = ((digitToInt x),(digitToInt y),(digitToInt z)) : inputToDefault xs
+inputToDefault ""         = []
+inputToDefault " "        = []
+inputToDefault (x:y:z:xs) =
+    case x of
+      ','  -> inputToDefault (y:z:xs)
+      _    -> ((digitToInt x),(digitToInt y),(digitToInt z)) : inputToDefault xs
 
 --SORTS THE BOARD so it appears from 1,1 through 9,9
 sortBoard :: [SudoCell] -> [SudoCell]
