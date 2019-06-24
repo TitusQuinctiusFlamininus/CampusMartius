@@ -83,11 +83,9 @@ sortBoard (x:xs) = sortBoard (filter (\y -> y < x) xs) ++ [x] ++ sortBoard (filt
 --Will tell you if the Possibility at the head of the list in the Sudocell, can be used as a value, considering the rows, columns and region values already
 --set either by default or because we passed through those cells earlier in the program
 isPossibilityOk :: SudoCell -> [SudoCell] -> Bool
-isPossibilityOk cell board =
- let deciders = nub (sameRowCells cell board) ++ (sameColumnCells cell board) ++ (sameRegionCells cell board)
-     (SudoCell (_, _, _, _, (x:xs), _)) = cell
-     forbiddenValues = map (\(SudoCell (_, _, s, _, _, _)) -> s) deciders in
-     all (x/=) forbiddenValues
+isPossibilityOk cell@SudoCell{_poss = (x:xs)} board  =  all (x/=) forbiddenValues
+ where  forbiddenValues = map (\s -> s ^. sValue) deciders
+        deciders        = nub (sameRowCells cell board) ++ (sameColumnCells cell board) ++ (sameRegionCells cell board)
 
 --Will update the board given the index of the cell, the cell itself and the board
 --param 1: the index
