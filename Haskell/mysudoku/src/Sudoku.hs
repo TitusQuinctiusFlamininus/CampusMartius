@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Sudoku where
 
@@ -7,6 +8,7 @@ import Data.Char
 import Data.Function             ((&))
 import qualified Data.Sequence as Seq
 import Data.Foldable
+import Control.Lens.Type         (Lens')
 import Control.Lens              ((^.),(.~))
 import Control.Lens.TH           
 
@@ -20,7 +22,7 @@ data SudoCell = SudoCell { _xLoc   :: Int, --the X coordinate of the cell
                            _region :: Int, --the numbered region this cell belongs to; essentially a number given to a group of 9 cells (bottom left bottom = 1, bottom 
                            _poss   :: [Int], -- the possibilities (1 through 9) that act as an Svalue
                            _found  :: Bool --the indication if the cell's true sudoku value has been found, once this is set to true, then it will not and should not change
-                         } 
+                         } deriving (Eq,Ord,Show)
                          
 makeLenses ''SudoCell
 
@@ -42,22 +44,11 @@ fillInRegions celldata = zipWith (\s r -> s & region .~ r) celldata regiondata
        createRawRegionValues   = \r -> concat . concat . replicate 3 . ((\x -> replicate 3 x) <$>) $ r
 
 
---function to give the list of SudoCells that are in the same row as the given SudoCell, all except the row that is used as the reference request
-sameRowCells :: SudoCell -> [SudoCell] -> [SudoCell]
-sameRowCells cell = filter (\g -> g /= cell) . filter (\s -> (cell^._yLoc == s^._yLoc))
- 
- 
-
---function to give the list of SudoCells that are in the same column as the given SudoCell, all except the row that is used as the reference request
-sameColumnCells :: SudoCell -> [SudoCell] -> [SudoCell]
-sameColumnCells  cell@(SudoCell (a, b, c, d, p, f)) board =
- let cells = filter (\(SudoCell (e, _, _, _, _, _)) -> (a == e)) board in
- filter (\g -> g /= cell) cells
-
---function to give the list of SudoCells that are in the same region as the given SudoCell, all except the row that is used as the reference request
-sameRegionCells :: SudoCell -> [SudoCell] -> [SudoCell]
-sameRegionCells cell =  filter (\g -> g /= cell) . filter (\s -> (cell ^. region == s ^. region))
-
+--function to give the list of SudoCells that are in the same region or column or row, depending on the LENS you pass in.
+-- For example: If yLoc is the lens, then we filter all cells in the same ROW
+-- if xLoc, then cells in the same column; if region, then cells with the same region, etc
+sameAttributeCells :: Lens' SudoCell Int ->  SudoCell -> [SudoCell] -> [SudoCell]
+sameAttributeCells focus cell = filter (\g -> g /= cell) . filter (\s -> (cell ^. focus == s ^. focus))
  
 --function to update a board with the default sudoku values
 setDefaultSudokuValues :: [(Int, Int, Int)] -> [SudoCell] -> [SudoCell]
@@ -87,7 +78,7 @@ sortBoard (x:xs) = sortBoard (filter (\y -> y < x) xs) ++ [x] ++ sortBoard (filt
 isPossibilityOk :: SudoCell -> [SudoCell] -> Bool
 isPossibilityOk cell@SudoCell{_poss = (x:xs)} board  =  all (x/=) forbiddenValues
  where  forbiddenValues = (\s -> s ^. sValue) <$> deciders
-        deciders        = nub (sameRowCells cell board) ++ (sameColumnCells cell board) ++ (sameRegionCells cell board)
+        deciders        = nub (sameAttributeCells yLoc cell board) ++ (sameAttributeCells xLoc cell board) ++ (sameAttributeCells region cell board)
 
 --Will update the board given the index of the cell, the cell itself and the board
 --param 1: the index
