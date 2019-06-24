@@ -1,8 +1,10 @@
--- This file has been generated from package.yaml by hpack version 0.28.2.
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.1.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 18a10ecd59f1bcd0b2db8937c341c04714e5e7788ef98c19566a13784da51a25
+-- hash: 8bb932b141e0e0c5f56d811f5ac8cac08c273dec8f8b3d5c82870968ccef68c9
 
 name:           mysudoku
 version:        0.1.0.0
@@ -15,10 +17,9 @@ copyright:      2019 Michael Nyika
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
-cabal-version:  >= 1.10
 extra-source-files:
-    ChangeLog.md
     README.md
+    ChangeLog.md
 
 source-repository head
   type: git

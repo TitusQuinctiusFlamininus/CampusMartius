@@ -105,22 +105,16 @@ updateAtIndex index cell board = foldMap (:[]) (Seq.update index cell $ Seq.from
 solveSudoku :: Int -> Direction -> [SudoCell] -> [SudoCell]
 solveSudoku index dir board
  | index == 81    = board
- | otherwise = do {
-      let cell@(SudoCell (a, b, c, d, p, f)) = board !! index in
-         if (f /= True) then
-               if (p/=[]) then
-                      if isPossibilityOk cell board then
-                         let goodcellboard         = updateAtIndex index (SudoCell (a, b, (head p), d, (drop 1 p), f)) board in
-                             solveSudoku (index+1) FORWARD goodcellboard
-                      else let tryagainboard       = updateAtIndex index (SudoCell (a, b, 0, d, (drop 1 p), f)) board in
-                             solveSudoku index STAY tryagainboard
-               else let badcellboard               = updateAtIndex index (SudoCell (a, b, 0, d, [1..9], f)) board in
-                             solveSudoku (index-1) BACK badcellboard
-         else
-               if dir == BACK then
-                  solveSudoku (index-1) BACK board
-               else solveSudoku (index+1) FORWARD board
-                  }
-
-
+ | otherwise      = do
+         case (cell ^. found) of
+           False  -> case cell ^. poss of
+                        [] -> solveSudoku (index-1) BACK $ updateAtIndex index (cell & poss .~ [1..9]) board
+                        _  -> case isPossibilityOk cell board of
+                              True  ->  solveSudoku (index+1) FORWARD $ updateAtIndex index ((cell & poss .~ (drop 1 $ cell ^. poss)) & sValue .~ head (cell ^. poss)) board
+                              False ->  solveSudoku index STAY $ updateAtIndex index (cell & poss .~ (drop 1 $ cell ^. poss)) board
+           True  -> case dir of 
+                     BACK  -> solveSudoku (index-1) BACK board
+                     _     -> solveSudoku (index+1) FORWARD board
+   where cell = board !! index
+                  
 

@@ -9,3 +9,4 @@ Haskell/Nurikabe/Nurikabe
 Haskell/Sudoku/Sudoku
 .gitignore
 Haskell/Exercises/Continuations_Example
+.stack-work
