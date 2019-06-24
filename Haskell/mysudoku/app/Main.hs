@@ -16,7 +16,7 @@ main = do
  let defaultInput = inputToDefault inputValues
  let bbp = setDefaultSudokuValues (inputToDefault inputValues) hollowboard
  let finalsolution = nub (solveSudoku 0 FORWARD bbp)
- --putStrLn (show (length finalsolution))
+ putStrLn (show (length finalsolution))
  putStrLn " elements."
  putStrLn " "
  putStrLn (show $ sortBoard finalsolution)
