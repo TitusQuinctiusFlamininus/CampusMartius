@@ -56,10 +56,9 @@ sameColumnCells  cell@(SudoCell (a, b, c, d, p, f)) board =
 
 --function to give the list of SudoCells that are in the same region as the given SudoCell, all except the row that is used as the reference request
 sameRegionCells :: SudoCell -> [SudoCell] -> [SudoCell]
-sameRegionCells cell@(SudoCell (a, b, c, d, p, f)) board =
- let cells = filter (\(SudoCell (_, _, _, r, _, _)) -> (d == r)) board in
- filter (\g -> g /= cell) cells
+sameRegionCells cell =  filter (\g -> g /= cell) . filter (\s -> (cell ^. region == s ^. region))
 
+ 
 --function to update a board with the default sudoku values
 setDefaultSudokuValues :: [(Int, Int, Int)] -> [SudoCell] -> [SudoCell]
 setDefaultSudokuValues [] r                       = r
@@ -87,7 +86,7 @@ sortBoard (x:xs) = sortBoard (filter (\y -> y < x) xs) ++ [x] ++ sortBoard (filt
 --set either by default or because we passed through those cells earlier in the program
 isPossibilityOk :: SudoCell -> [SudoCell] -> Bool
 isPossibilityOk cell@SudoCell{_poss = (x:xs)} board  =  all (x/=) forbiddenValues
- where  forbiddenValues = map (\s -> s ^. sValue) deciders
+ where  forbiddenValues = (\s -> s ^. sValue) <$> deciders
         deciders        = nub (sameRowCells cell board) ++ (sameColumnCells cell board) ++ (sameRegionCells cell board)
 
 --Will update the board given the index of the cell, the cell itself and the board
