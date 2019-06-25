@@ -24,6 +24,8 @@ data SudoCell = SudoCell { _xLoc   :: Int, --the X coordinate of the cell
                            _found  :: Bool --the indication if the cell's true sudoku value has been found, once this is set to true, then it will not and should not change
                          } deriving (Eq,Ord,Show)
                          
+defaultCell = SudoCell {_xLoc = 0, _yLoc = 0, _sValue = 0, _region = 0, _poss = [1..9], _found = False}
+                         
 makeLenses ''SudoCell
 
 --function to generate the board
@@ -33,7 +35,7 @@ createBoard board
  | (length board) == 81     = board
  | otherwise                = createBoard $ fillInRegions (board ++ noRegionBoard)
                               where noRegionBoard = func <$> [1..9]
-                                    func          = (\x -> SudoCell {_xLoc = x, _yLoc = y, _sValue = 0, _region = 0, _poss = [1..9], _found = False})
+                                    func          = (\x -> (defaultCell & xLoc .~ x) & yLoc .~ y)
                                     y             = if (board == []) then 1 else ((length board) `div` 9)+1
      
 
@@ -85,7 +87,7 @@ isPossibilityOk cell@SudoCell{_poss = (x:xs)} board  =  all (x/=) forbiddenValue
 --param 2: the cell
 --param 3: the board
 updateAtIndex :: Int -> SudoCell -> [SudoCell] -> [SudoCell]
-updateAtIndex index cell board = foldMap (:[]) (Seq.update index cell $ Seq.fromList board)
+updateAtIndex index cell board = foldMap (:[]) $ Seq.update index cell $ Seq.fromList board
 
 
 
