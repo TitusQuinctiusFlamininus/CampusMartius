@@ -8,6 +8,9 @@ Conway's Game of Life Problem: https://en.wikipedia.org/wiki/Conway's_Game_of_Li
 
 Tic Tac Toe problem: https://en.wikipedia.org/wiki/Tic-tac-toe
 
+OHCE TDD Kata: https://kata-log.rocks/ohce-kata
+
+
 # HASKELL
 ![alt tag](https://github.com/TitusQuinctiusFlamininus/CampusMartius/blob/master/logo7000.png)
 
